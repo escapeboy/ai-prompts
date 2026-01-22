@@ -74,6 +74,38 @@ This library contains reusable prompts for implementing global Claude Code optim
 **Use when**: Complex projects, team coordination, critical decisions
 **Benefit**: Handle advanced scenarios with proven patterns
 
+### [07-custom-commands](07-custom-commands/)
+**Custom slash commands for specialized workflows**
+
+- **[debug.md](07-custom-commands/debug.md)** - Debug Agent for systematic debugging
+- **[i18n.md](07-custom-commands/i18n.md)** - Internationalization management
+- **[qa.md](07-custom-commands/qa.md)** - QA automation with browser testing
+
+**Use when**: Specialized workflows, testing, debugging
+**Benefit**: Encapsulate complex workflows into simple commands
+
+### [08-ui-ux-development](08-ui-ux-development/)
+**Production-ready UI/UX implementation with Claude Code**
+
+- **[ui-ux-pro-skill.md](08-ui-ux-development/ui-ux-pro-skill.md)** - Complete UI/UX Pro Max skill documentation
+  - 50+ UI styles (Glassmorphism, Minimalism, Brutalism, etc.)
+  - 21 color palettes with accessibility guidance
+  - 50 font pairings
+  - shadcn/ui MCP integration
+- **[dashboard-workflow-guide.md](08-ui-ux-development/dashboard-workflow-guide.md)** - Step-by-step dashboard implementation
+  - Real API data integration
+  - Empty states and loading patterns
+  - Security best practices (XSS prevention)
+  - Dark mode and multilingual support
+- **[browser-testing-guide.md](08-ui-ux-development/browser-testing-guide.md)** - Systematic browser testing
+  - Chrome DevTools via Claude in Chrome MCP
+  - Network, console, visual verification
+  - Responsive and accessibility testing
+
+**Use when**: Building dashboards, admin panels, landing pages, SaaS interfaces
+**Benefit**: 40-60% token savings, production-ready code with security and accessibility
+**Time**: 60-90 minutes per dashboard (vs 3-4 hours manual)
+
 ---
 
 ## 🚀 Quick Start
@@ -400,5 +432,28 @@ These prompts are project-agnostic and can be freely shared, modified, and adapt
 ---
 
 **Created**: 2026-01-04
-**Version**: 1.0.0
+**Last Updated**: 2026-01-22
+**Version**: 1.1.0
 **Compatibility**: Claude Code (all versions), Claude API (Sonnet 4.5, Opus 4.5, Haiku 4.5)
+
+---
+
+## 📝 Version History
+
+### v1.1.0 (2026-01-22)
+**Added**: UI/UX Development Section (08-ui-ux-development/)
+- Complete UI/UX Pro Max skill documentation with 50+ styles, 21 palettes, 50 font pairings
+- Dashboard workflow guide with real API integration patterns
+- Browser testing guide with Chrome DevTools automation
+- Security best practices (XSS prevention, CSRF protection)
+- Empty state patterns and dark mode implementation
+- Based on production Zonex dashboard implementation
+- **Token savings**: 40-60% for UI/UX tasks
+
+### v1.0.0 (2026-01-04)
+**Initial release**:
+- Global optimization setup (01-06)
+- Project activation workflows
+- Custom skills and commands
+- Research and token optimization guides
+- Advanced patterns for complex scenarios
