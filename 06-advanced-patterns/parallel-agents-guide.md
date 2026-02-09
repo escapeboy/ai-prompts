@@ -212,6 +212,158 @@ Launch test generation agents:
 
 ---
 
+### Pattern 5: Selective Deep Plan Analysis
+
+**Scenario**: Review a complex plan with multiple specialized agents without exhausting the context window.
+
+**Problem**: Launching 5+ review agents simultaneously generates 100K+ tokens of output, often exceeding the context window and producing truncated, unusable analysis.
+
+**Solution**: Tiered agent selection with context budget awareness.
+
+#### Tier System
+
+| Tier | Agents | Token Budget | When to Use |
+|------|--------|-------------|-------------|
+| **Tier 1 (Core)** | architecture-strategist, code-simplicity-reviewer | ~30K tokens | Always - minimum viable review |
+| **Tier 2 (Recommended)** | + security-sentinel, performance-oracle | ~60K tokens | Default for most plans |
+| **Tier 3 (Full)** | + all domain-specific agents | 100K+ tokens | Only when explicitly requested |
+
+#### Context Budget Calculator
+
+Before launching agents, calculate the maximum safe count:
+
+```
+max_agents = (context_window - current_usage - plan_size) / avg_agent_output
+
+Example:
+  context_window  = 200,000 tokens
+  current_usage   = 50,000 tokens (conversation so far)
+  plan_size       = 20,000 tokens (the plan being reviewed)
+  avg_agent_output = 25,000 tokens (per agent response)
+
+  max_agents = (200,000 - 50,000 - 20,000) / 25,000 = 5.2 → 5 agents max
+```
+
+**Safety margin**: Always subtract 20% from max_agents to leave room for synthesis.
+
+#### Agent Priority Matrix
+
+Select agents based on project type:
+
+| Project Type | Priority Agents | Secondary Agents |
+|-------------|----------------|------------------|
+| **Laravel/PHP** | architecture-strategist, security-sentinel, data-integrity-guardian | performance-oracle, code-simplicity-reviewer |
+| **React/TypeScript** | architecture-strategist, typescript-reviewer, react-performance | frontend-developer, code-simplicity-reviewer |
+| **API Design** | backend-architect, security-sentinel, performance-oracle | graphql-architect, code-simplicity-reviewer |
+| **Data/Migrations** | data-migration-expert, data-integrity-guardian, deployment-verification | architecture-strategist, security-sentinel |
+| **Mobile** | mobile-developer, architecture-strategist, performance-oracle | security-sentinel, code-simplicity-reviewer |
+
+#### Implementation Patterns
+
+**Pattern A: Compact-Between-Agents**
+
+Run agents sequentially with `/compact` between each to free context:
+
+```markdown
+1. Launch architecture-strategist -> Get results -> Save to summary
+2. /compact (frees ~30K tokens)
+3. Launch security-sentinel -> Get results -> Add to summary
+4. /compact (frees ~30K tokens)
+5. Launch performance-oracle -> Get results -> Add to summary
+6. Synthesize from summaries
+```
+
+**Pattern B: Background Agents**
+
+Use `run_in_background: true` to run agents in parallel without blocking context:
+
+```markdown
+Launch all agents with run_in_background: true
+  -> Each agent writes results to output_file
+  -> Read output files after all complete
+  -> Synthesize in main conversation
+
+Advantage: Agents run in parallel (faster)
+Disadvantage: Must read output files (extra step)
+```
+
+**Pattern C: Selective Launch (Recommended)**
+
+Ask the user which tier before launching:
+
+```markdown
+"This plan has 15 files across 3 modules. I recommend Tier 2 review
+(4 agents, ~60K tokens). Options:
+
+1. Tier 1 (Core): architecture + simplicity [~30K tokens]
+2. Tier 2 (Recommended): + security + performance [~60K tokens]
+3. Tier 3 (Full): + all specialists [~120K tokens, may need /compact]
+4. Custom: specify agents by name
+
+Which tier?"
+```
+
+---
+
+### Deep Plan Anti-Patterns
+
+Avoid these common mistakes when using parallel agents for plan review:
+
+#### Anti-Pattern 1: Launching All Agents at Once
+
+```markdown
+# BAD: 8 agents launched simultaneously
+Launch: architecture-strategist, code-simplicity-reviewer, security-sentinel,
+        performance-oracle, data-integrity-guardian, deployment-verification,
+        typescript-reviewer, react-performance
+
+# Result: 200K+ tokens of output, context overflow, truncated results
+```
+
+**Fix**: Use the tier system. Start with Tier 1, escalate only if needed.
+
+#### Anti-Pattern 2: Using Opus for Every Agent
+
+```markdown
+# BAD: All agents on Opus (3x more tokens per agent)
+architecture-strategist (opus) -> 40K tokens
+security-sentinel (opus) -> 35K tokens
+performance-oracle (opus) -> 38K tokens
+# Total: 113K tokens for 3 agents
+
+# GOOD: Match model to task
+architecture-strategist (opus) -> 40K tokens  # Critical - worth opus
+security-sentinel (sonnet) -> 20K tokens       # Standard review
+performance-oracle (sonnet) -> 18K tokens      # Standard review
+# Total: 78K tokens for 3 agents (31% savings)
+```
+
+**Fix**: Use Opus only for architectural decisions. Sonnet is sufficient for most reviews.
+
+#### Anti-Pattern 3: No Prioritization
+
+```markdown
+# BAD: All agents marked as "required"
+"Run ALL review agents because quality matters"
+
+# Result: Context overflow, no agent completes properly
+```
+
+**Fix**: Prioritize ruthlessly. Two thorough reviews > six truncated reviews.
+
+#### Anti-Pattern 4: Ignoring Context State
+
+```markdown
+# BAD: Launching 5 agents when context is already 70% full
+Context: 140K/200K used + 5 agents x 25K = 265K > 200K
+
+# Result: Later agents get truncated or fail
+```
+
+**Fix**: Always calculate context budget before launching agents. Use `/compact` to free space first.
+
+---
+
 ## Agent Types for Parallel Work
 
 ### Exploration Agents

@@ -106,6 +106,33 @@ This library contains reusable prompts for implementing global Claude Code optim
 **Benefit**: 40-60% token savings, production-ready code with security and accessibility
 **Time**: 60-90 minutes per dashboard (vs 3-4 hours manual)
 
+### [09-laravel-mcp-integration](09-laravel-mcp-integration/)
+**Connect Claude Code with Laravel's MCP ecosystem**
+
+- **[README.md](09-laravel-mcp-integration/README.md)** - Laravel MCP ecosystem overview
+- **[setup-guide.md](09-laravel-mcp-integration/setup-guide.md)** - Installation and configuration
+- **[laravel-claude-md-template.md](09-laravel-mcp-integration/laravel-claude-md-template.md)** - CLAUDE.md template for Laravel projects
+- **[laravel-subagent.md](09-laravel-mcp-integration/laravel-subagent.md)** - Custom subagent for Laravel development
+
+**Use when**: Working on Laravel 11.x/12.x projects with Claude Code
+**Benefit**: Project-aware assistance via Laravel Boost + package discovery via LaraPlugins.io
+**Setup**: 5 minutes per project (composer install + MCP registration)
+
+### [10-subagents](10-subagents/)
+**Create custom AI agents with specialized knowledge and tools**
+
+- **[README.md](10-subagents/README.md)** - Subagent system overview
+- **[guide.md](10-subagents/guide.md)** - Complete subagent creation guide
+- **[examples/](10-subagents/examples/)** - Working subagent examples
+  - `code-reviewer.md` - Read-only code review agent
+  - `laravel-specialist.md` - Laravel development agent
+  - `debugger.md` - Debugging specialist
+  - `test-generator.md` - Test generation agent
+
+**Use when**: Repetitive specialized tasks, team standardization, cost optimization
+**Benefit**: Reusable agents with controlled tool access and model selection
+**Setup**: 5-10 minutes per agent definition
+
 ---
 
 ## 🚀 Quick Start
@@ -343,6 +370,17 @@ git push -u origin main
 - [FastMCP Skills](https://fastmcp.me/Skills/Explore)
 - [SuperClaude Framework](https://github.com/SuperClaude)
 - [Serena MCP](https://github.com/Serena-MCP)
+- [Awesome Claude Code Subagents](https://github.com/VoltAgent/awesome-claude-code-subagents)
+- [Claude Code Cheat Sheet](https://github.com/Njengah/claude-code-cheat-sheet)
+
+### Laravel MCP Ecosystem
+- [Laravel Boost](https://laravel.com/ai/mcp) - Official Laravel MCP server
+- [LaraPlugins.io MCP](https://laraplugins.io/mcp) - Package discovery MCP
+
+### Claude Code Documentation
+- [Claude Code Subagents](https://code.claude.com/docs/en/sub-agents) - Official subagent docs
+- [Claude Code MCP](https://code.claude.com/docs/en/mcp) - MCP integration guide
+- [Claude Code Skills](https://code.claude.com/docs/en/skills) - Custom skills guide
 
 ### Related Tools
 - [Codex-CLI](https://github.com/codex-cli) - Code refactoring
@@ -432,13 +470,36 @@ These prompts are project-agnostic and can be freely shared, modified, and adapt
 ---
 
 **Created**: 2026-01-04
-**Last Updated**: 2026-01-22
-**Version**: 1.1.0
-**Compatibility**: Claude Code (all versions), Claude API (Sonnet 4.5, Opus 4.5, Haiku 4.5)
+**Last Updated**: 2026-02-09
+**Version**: 1.2.0
+**Compatibility**: Claude Code (all versions), Claude API (Opus 4.6, Sonnet 4.5, Haiku 4.5)
 
 ---
 
 ## 📝 Version History
+
+### v1.2.0 (2026-02-09)
+**Added**: Laravel MCP Integration (09-laravel-mcp-integration/)
+- Laravel Boost MCP setup guide (official Laravel MCP server)
+- LaraPlugins.io MCP configuration for package discovery
+- CLAUDE.md template for Laravel projects (Livewire, Inertia, Filament variants)
+- Laravel-specialized subagent definition with Boost MCP integration
+
+**Added**: Subagents Section (10-subagents/)
+- Complete subagent creation guide with YAML frontmatter format
+- Tool access patterns (read-only, research, code writer, full access)
+- Model selection guide (haiku/sonnet/opus by task type)
+- Four example subagents: code-reviewer, laravel-specialist, debugger, test-generator
+
+**Added**: Selective Deep Plan Analysis (06-advanced-patterns/)
+- Tiered agent selection system (Tier 1/2/3) to prevent context overflow
+- Context budget calculator formula for safe agent count
+- Agent priority matrix by project type (Laravel, React, API, Data)
+- Compact-between-agents and background agent patterns
+- Deep plan anti-patterns section
+
+**Updated**: Model compatibility to Claude 4.6 (Opus 4.6, Sonnet 4.5, Haiku 4.5)
+**Updated**: Resources with Laravel MCP, subagent docs, and community links
 
 ### v1.1.0 (2026-01-22)
 **Added**: UI/UX Development Section (08-ui-ux-development/)
