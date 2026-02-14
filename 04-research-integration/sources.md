@@ -153,6 +153,25 @@ These are community-maintained resources with valuable patterns and tools.
 
 ---
 
+### Awesome LLM Apps — Agent Skills
+
+**URL**: https://github.com/Shubhamsaboo/awesome-llm-apps/tree/main/awesome_agent_skills
+
+**What to find**:
+- 18 skills in `SKILL.md` format (same format as Claude Code skills)
+- Skill categories: coding (code-reviewer, debugger, fullstack-developer), research (deep-research, fact-checker), planning (sprint-planner, project-planner), data analysis, writing
+- Multi-agent team patterns: finance, legal, recruitment, competitor intelligence, design teams
+- [Agent Skills specification](https://agentskills.io) — open format for packaging agent capabilities
+
+**Useful for**:
+- Inspiration for new skill structures and prompts
+- Multi-agent role decomposition patterns (see `advanced_ai_agents/multi_agent_apps/agent_teams/`)
+- Note: skills are generic (not Claude Code-optimized) — adapt patterns, don't copy verbatim
+
+**Check frequency**: Quarterly
+
+---
+
 ## Third-Party Resources
 
 These provide analysis, comparisons, and real-world insights.

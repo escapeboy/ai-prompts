@@ -814,3 +814,5 @@ requires: [serena, docker, gh]
 - See `examples/` directory for complete working examples
 - Check `~/.claude/skills/` for built-in skills as reference
 - Review `../01-global-optimization/` for global skill patterns
+- [Awesome Agent Skills](https://github.com/Shubhamsaboo/awesome-llm-apps/tree/main/awesome_agent_skills) — 18 open-source skills in `SKILL.md` format (code-reviewer, deep-research, sprint-planner, etc.) for structure inspiration
+- [Agent Skills Specification](https://agentskills.io) — open format for packaging agent capabilities

@@ -133,6 +133,35 @@ This library contains reusable prompts for implementing global Claude Code optim
 **Benefit**: Reusable agents with controlled tool access and model selection
 **Setup**: 5-10 minutes per agent definition
 
+### [11-mobile-development](11-mobile-development/)
+**Mobile development with Claude Code across all major platforms**
+
+- **[README.md](11-mobile-development/README.md)** - Platform comparison and quick start
+- **[setup-guide.md](11-mobile-development/setup-guide.md)** - MCP server installation for all platforms
+- **iOS**: [guide](11-mobile-development/ios/ios-guide.md) | [subagent](11-mobile-development/ios/ios-subagent.md) | [CLAUDE.md template](11-mobile-development/ios/ios-claude-md-template.md)
+- **Android**: [guide](11-mobile-development/android/android-guide.md) | [subagent](11-mobile-development/android/android-subagent.md) | [CLAUDE.md template](11-mobile-development/android/android-claude-md-template.md)
+- **React Native**: [guide](11-mobile-development/react-native/react-native-guide.md) | [subagent](11-mobile-development/react-native/react-native-subagent.md) | [CLAUDE.md template](11-mobile-development/react-native/react-native-claude-md-template.md)
+- **Flutter**: [guide](11-mobile-development/flutter/flutter-guide.md) | [subagent](11-mobile-development/flutter/flutter-subagent.md) | [CLAUDE.md template](11-mobile-development/flutter/flutter-claude-md-template.md)
+- **Skills**: [/mobile-build](11-mobile-development/skills/mobile-build.md) | [/mobile-test](11-mobile-development/skills/mobile-test.md)
+
+**Use when**: Developing iOS (Swift/SwiftUI), Android (Kotlin/Compose), React Native, or Flutter apps
+**Benefit**: Platform-specific MCP integration, build/test automation, device control
+**Setup**: 5-10 minutes per platform (MCP installation + CLAUDE.md template)
+
+### [12-desktop-development](12-desktop-development/)
+**Desktop development with Claude Code for macOS, Tauri, and Electron**
+
+- **[README.md](12-desktop-development/README.md)** - Platform comparison and quick start
+- **[setup-guide.md](12-desktop-development/setup-guide.md)** - MCP server installation for all platforms
+- **macOS**: [guide](12-desktop-development/macos/macos-guide.md) | [subagent](12-desktop-development/macos/macos-subagent.md) | [CLAUDE.md template](12-desktop-development/macos/macos-claude-md-template.md)
+- **Tauri**: [guide](12-desktop-development/tauri/tauri-guide.md) | [subagent](12-desktop-development/tauri/tauri-subagent.md) | [CLAUDE.md template](12-desktop-development/tauri/tauri-claude-md-template.md)
+- **Electron**: [guide](12-desktop-development/electron/electron-guide.md) | [subagent](12-desktop-development/electron/electron-subagent.md) | [CLAUDE.md template](12-desktop-development/electron/electron-claude-md-template.md)
+- **Skills**: [/desktop-build](12-desktop-development/skills/desktop-build.md) | [/desktop-test](12-desktop-development/skills/desktop-test.md)
+
+**Use when**: Building macOS native (SwiftUI/AppKit), Tauri (Rust + Web), or Electron (Node.js + Chromium) desktop apps
+**Benefit**: Platform-specific MCP integration, build/package automation, code signing and notarization workflows
+**Setup**: 5-10 minutes per platform (MCP installation + CLAUDE.md template)
+
 ---
 
 ## 🚀 Quick Start
@@ -372,6 +401,7 @@ git push -u origin main
 - [Serena MCP](https://github.com/Serena-MCP)
 - [Awesome Claude Code Subagents](https://github.com/VoltAgent/awesome-claude-code-subagents)
 - [Claude Code Cheat Sheet](https://github.com/Njengah/claude-code-cheat-sheet)
+- [Awesome LLM Apps](https://github.com/Shubhamsaboo/awesome-llm-apps) - 95K+ star collection of LLM agent implementations; see [`awesome_agent_skills/`](https://github.com/Shubhamsaboo/awesome-llm-apps/tree/main/awesome_agent_skills) for 18 SKILL.md-format skills and multi-agent team patterns
 
 ### Laravel MCP Ecosystem
 - [Laravel Boost](https://laravel.com/ai/mcp) - Official Laravel MCP server
@@ -470,13 +500,36 @@ These prompts are project-agnostic and can be freely shared, modified, and adapt
 ---
 
 **Created**: 2026-01-04
-**Last Updated**: 2026-02-09
-**Version**: 1.2.0
+**Last Updated**: 2026-02-14
+**Version**: 1.4.0
 **Compatibility**: Claude Code (all versions), Claude API (Opus 4.6, Sonnet 4.5, Haiku 4.5)
 
 ---
 
 ## 📝 Version History
+
+### v1.4.0 (2026-02-14)
+**Added**: Desktop Development Section (12-desktop-development/)
+- macOS native development guide with XcodeBuildMCP (59 tools) and xclaude-plugin (87% token savings)
+- Tauri v2 development guide with tauri-plugin-mcp and Rust + web frontend workflows
+- Electron development guide with electron-mcp-server and main/renderer process patterns
+- Platform-specific subagent definitions for macOS, Tauri, and Electron
+- CLAUDE.md templates for all three platforms with customization variants
+- Cross-platform `/desktop-build` and `/desktop-test` skills with auto-detection
+- macOS-specific coverage: sandboxing, entitlements, notarization, AppKit bridging, window management
+- Tauri-specific coverage: IPC commands, capability-based security, plugin system, CSP
+- Electron-specific coverage: process isolation, contextBridge, Forge vs Builder, Playwright testing
+
+### v1.3.0 (2026-02-14)
+**Added**: Mobile Development Section (11-mobile-development/)
+- iOS development guide with XcodeBuildMCP (59 tools) and xclaude-plugin (87% token savings)
+- Android development guide with JetBrains MCP and android-mcp-server (ADB)
+- React Native development guide with Expo MCP (EAS Build/Update)
+- Flutter development guide with Dart/Flutter MCP, Flutter MCP (50k+ packages), DCM MCP (450+ rules)
+- Platform-specific subagent definitions for iOS, Android, React Native, and Flutter
+- CLAUDE.md templates for all four platforms with customization variants
+- Cross-platform `/mobile-build` and `/mobile-test` skills with auto-detection
+- Shared mobile-mcp integration for simulator/emulator/device control
 
 ### v1.2.0 (2026-02-09)
 **Added**: Laravel MCP Integration (09-laravel-mcp-integration/)
