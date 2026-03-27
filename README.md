@@ -80,7 +80,7 @@ This library contains reusable prompts for implementing global Claude Code optim
 **Advanced techniques for complex scenarios**
 
 - **[parallel-agents-guide.md](06-advanced-patterns/parallel-agents-guide.md)** - Multi-agent coordination via Task tool + git isolation with [Worktrunk](https://worktrunk.dev/)
-- **[agent-teams-guide.md](06-advanced-patterns/agent-teams-guide.md)** - Native Agent Teams (v2.1.32+, Opus 4.6) — autonomous peer-to-peer coordination on shared codebases
+- **[agent-teams-guide.md](06-advanced-patterns/agent-teams-guide.md)** - Native Agent Teams (v2.1.32+, Opus 4.6) — autonomous peer-to-peer coordination on shared codebases; includes `/agent-team` skill with `pr-review`, `debug`, `feature`, `custom` presets
 - **[checkpoint-system-guide.md](06-advanced-patterns/checkpoint-system-guide.md)** - Save/resume workflows
 - **[constitution-guide.md](06-advanced-patterns/constitution-guide.md)** - Architectural decision frameworks
 - **[observability-guide.md](06-advanced-patterns/observability-guide.md)** - Session monitoring, cost tracking, usage pattern analysis
@@ -137,7 +137,10 @@ This library contains reusable prompts for implementing global Claude Code optim
 **Create custom AI agents with specialized knowledge and tools**
 
 - **[README.md](10-subagents/README.md)** - Subagent system overview
-- **[guide.md](10-subagents/guide.md)** - Complete subagent creation guide
+- **[guide.md](10-subagents/guide.md)** - Complete subagent creation guide + all v2.1.83 frontmatter fields + production agents
+  - `plan-challenger` (Opus) — adversarial plan review across 5 dimensions with refutation check
+  - `output-evaluator` (Haiku) — LLM-as-Judge: APPROVE/NEEDS_REVIEW/REJECT before commit
+  - `loop-monitor` (Haiku) — watchdog for autonomous sessions: stall/runaway/loop detection
 - **[examples/](10-subagents/examples/)** - Working subagent examples
   - `code-reviewer.md` - Read-only code review agent
   - `laravel-specialist.md` - Laravel development agent
@@ -205,6 +208,7 @@ This library contains reusable prompts for implementing global Claude Code optim
   - 6 production safety rules with `settings.json` + hook implementations
   - `permissions.deny` hardening templates (global + project-level)
   - Agent Skills supply chain risks and scanning
+  - **Production Hook Library** (`~/.claude/hooks/`): `dangerous-actions-blocker.sh`, `pre-commit-secrets.sh`, `smart-suggest.sh` — copy-paste ready with matcher-based `settings.json` registration
 
 **Use when**: Team environments, production codebases, regulated industries, before adding new MCP servers
 **Benefit**: Prevent data exfiltration, block destructive operations, audit MCP supply chain
@@ -301,6 +305,14 @@ cd ~/projects/your-project
 
 **Agents** (orchestration):
 - `agents/pm-orchestrator.md` - Central coordinator
+- `agents/plan-challenger.md` - Adversarial plan review (Opus)
+- `agents/output-evaluator.md` - Code quality judge before commit (Haiku)
+- `agents/loop-monitor.md` - Autonomous session watchdog (Haiku)
+
+**Hooks** (automation):
+- `hooks/dangerous-actions-blocker.sh` - Blocks destructive commands and protected files
+- `hooks/pre-commit-secrets.sh` - Scans staged files for API keys before commit
+- `hooks/smart-suggest.sh` - Suggests the right tool/agent per prompt intent
 
 **Settings** (configuration):
 - `settings/prompt-caching.json` - 90% savings on cached content
@@ -314,6 +326,7 @@ cd ~/projects/your-project
 - `skills/cache-inspector/SKILL.md` - `/cache-inspector` command
 - `skills/update-docs/SKILL.md` - `/update-docs` command
 - `skills/init-project/SKILL.md` - `/init-project` command
+- `skills/agent-team/SKILL.md` - `/agent-team` command (pr-review, debug, feature, custom)
 
 **System Prompts** (behavior):
 - `system-prompts/global-optimization.md` - Applies to all projects/agents

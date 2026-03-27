@@ -435,6 +435,168 @@ git diff --name-only HEAD~5 | grep -E "(\.env|config|secret|credential)"
 
 ---
 
+## 8. Production Hook Library
+
+A complete, production-tested hook setup for Laravel/PHP projects. All hooks live in `~/.claude/hooks/` as separate bash files and are registered via `settings.json`.
+
+### Directory structure
+
+```
+~/.claude/
+├── hooks/
+│   ├── dangerous-actions-blocker.sh   # PreToolUse (all tools): blocks destructive commands
+│   ├── pre-commit-secrets.sh          # PreToolUse (Bash): scans staged files before git commit
+│   └── smart-suggest.sh               # UserPromptSubmit: suggests right command/agent
+└── settings.json                      # Registers all hooks with matchers
+```
+
+### settings.json registration format
+
+The new multi-hook format uses `matcher` (regex matching the tool name) and supports multiple hooks per event:
+
+```json
+{
+  "hooks": {
+    "UserPromptSubmit": [
+      {
+        "hooks": [{ "type": "command", "command": "bash ~/.claude/hooks/smart-suggest.sh", "timeout": 5 }]
+      }
+    ],
+    "PreToolUse": [
+      {
+        "matcher": ".*",
+        "hooks": [{ "type": "command", "command": "bash ~/.claude/hooks/dangerous-actions-blocker.sh", "timeout": 5, "statusMessage": "Safety check..." }]
+      },
+      {
+        "matcher": "Bash",
+        "hooks": [{ "type": "command", "command": "bash ~/.claude/hooks/pre-commit-secrets.sh", "timeout": 15, "statusMessage": "Scanning for secrets..." }]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Edit",
+        "hooks": [
+          { "type": "command", "command": "file=$(jq -r '.tool_input.file_path' 2>/dev/null); if [[ \"$file\" == *.php ]] && [[ -f \"$file\" ]]; then php -l \"$file\" 2>&1 | grep -v 'No syntax errors' | grep -v '^$' || true; fi", "timeout": 10, "statusMessage": "PHP syntax check..." },
+          { "type": "command", "command": "file=$(jq -r '.tool_input.file_path' 2>/dev/null); if [[ \"$file\" == */migrations/* ]]; then dir=$(dirname \"$file\"); git -C \"$dir\" log --oneline -- \"$file\" 2>/dev/null | grep -q . && echo 'WARNING: Migration has git history — may have already run in production.'; fi", "timeout": 5 },
+          { "type": "command", "command": "file=$(jq -r '.tool_input.file_path' 2>/dev/null); base=$(basename \"$file\"); [[ \"$base\" == .env* ]] && echo \"WARNING: Editing env file — verify no secrets will be committed\"", "timeout": 3 }
+        ]
+      }
+    ],
+    "Stop": [
+      { "hooks": [{ "type": "command", "command": "osascript -e 'display notification \"Claude finished\" with title \"Claude Code\" sound name \"Glass\"' 2>/dev/null || true", "async": true }] }
+    ]
+  }
+}
+```
+
+**Key design principles**:
+- `"matcher": ".*"` — fires for ALL tool calls
+- `"matcher": "Bash"` — fires only for Bash tool calls
+- No matcher on `UserPromptSubmit`/`Stop` — always fires
+- `exit 2` in hook = block the action + show stderr to Claude
+- `exit 0` = allow (default)
+- `async: true` on Stop = fire-and-forget, doesn't block
+
+### Hook: dangerous-actions-blocker.sh
+
+Blocks before execution (PreToolUse, all tools):
+
+```bash
+#!/bin/bash
+INPUT=$(cat)
+TOOL_NAME=$(echo "$INPUT" | jq -r '.tool_name // empty')
+TOOL_INPUT=$(echo "$INPUT" | jq -r '.tool_input // empty')
+
+if [[ "$TOOL_NAME" == "Bash" ]]; then
+    COMMAND=$(echo "$TOOL_INPUT" | jq -r '.command // empty')
+    DANGEROUS=("rm -rf /" "rm -rf ~" "dd if=" "mkfs" "DROP DATABASE" "DROP TABLE" "--no-preserve-root")
+    for p in "${DANGEROUS[@]}"; do
+        [[ "$COMMAND" == *"$p"* ]] && { echo "BLOCKED: '$p' detected" >&2; exit 2; }
+    done
+    echo "$COMMAND" | grep -qE "git push.*(-f|--force).*(main|master)" && { echo "BLOCKED: force push to main forbidden" >&2; exit 2; }
+fi
+
+if [[ "$TOOL_NAME" == "Edit" || "$TOOL_NAME" == "Write" ]]; then
+    FILE=$(echo "$TOOL_INPUT" | jq -r '.file_path // empty')
+    for p in credentials.json serviceAccountKey.json id_rsa id_ed25519; do
+        [[ "$(basename "$FILE")" == "$p" ]] && { echo "BLOCKED: sensitive file '$p'" >&2; exit 2; }
+    done
+fi
+exit 0
+```
+
+### Hook: pre-commit-secrets.sh
+
+Intercepts `git commit` and scans staged files (PreToolUse, Bash):
+
+```bash
+#!/bin/bash
+INPUT=$(cat)
+COMMAND=$(echo "$INPUT" | jq -r '.tool_input.command // empty' 2>/dev/null || true)
+echo "$COMMAND" | grep -qE 'git commit' || exit 0
+
+declare -A PATTERNS=(
+    ["OpenAI"]="sk-[A-Za-z0-9]{48}"
+    ["GitHub"]="gh[pous]_[A-Za-z0-9]{36}"
+    ["AWS"]="AKIA[A-Z0-9]{16}"
+    ["Anthropic"]="sk-ant-[A-Za-z0-9-]{50,}"
+    ["Private Key"]="-----BEGIN (RSA |EC |OPENSSH )?PRIVATE KEY-----"
+    ["DB URL"]="(postgres|mysql|mongodb)://[^:]+:[^@]+@"
+)
+WHITELIST=("your_token_here" "example.com" "placeholder" "sk-ant-example" "\${env:")
+
+found=0
+while IFS= read -r file; do
+    [[ "${file##*.}" =~ ^(md|txt|sample)$ ]] && continue
+    content=$(git show ":$file" 2>/dev/null || true)
+    for name in "${!PATTERNS[@]}"; do
+        matches=$(echo "$content" | grep -noE "${PATTERNS[$name]}" || true)
+        [[ -z "$matches" ]] && continue
+        while IFS= read -r match; do
+            text="${match#*:}"
+            for w in "${WHITELIST[@]}"; do [[ "$text" == *"$w"* ]] && continue 2; done
+            found=1; echo "  $file — $name" >&2
+        done <<< "$matches"
+    done
+done <<< "$(git diff --cached --name-only --diff-filter=ACM 2>/dev/null)"
+
+[[ $found -eq 1 ]] && { echo "BLOCKED: secrets in staged files" >&2; exit 2; }
+exit 0
+```
+
+### Hook: smart-suggest.sh
+
+Suggests the right command/agent based on prompt intent (UserPromptSubmit, 1 match max):
+
+```bash
+#!/bin/bash
+INPUT=$(cat)
+PROMPT_LC=$(echo "$INPUT" | jq -r '.prompt // empty' 2>/dev/null | tr '[:upper:]' '[:lower:]')
+[[ ${#PROMPT_LC} -lt 8 ]] && exit 0
+[[ "$PROMPT_LC" =~ ^/ ]] && exit 0  # Skip slash commands
+
+suggest() {
+    cat << EOF
+{"hookSpecificOutput":{"hookEventName":"UserPromptSubmit","additionalContext":"[Suggestion] $1: $2 — $3"}}
+EOF
+    exit 0
+}
+
+echo "$PROMPT_LC" | grep -qE '(implement|create (a|the) (service|controller|feature))' \
+    && ! echo "$PROMPT_LC" | grep -qE '(plan|fix|test|review)' \
+    && suggest "Command" "/plan" "Plan BEFORE coding — reduces rework"
+
+echo "$PROMPT_LC" | grep -qE '(security audit|idor|owasp|cross.?tenant)' \
+    && suggest "Command" "qa-security-agent.sh --skip-tests" "Full OWASP security audit"
+
+echo "$PROMPT_LC" | grep -qE '(tests? fail|fix (the )?tests?)' \
+    && suggest "Command" "/fix-bug" "Three-phase fix: grep all occurrences → fix atomically → regression test"
+
+exit 0
+```
+
+---
+
 ## Quick Reference
 
 ### Decision Matrix

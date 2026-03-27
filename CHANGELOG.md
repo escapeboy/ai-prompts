@@ -4,6 +4,76 @@ All notable changes to this library are documented here.
 
 ---
 
+## [1.12.0] — 2026-03-27
+
+### Added
+
+**13-security-hardening/guide.md** — нова секция "Production Hook Library" (секция 8)
+
+- Пълна файлова структура: `~/.claude/hooks/` с 3 bash скрипта
+- `settings.json` регистрация с matcher-based формат (нов в Claude Code)
+- `dangerous-actions-blocker.sh` — PreToolUse (всички tools): блокира `rm -rf /`, `DROP TABLE`, force push към main, protected files
+- `pre-commit-secrets.sh` — PreToolUse (Bash): сканира staged файлове за API ключове преди `git commit`
+- `smart-suggest.sh` — UserPromptSubmit: предлага правилния инструмент на базата на prompt intent (1 suggestion max, silent on no match)
+- Обяснение на `exit 2` vs `exit 0` семантиката и `async: true` за Stop hooks
+- PostToolUse hook примери: PHP syntax check, migration safety warning, .env guard
+
+**06-advanced-patterns/agent-teams-guide.md** — нова секция 7 "/agent-team Skill (Recommended)"
+
+- `/agent-team` skill като препоръчан начин за стартиране на agent teams (вместо ad-hoc prompts)
+- 4 preset режима: `pr-review`, `debug`, `feature`, `custom`
+- Feature flag чрез `settings.json env` блок (не само environment variable)
+- Навигационна таблица: `Shift+Down`, `Ctrl+T`, `Escape`
+- Skill поведение: confirm → warn cost → brief teammates → wait → synthesize → cleanup
+
+**10-subagents/guide.md** — нова секция "Production Agents (Real Examples)"
+
+- `plan-challenger` (Opus) — adversarial plan review по 5 измерения с refutation check. Laravel-специфични проверки включени
+- `output-evaluator` (Haiku) — LLM-as-Judge: APPROVE/NEEDS_REVIEW/REJECT verdict преди commit
+- `loop-monitor` (Haiku) — watchdog за автономни сесии: stall/runaway/loop detection с bash integration пример
+
+### Updated
+
+- `CHANGELOG.md` — bumped to v1.12.0
+
+---
+
+## [1.11.0] — 2026-03-26
+
+### Updated
+
+**10-subagents/guide.md** — нови frontmatter полета от v2.0.43–v2.1.83
+
+- `disallowedTools` — explicitly block tools incl. `Task(AgentName)` syntax
+- `permissionMode` — `default` / `acceptEdits` / `plan` / `bypassPermissions`
+- `background: true` — always run as background task (v2.1.49)
+- `isolation: "worktree"` — isolated git worktree per agent run (v2.1.49)
+- `effort` — `low` / `medium` / `high` model effort level (v2.1.78)
+- `maxTurns` — max turns before stopping (v2.1.78)
+- `hooks` — PreToolUse/PostToolUse/Stop hooks scoped to agent lifecycle (v2.0.43)
+- `memory` — persistent memory scope: `user` / `project` / `local` (v2.1.33)
+- `initialPrompt` — auto-submit first turn on agent start (v2.1.83)
+- `skills` — skills to auto-load for this agent (v2.0.43)
+- Full model IDs accepted in `model:` field (e.g. `claude-sonnet-4-6`) (v2.1.74)
+- Full-featured example с всички нови полета добавен
+
+**03-custom-skills/guide.md** — нови frontmatter полета и variables
+
+- `context: fork` — run in isolated forked sub-agent (v2.1.0)
+- `agent` — delegate execution to specific agent type (v2.1.0)
+- `user-invocable: false` — hide from slash command menu (v2.1.0)
+- `effort` — override model effort level per skill (v2.1.76)
+- `allowed-tools` — YAML list syntax + wildcard `mcp__server__*` (v2.1.0)
+- `hooks` — hooks scoped to skill run (v2.0.43)
+- Arguments: `$0`, `$1` shorthand (v2.1.19) и `$ARGUMENTS[N]` bracket syntax
+- Variables: `${CLAUDE_SESSION_ID}` (v2.1.9), `${CLAUDE_SKILL_DIR}` (v2.1.69)
+
+### Updated
+
+- `CHANGELOG.md` — bumped to v1.11.0
+
+---
+
 ## [1.10.0] — 2026-03-21
 
 ### Added

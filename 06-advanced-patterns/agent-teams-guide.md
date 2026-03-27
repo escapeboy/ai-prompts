@@ -14,8 +14,9 @@ Agent Teams is an experimental feature (v2.1.32+, Opus 4.6 required) where one C
 4. [Architecture](#4-architecture)
 5. [When to Use](#5-when-to-use)
 6. [Quick-Start Patterns](#6-quick-start-patterns)
-7. [Limitations & Red Flags](#7-limitations--red-flags)
-8. [Navigation](#8-navigation)
+7. [/agent-team Skill (Recommended)](#7-agent-team-skill-recommended)
+8. [Limitations & Red Flags](#8-limitations--red-flags)
+9. [Navigation](#9-navigation)
 
 ---
 
@@ -228,7 +229,65 @@ Before using Agent Teams, confirm:
 
 ---
 
-## 7. Limitations & Red Flags
+## 7. /agent-team Skill (Recommended)
+
+Instead of crafting ad-hoc team prompts, use the `/agent-team` skill. It enforces best practices: confirms team structure before spawning, warns about token cost, briefs each teammate with the right context, waits for completion, synthesizes results, and cleans up automatically.
+
+### Setup
+
+```bash
+# Skill file location
+~/.claude/skills/agent-team/SKILL.md
+
+# Feature flag (in settings.json, not just env var)
+# settings.json:
+{
+  "env": {
+    "CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS": "1"
+  }
+}
+```
+
+### Usage
+
+```
+/agent-team pr-review
+/agent-team debug заявките към /api/alerts връщат 500 след последния deploy
+/agent-team feature нов модул за subscription billing
+/agent-team custom [произволно описание]
+```
+
+### Preset modes
+
+| Mode | Teammates | What each does |
+|------|-----------|----------------|
+| `pr-review` | 3 | Security / Logic / Test coverage — each reviews independently |
+| `debug` | 3-5 | Competing hypotheses — each investigates different layer, actively tries to disprove the others |
+| `feature` | N | Owns independent file group — Claude decomposes automatically |
+| `custom` | N | Free-form team structure |
+
+### Skill behavior
+
+The skill instructs Claude to:
+1. Show proposed team structure and confirm before spawning
+2. Warn about token cost (3 teammates ≈ 3-5× normal cost)
+3. Brief each teammate: which files they own, focus area, what NOT to touch
+4. Wait for all teammates to finish — do not start doing work itself
+5. Synthesize findings into structured report
+6. Run `Clean up the team` when done
+
+### Navigation during a team session
+
+| Action | Key |
+|--------|-----|
+| Cycle between teammates | `Shift+Down` |
+| Message a teammate directly | Cycle to them, then type |
+| Toggle task list | `Ctrl+T` |
+| Interrupt a teammate | `Escape` while viewing their session |
+
+---
+
+## 8. Limitations & Red Flags
 
 ### Current limitations (research preview)
 
@@ -263,7 +322,7 @@ Before using Agent Teams, confirm:
 
 ---
 
-## 8. Navigation
+## 9. Navigation
 
 After launching a team, use these controls:
 

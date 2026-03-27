@@ -119,12 +119,49 @@ Optional fields:
 name: skill-name
 description: Brief description
 version: 1.0.0
-model: claude-sonnet-4-6    # Preferred model
-author: Your Name                     # Attribution
-tags: [deployment, docker, ci]        # Categorization
-requires: [serena, docker]            # Dependencies
+model: claude-sonnet-4-6    # Preferred model (alias или full ID)
+effort: medium              # low / medium / high (v2.1.76)
+author: Your Name
+tags: [deployment, docker, ci]
+requires: [serena, docker]
+
+# Execution
+context: fork               # Run in isolated forked sub-agent (v2.1.0)
+agent: code-reviewer        # Delegate to specific agent type (v2.1.0)
+user-invocable: false       # Hide from slash command menu (v2.1.0)
+
+# Tool access — YAML list syntax (v2.1.0)
+allowed-tools:
+  - Read
+  - Glob
+  - mcp__serena__find_symbol
+  - mcp__laravel-boost__*   # wildcard за цял MCP server
+
+# Hooks scoped to this skill run (v2.0.43)
+hooks:
+  Stop:
+    - command: "echo 'Skill done'"
 ---
 ```
+
+### Arguments in Skills (v2.1.19+)
+
+```markdown
+# Usage: /deploy staging v1.2.0
+
+## Arguments
+- `$0` or `$ARGUMENTS[0]` — first argument (e.g. `staging`)
+- `$1` or `$ARGUMENTS[1]` — second argument (e.g. `v1.2.0`)
+- `$ARGUMENTS` — full argument string as one value
+```
+
+### Built-in Variables
+
+| Variable | Description | Since |
+|----------|-------------|-------|
+| `${CLAUDE_SESSION_ID}` | Current session ID | v2.1.9 |
+| `${CLAUDE_SKILL_DIR}` | Absolute path to this skill's directory | v2.1.69 |
+| `${CLAUDE_PLUGIN_ROOT}` | Plugin root (for plugin-shipped skills) | — |
 
 ---
 

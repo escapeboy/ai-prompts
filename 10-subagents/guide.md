@@ -25,6 +25,45 @@ tools:
 Your system prompt goes here in Markdown format.
 ```
 
+### Full-Featured Example (v2.1.83+)
+
+```markdown
+---
+name: safe-refactor
+description: Refactors code in an isolated worktree, runs tests before merging
+model: sonnet
+effort: medium
+tools:
+  - Read
+  - Write
+  - Edit
+  - Glob
+  - Grep
+  - Bash
+disallowedTools:
+  - WebSearch
+permissionMode: acceptEdits
+isolation: worktree
+background: true
+maxTurns: 30
+memory: project
+skills:
+  - refactor
+  - test
+initialPrompt: |
+  Load the project architecture from Serena memories,
+  then wait for the user's refactor instructions.
+hooks:
+  Stop:
+    - command: "echo 'Refactor agent done' | notify"
+---
+
+You are a safe refactoring agent. You work in an isolated git worktree
+so your changes never affect the main branch until explicitly merged.
+
+Always run tests after refactoring. Report what changed and why.
+```
+
 ---
 
 ## YAML Frontmatter Fields
@@ -40,10 +79,20 @@ Your system prompt goes here in Markdown format.
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
-| `model` | string | inherits | `haiku`, `sonnet`, or `opus` |
+| `model` | string | inherits | `haiku`, `sonnet`, `opus`, or full model ID (e.g. `claude-sonnet-4-6`) |
 | `tools` | list | all | Which tools the agent can use |
+| `disallowedTools` | list | none | Explicitly block tools (e.g. `Bash`, `Task(AgentName)`) |
+| `permissionMode` | string | inherits | `default`, `acceptEdits`, `plan`, `bypassPermissions` |
 | `mcpServers` | object | none | Inline MCP server definitions |
 | `allowedTools` | list | none | MCP tool whitelist (e.g., `mcp__server__tool`) |
+| `background` | bool | false | Always run as background task (v2.1.49) |
+| `isolation` | string | none | `"worktree"` — run in isolated git worktree (v2.1.49) |
+| `effort` | string | inherits | `low`, `medium`, `high` — model effort level (v2.1.78) |
+| `maxTurns` | int | none | Max turns before stopping (v2.1.78) |
+| `hooks` | object | none | PreToolUse/PostToolUse/Stop hooks scoped to this agent (v2.0.43) |
+| `memory` | string | none | `user`, `project`, or `local` — persistent memory scope (v2.1.33) |
+| `initialPrompt` | string | none | Auto-submit first turn on agent start (v2.1.83) |
+| `skills` | list | none | Skills to auto-load for this agent (v2.0.43) |
 
 ### Model Selection Guide
 
@@ -54,6 +103,8 @@ Your system prompt goes here in Markdown format.
 | `opus` | High | Slower | Architecture decisions, complex reasoning |
 
 **Rule of thumb**: Start with `haiku` for read-only tasks, `sonnet` for code writing, `opus` only for critical decisions.
+
+**Full model IDs**: `model:` приема и пълни идентификатори: `claude-sonnet-4-6`, `claude-opus-4-6`, `claude-haiku-4-5-20251001`. Полезно когато искаш да pinваш конкретна версия вместо alias.
 
 ---
 
@@ -396,4 +447,75 @@ For each migration file:
 
 # Test it
 claude --agent migration-reviewer "Review all pending migrations"
+```
+
+---
+
+## Production Agents (Real Examples)
+
+Three production-ready agents installed globally in `~/.claude/agents/`.
+
+### plan-challenger (Opus)
+
+Adversarial plan review before implementation. Attacks a plan across 5 dimensions (Assumptions, Missing Cases, Security Risks, Architectural Concerns, Complexity Creep), then applies refutation reasoning to eliminate false positives.
+
+**Use before** any multi-day implementation effort or irreversible architectural decision.
+
+```markdown
+---
+name: plan-challenger
+description: Adversarial plan review — attacks plans across 5 dimensions before implementation
+model: opus
+tools: Read, Grep, Glob
+---
+```
+
+**Laravel-specific checks built in**: org scoping on all queries, `$fillable` mass-assignment, `authorize()` on model-bound methods, additive-only migrations, `DB::transaction()` on multi-step mutations.
+
+**Invocation**:
+```
+I have a plan to [describe plan]. Use the plan-challenger agent to review it.
+```
+
+### output-evaluator (Haiku)
+
+LLM-as-Judge pattern. Scores code changes 0–10 across Correctness, Completeness, and Safety before commit. Returns `APPROVE / NEEDS_REVIEW / REJECT` verdict with specific file:line issues.
+
+```markdown
+---
+name: output-evaluator
+description: Evaluate code changes for quality before commit — scores correctness, completeness, safety
+model: haiku
+tools: Read, Grep, Glob
+---
+```
+
+**When to invoke**: after significant code generation, before committing staged changes, after bulk refactors.
+
+```
+Use the output-evaluator agent to review the staged changes before I commit.
+```
+
+### loop-monitor (Haiku)
+
+Watchdog for unattended autonomous sessions (`qa-security-agent.sh`, `deploy-pipeline.sh`). Detects stalls (no tool call > N seconds), token runaway (abnormally high consumption), and repeated action loops (same call 5+ times).
+
+```markdown
+---
+name: loop-monitor
+description: Monitors autonomous sessions for stalls, token runaway, and infinite loops
+model: haiku
+tools: Read, Bash
+---
+```
+
+**Integration**:
+```bash
+# Run alongside qa-security-agent.sh
+while true; do
+  sleep 30
+  STATUS=$(claude --agent loop-monitor --var SESSION_LOG="$LOG" --print "Check session status")
+  [[ "$STATUS" =~ ^(STALL|LOOP|RUNAWAY) ]] && osascript -e "display notification \"$STATUS\""
+  [[ "$STATUS" =~ ^COMPLETE ]] && break
+done
 ```
