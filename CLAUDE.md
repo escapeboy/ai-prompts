@@ -24,6 +24,7 @@ The library follows a sequential learning path (01 through 14), where each direc
 - **12-desktop-development** - macOS, Tauri, Electron guides with MCP servers, subagents, CLAUDE.md templates, and cross-platform skills
 - **13-security-hardening** - MCP CVEs, vetting checklists, prompt injection defense hooks, production safety rules, permissions.deny templates
 - **14-webmcp** - WebMCP (W3C Draft) integration guide: navigator.modelContext API, browser tool registration, Chrome/Playwright MCP integration
+- **15-context-mode** - context-mode MCP plugin: sandbox tool output to protect context window, session continuity after compaction, tool hierarchy (ctx_batch_execute → ctx_search → ctx_execute)
 
 ## Key Patterns
 

@@ -475,6 +475,7 @@ git push -u origin main
 - [Claude Code Skills](https://code.claude.com/docs/en/skills) - Custom skills guide
 
 ### Related Tools
+- [context-mode](https://github.com/mksglu/context-mode) - MCP plugin that sandboxes tool output to protect context window (98% savings on bulk commands)
 - [Worktrunk](https://worktrunk.dev/) - Git worktree management for parallel AI agents (Apache 2.0)
 - [Codex-CLI](https://github.com/codex-cli) - Code refactoring
 - [Chrome-DevTools MCP](https://github.com/chrome-devtools-mcp) - Browser automation
@@ -563,13 +564,24 @@ These prompts are project-agnostic and can be freely shared, modified, and adapt
 ---
 
 **Created**: 2026-01-04
-**Last Updated**: 2026-03-21
-**Version**: 1.10.0
+**Last Updated**: 2026-03-28
+**Version**: 1.13.0
 **Compatibility**: Claude Code v2.1.32+, Claude API (Opus 4.6: `claude-opus-4-6`, Sonnet 4.6: `claude-sonnet-4-6`, Haiku 4.5: `claude-haiku-4-5-20251001`)
 
 ---
 
 ## 📝 Version History
+
+### v1.13.0 (2026-03-28)
+**Added**: context-mode Guide (15-context-mode/)
+- Installation via Claude Code plugin (`/plugin marketplace add mksglu/context-mode`) and MCP-only mode
+- Tool reference: `ctx_batch_execute`, `ctx_search`, `ctx_execute`, `ctx_execute_file`, `ctx_fetch_and_index`, `ctx_index`
+- Mandatory tool selection hierarchy (Tier 1 → Tier 2 → Tier 3) and forbidden patterns
+- Session continuity: SQLite FTS5 event capture, `--continue` restoration across compaction
+- Integration matrix with Serena, memory system, prompt caching, and Agent Teams
+- Savings benchmarks: 94-99.9% context reduction vs raw tool output
+
+**Updated**: README.md — added context-mode to Related Tools, bumped to v1.13.0
 
 ### v1.10.0 (2026-03-21)
 **Added**: `/content-review` skill (07-custom-commands/content-review.md)
