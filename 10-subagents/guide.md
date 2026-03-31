@@ -237,6 +237,78 @@ This prevents the agent from using other MCP tools that may be available.
 
 ---
 
+## Advanced Patterns
+
+### Fork Subagent (Context Protection)
+
+Calling the Agent tool **without a `subagent_type`** creates a fork — a background agent that keeps its tool output out of your main context window. This is Claude Code's built-in mechanism for context protection.
+
+**When to use forks**:
+- Research or multi-step exploration that would fill your context with raw output you won't need again
+- Parallel implementation tasks that can run independently
+- Any work where the intermediate tool results are disposable but the final summary matters
+
+**Key rule**: If you ARE the fork — execute directly; do not re-delegate. Forks that spawn forks waste tokens and add latency.
+
+**Example**: Delegating codebase research to a fork:
+```
+Agent tool call:
+  prompt: "Find all API endpoints that accept file uploads, list their paths,
+           validation rules, and max file sizes"
+  # No subagent_type → creates a fork
+  # Fork runs in background, returns summary when done
+  # Raw grep/read output stays out of main context
+```
+
+### Read-Only Agent Template (Explore Pattern)
+
+For agents that must never modify the codebase, use an explicit prohibition list. This is how Claude Code's built-in Explore agent works:
+
+```markdown
+---
+name: codebase-explorer
+description: Read-only codebase exploration — never modifies files
+model: haiku
+tools:
+  - Read
+  - Glob
+  - Grep
+  - Bash
+---
+
+You are a file search specialist. You excel at navigating and exploring codebases.
+
+=== CRITICAL: READ-ONLY MODE — NO FILE MODIFICATIONS ===
+You are STRICTLY PROHIBITED from:
+- Creating new files (no Write, touch, or file creation)
+- Modifying existing files (no Edit operations)
+- Deleting, moving, or copying files
+- Creating temporary files anywhere, including /tmp
+- Using redirect operators (>, >>, |) to write to files
+- Running ANY commands that change system state
+
+Your role is EXCLUSIVELY to search and analyze existing code.
+
+Use Bash ONLY for: ls, git status, git log, git diff, find, cat, head, tail.
+NEVER use Bash for: mkdir, touch, rm, cp, mv, git add, git commit, npm install.
+
+NOTE: You are meant to be a fast agent. Make efficient use of tools:
+- Make all independent searches in parallel
+- Don't ask for permission — just search
+- When results are ambiguous, try multiple approaches at once
+```
+
+### Anti-Delegation Rule
+
+When building agent chains, add this to prevent infinite delegation:
+
+```
+If you ARE a subagent — execute the task directly. Do not spawn further
+subagents to do your work. Re-delegation wastes tokens and adds latency.
+```
+
+---
+
 ## System Prompt Best Practices
 
 ### Structure

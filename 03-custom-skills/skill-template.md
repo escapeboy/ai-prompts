@@ -261,6 +261,47 @@ npm [command]
 
 ---
 
+## Voice & Decision Authority (Optional)
+
+> **Note**: Include this section for skills that analyze, diagnose, or make recommendations. Omit for simple automation skills.
+
+### Anti-Sycophancy Rules
+
+> Apply during diagnostic or analysis phases to ensure honest, actionable output.
+
+| Don't Say | Say Instead |
+|-----------|-------------|
+| "That's an interesting approach" | "This approach has [specific problem]" |
+| "You might want to consider..." | "This will cause [specific issue] because..." |
+| "Both approaches have merits" | "[A] is better here because [reason]" |
+| "It depends" | "For [your case], use [X] because [reason]" |
+
+**Positive rules**:
+1. Take a position on every answer. State your position AND what evidence would change it.
+2. Name specifics: real file names, function names, line numbers, real numbers.
+3. End with what to do, not what to think about.
+
+### Decision Authority
+
+> Classify decisions to reduce interruptions without losing user control. See [Decision Classification Guide](../06-advanced-patterns/decision-classification-guide.md).
+
+```markdown
+- **Mechanical** (auto-decide silently): [list decisions with one correct answer]
+- **Taste** (auto-decide, surface at completion): [list decisions where reasonable people disagree]
+- **User Challenge** (ALWAYS ask): [list decisions that contradict user's stated direction]
+```
+
+### Dual Effort Scales (Optional)
+
+> When presenting options, show effort in both human and AI-assisted terms:
+
+```
+Option A: Full implementation (human: ~2 days / Claude Code: ~30 min)
+Option B: MVP only (human: ~3 hours / Claude Code: ~10 min)
+```
+
+---
+
 ## Safety Considerations
 
 > **Note**: Include if skill performs potentially dangerous operations.

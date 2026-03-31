@@ -44,7 +44,7 @@ The library follows a sequential learning path (01 through 14), where each direc
 - Each directory has a `guide.md` as its primary entry point
 - Templates use bracket placeholders: `[Description]`, `[Step 1]`
 - Token savings estimates are included in guides where applicable
-- Version history is tracked in the root `README.md` (current: v1.9.0)
+- Version history is tracked in the root `README.md` (current: v1.15.0)
 - Compatible with Claude Opus 4.6, Sonnet 4.6, Haiku 4.5
 
 ## When Editing

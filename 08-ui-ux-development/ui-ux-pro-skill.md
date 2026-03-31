@@ -449,6 +449,69 @@ Alpine.data('darkMode', () => ({
 
 ---
 
+## AI Slop Detection
+
+AI-generated UI has recognizable patterns that look "generated" rather than designed. This section helps identify and eliminate AI slop to produce distinctive, human-quality interfaces.
+
+### AI Slop Score
+
+Rate any UI implementation 0-10 on the AI Slop scale:
+
+| Score | Level | Description |
+|-------|-------|-------------|
+| 0-2 | **Distinctive** | Looks hand-crafted, has personality and intentional design choices |
+| 3-4 | **Acceptable** | Minor generic patterns but overall feels designed |
+| 5-6 | **Suspicious** | Trained eye recognizes AI patterns |
+| 7-8 | **Obvious** | Clearly AI-generated, no design personality |
+| 9-10 | **Template** | Indistinguishable from a ChatGPT demo output |
+
+### Common AI Slop Patterns
+
+Detect and fix these patterns during review:
+
+| Pattern | What It Looks Like | Fix |
+|---------|-------------------|-----|
+| **Gradient Hero** | Purple-to-blue gradient background with white text overlay | Use solid colors or subtle textures. If gradient, use brand-specific colors at non-standard angles. |
+| **3-Column Icon Grid** | Three feature cards with centered icons, identical structure | Vary card sizes, use asymmetric layouts, or replace with actual screenshots/illustrations. |
+| **Uniform Border Radius** | Every element has `rounded-xl` or `rounded-2xl` | Mix sharp corners (buttons, nav) with rounded (cards, avatars). Use `rounded-none` intentionally. |
+| **Generic Illustrations** | Undraw-style SVG people illustrations | Use actual product screenshots, custom iconography, or photography. |
+| **Shadow Everything** | `shadow-lg` on every card, button, and container | Shadows imply elevation. Use sparingly and intentionally. Most elements should be flat. |
+| **Centered Everything** | All text center-aligned, symmetric padding everywhere | Left-align body text. Use asymmetric layouts. Let some elements breathe differently. |
+| **Testimonial Carousel** | Three rounded avatars with star ratings and quotes | Use real photos, specific names, company logos, and non-standard layouts. |
+| **CTA Button Pair** | "Get Started" primary + "Learn More" ghost button | Use specific action verbs ("Start free trial", "See pricing"). One CTA is usually enough. |
+| **Stock Metric Cards** | Four equal-width cards showing "+23%" in green | Vary card sizes by importance. Use sparklines or context instead of raw percentages. |
+| **Emoji Headers** | Section titles prefixed with emoji (rocket, lightning, chart) | Remove emoji from headings. If icons needed, use a consistent icon set at appropriate size. |
+
+### The Fix Checklist
+
+After generating any UI, run this checklist:
+
+1. **Color**: Are you using more than 2 gradients? Replace with solid brand colors.
+2. **Layout**: Is everything symmetrical? Break the grid intentionally somewhere.
+3. **Typography**: Is there only one font weight in use? Add hierarchy with weight and size variation.
+4. **Spacing**: Is padding identical on all elements? Vary spacing to create visual rhythm.
+5. **Icons**: Are all icons the same size/style from a generic set? Reduce icon count, increase meaning.
+6. **Copy**: Does the text say "Transform your workflow" or similar? Replace with specific, concrete language.
+7. **Imagery**: Using placeholder illustrations? Use real content or remove entirely.
+8. **Animation**: Does everything fade-in on scroll? Remove most animations. Keep only functional ones (loading, transitions).
+
+### Integration with Design Review
+
+When running `/qa` or design review on UI code, include AI slop score in the output:
+
+```
+## AI Slop Assessment: [score]/10
+
+Patterns detected:
+- [pattern 1]: [where found] → [suggested fix]
+- [pattern 2]: [where found] → [suggested fix]
+
+Distinctive elements (keep these):
+- [element that shows design intentionality]
+```
+
+---
+
 ## Troubleshooting
 
 ### Issue: Generic designs without personality

@@ -84,6 +84,8 @@ This library contains reusable prompts for implementing global Claude Code optim
 - **[checkpoint-system-guide.md](06-advanced-patterns/checkpoint-system-guide.md)** - Save/resume workflows
 - **[constitution-guide.md](06-advanced-patterns/constitution-guide.md)** - Architectural decision frameworks
 - **[observability-guide.md](06-advanced-patterns/observability-guide.md)** - Session monitoring, cost tracking, usage pattern analysis
+- **[sprint-orchestration-guide.md](06-advanced-patterns/sprint-orchestration-guide.md)** - Chain skills into a Think → Plan → Build → Review → Test → Ship → Reflect lifecycle with artifact flow between phases
+- **[decision-classification-guide.md](06-advanced-patterns/decision-classification-guide.md)** - Mechanical / Taste / User Challenge decision framework, anti-sycophancy rules, dual effort scales
 
 **Use when**: Complex projects, team coordination, critical decisions, cost visibility
 **Benefit**: Handle advanced scenarios with proven patterns; understand where tokens go
@@ -95,8 +97,9 @@ This library contains reusable prompts for implementing global Claude Code optim
 - **[i18n.md](07-custom-commands/i18n.md)** - Internationalization management
 - **[qa.md](07-custom-commands/qa.md)** - QA automation with browser testing
 - **[content-review.md](07-custom-commands/content-review.md)** - Content audit for accuracy, consistency, grammar, and translations
+- **[retro.md](07-custom-commands/retro.md)** - Sprint retrospective with git analytics, shipping metrics, per-author breakdowns, and actionable insights
 
-**Use when**: Specialized workflows, testing, debugging, content quality assurance
+**Use when**: Specialized workflows, testing, debugging, sprint retrospectives, content quality assurance
 **Benefit**: Encapsulate complex workflows into simple commands
 
 ### [08-ui-ux-development](08-ui-ux-development/)
@@ -571,6 +574,14 @@ These prompts are project-agnostic and can be freely shared, modified, and adapt
 ---
 
 ## 📝 Version History
+
+### v1.14.0 (2026-03-31)
+**Added**: Sprint lifecycle patterns inspired by [gstack](https://github.com/garrytan/gstack) analysis
+- `/retro` skill — sprint retrospective with git analytics, per-author breakdowns, shipping streaks
+- Sprint orchestration guide — Think → Plan → Build → Review → Test → Ship → Reflect pipeline
+- Decision classification guide — Mechanical / Taste / User Challenge framework with anti-sycophancy rules
+- AI slop detection in UI/UX Pro skill — 0-10 scoring rubric, 10 common patterns, fix checklist
+- Anti-sycophancy and decision authority sections in skill template
 
 ### v1.13.0 (2026-03-28)
 **Added**: context-mode Guide (15-context-mode/)

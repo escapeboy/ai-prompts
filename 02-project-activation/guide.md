@@ -167,7 +167,37 @@ Serena will:
 
 ---
 
-### Step 3: Create Core Memories
+### Step 3: Understand the Memory Type System
+
+Claude Code's auto-memory uses a **closed four-type taxonomy**. Each memory must be one of these types:
+
+| Type | Purpose | Body Structure |
+|------|---------|----------------|
+| **user** | Role, goals, preferences, knowledge | Free-form profile |
+| **feedback** | Corrections AND confirmations from user | Rule → **Why:** → **How to apply:** |
+| **project** | Ongoing work, goals, deadlines, decisions | Fact → **Why:** → **How to apply:** |
+| **reference** | Pointers to external systems (Linear, Grafana, Slack) | Location + purpose |
+
+**Key principles**:
+
+- **Feedback captures BOTH failures AND successes** — "if you only save corrections, you will avoid past mistakes but drift away from approaches the user has already validated"
+- **Convert relative dates to absolute** when saving project memories (e.g., "Thursday" → "2026-03-05")
+- **feedback/project types** use structured body: lead with the rule/fact, then `**Why:**` line, then `**How to apply:**` line
+
+**What NOT to save as memories** (derivable from current state):
+- Code patterns, conventions, architecture, file paths, project structure → read the code
+- Git history, recent changes, who-changed-what → `git log` / `git blame`
+- Debugging solutions or fix recipes → the fix is in the code, commit message has context
+- Anything already documented in CLAUDE.md files
+- Ephemeral task details, in-progress work, current conversation context
+
+**Before recommending from memory** (trusting recall):
+- A memory that names a specific function, file, or flag is a claim that it existed *when the memory was written*. It may have been renamed, removed, or never merged.
+- If the memory names a file path: check the file exists before recommending
+- If the memory names a function or flag: grep for it first
+- "The memory says X exists" is not the same as "X exists now"
+
+### Step 4: Create Core Memories
 
 Serena stores project knowledge in `.serena/memories/` as Markdown files. These are loaded at session start, providing instant context without reading files.
 
@@ -785,7 +815,7 @@ docker-compose exec app chown -R www-data:www-data storage bootstrap/cache
 
 ---
 
-### Step 4: Save Memories to Serena
+### Step 5: Save Memories to Serena
 
 After creating the memory files, save them using Serena:
 

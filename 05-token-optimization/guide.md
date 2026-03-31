@@ -67,6 +67,47 @@ Tokens are the units Claude uses to process text:
 
 ## Optimization Techniques
 
+### 0. Cache-Friendly Prompt Ordering (Foundation)
+
+**How it works**:
+- Claude Code splits its system prompt into **static** (cacheable) and **dynamic** (per-session) sections
+- Everything before a boundary marker gets cached at 90% discount
+- Everything after contains user/session-specific content and is recomputed
+
+**The static/dynamic split** (from Claude Code's actual architecture):
+
+```
+STATIC (cached — put stable rules here):
+  1. Identity / intro
+  2. System info
+  3. Code style rules ("doing tasks")
+  4. Action safety rules
+  5. Tool usage instructions
+  6. Tone and style
+  7. Output efficiency
+  ═══ CACHE BOUNDARY ═══
+DYNAMIC (recomputed per session):
+  8. Session-specific guidance (available tools, skills)
+  9. Memory prompt (MEMORY.md contents)
+  10. Environment info (cwd, git status, OS)
+  11. Language settings
+  12. Output style overrides
+  13. MCP server instructions
+  14. Scratchpad directory
+```
+
+**Apply this to your CLAUDE.md**:
+- Put stable, rarely-changing rules at the **top** (code style, conventions, architecture rules)
+- Put volatile context at the **bottom** (current sprint goals, temporary workarounds)
+- The more stable content that stays at the top, the higher your cache hit rate
+
+**Why this matters**:
+- Prompt caching uses prefix matching — content must be identical from the start
+- If volatile content sits early in the prompt, it invalidates the cache for everything after it
+- Moving one volatile line from position 3 to position 20 can save 90% on 17 sections of content
+
+**Rule of thumb**: If it changes less than once a week, put it in the top half. If it changes per-session, put it at the bottom.
+
 ### 1. Prompt Caching (90% Savings)
 
 **How it works**:

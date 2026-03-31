@@ -4,6 +4,88 @@ All notable changes to this library are documented here.
 
 ---
 
+## [1.15.0] — 2026-03-31
+
+### Added
+
+**Source-informed improvements** — based on analysis of Claude Code's actual system prompt architecture (reverse-engineered TypeScript source)
+
+**~/.claude/CLAUDE.md** — 4 new MANDATORY sections derived from Anthropic's internal prompt patterns:
+
+- **Code Discipline** — anti-overengineering rules: don't gold-plate, don't add comments to untouched code, don't abstract one-time operations, "three similar lines > premature abstraction"
+- **Faithful Reporting** — false-claims mitigation: never claim tests pass when output shows failures, never suppress failing checks, never characterize broken work as done
+- **Communication Protocol** — inverted pyramid pattern: lead with action not reasoning, brief updates at milestones, match response format to task complexity
+- **Action Safety** — reversibility × blast radius framework: freely take local/reversible actions, confirm destructive/shared-state/hard-to-reverse ops
+
+**02-project-activation/guide.md** — new Step 3 "Understand the Memory Type System":
+
+- Closed 4-type taxonomy: user, feedback, project, reference (with structured body formats)
+- "What NOT to save" exclusion list (code patterns, git history, debugging solutions — all derivable from current state)
+- "Trusting recall" verification pattern: memory claims ≠ current state, verify before recommending
+- Feedback captures BOTH corrections AND confirmations to prevent overcautious drift
+
+**05-token-optimization/guide.md** — new Section 0 "Cache-Friendly Prompt Ordering":
+
+- Static/dynamic boundary pattern from Claude Code's actual cache architecture
+- Rule: stable instructions at top (cached at 90% discount), volatile context at bottom
+- Prefix-matching explanation: one volatile line early invalidates cache for everything after it
+
+**10-subagents/guide.md** — new "Advanced Patterns" section:
+
+- Fork subagent pattern: context protection via background forks that keep tool output out of main context
+- Read-only agent template: explicit prohibition list (Claude Code's Explore agent approach)
+- Anti-delegation rule: "if you ARE the subagent, execute directly; do not re-delegate"
+
+**03-custom-skills/guide.md** — new Example 5 "Output Style Skills":
+
+- Explanatory style template (insight boxes with educational points)
+- Audit style template (evidence-based, no assumptions, FINDING → EVIDENCE → SEVERITY format)
+- Teaching style template (pause for learner practice, progressive challenges)
+
+**claudedocs/research_claude-code-source-analysis_2026-03-31.md** — full research report
+
+- 10 improvement areas identified from Claude Code source (53KB prompts.ts, 20KB memdir.ts, 22KB memoryTypes.ts)
+- Priority-ranked recommendations with code examples
+- Key insight: Anthropic's prompts are anti-maximalist — power comes from constraints, not capabilities
+
+**07-custom-commands/retro.md** — `/retro` sprint retrospective skill (inspired by gstack)
+
+- Git-based data collection (12+ parallel commands): commits, authors, LOC, PRs, test files, hotspots
+- Per-author breakdown with top areas, LOC, coding sessions, focus classification
+- Health indicators rated 0-10: velocity, test health, focus, hotspot risk, PR throughput
+- Shipping streaks tracking (consecutive days with commits)
+- Compare mode (`--compare`) for period-over-period velocity comparison
+- Anti-sycophancy rules in insights — state problems directly with numbers
+
+**06-advanced-patterns/sprint-orchestration-guide.md** — skill pipeline lifecycle
+
+- Think → Plan → Build → Review → Test → Ship → Reflect lifecycle
+- Artifact flow between phases (design doc → architecture plan → test plan → review → retro)
+- Decision gates at each phase transition
+- Full pipeline, quick pipeline, and automated pipeline variants
+- Maps all existing skills to lifecycle phases
+
+**06-advanced-patterns/decision-classification-guide.md** — decision framework
+
+- Three decision types: Mechanical (auto-decide), Taste (auto-decide + surface), User Challenge (always ask)
+- Classification flowchart for quick reference
+- Anti-sycophancy rules with banned phrases table and positive rules
+- Dual effort scales: show `(human: ~X / Claude Code: ~Y)` on every option
+
+### Updated
+
+- **03-custom-skills/skill-template.md** — added "Voice & Decision Authority" section with anti-sycophancy rules, decision classification, and dual effort scales
+- **08-ui-ux-development/ui-ux-pro-skill.md** — added "AI Slop Detection" section: 0-10 scoring rubric, 10 common slop patterns with fixes
+- **CLAUDE.md** — version bumped to v1.15.0
+- **README.md** — updated to reflect all new content
+
+### Research
+
+- **research/gstack-analysis.md** — comprehensive analysis of garrytan/gstack (58K+ stars), 25+ skills, full SDLC pipeline
+- **claudedocs/research_claude-code-source-analysis_2026-03-31.md** — Claude Code source prompt analysis (10 improvement areas)
+
+---
+
 ## [1.12.0] — 2026-03-27
 
 ### Added

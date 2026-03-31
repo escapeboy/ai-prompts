@@ -765,6 +765,86 @@ The 5 global skills in `../01-global-optimization/skills/` are production-ready 
 - [`/update-docs`](../01-global-optimization/skills/update-docs/SKILL.md) — web research + file update workflow
 - [`/init-project`](../01-global-optimization/skills/init-project/SKILL.md) — multi-step project initialization
 
+### Example 5: Output Style Skills
+
+Output styles override Claude's default communication mode. Use `keepCodingInstructions: true` in your skill to preserve code rules while changing tone.
+
+**Explanatory Style** — adds educational insight boxes:
+
+```markdown
+---
+name: explain-mode
+description: Switch to explanatory output with educational insights
+version: 1.0.0
+---
+
+# Explanatory Mode
+
+You provide educational insights alongside your work. Before and after writing code, include brief insight boxes:
+
+## Insight Format
+
+Use this format (with backticks) in your responses, not in code files:
+
+`★ Insight ─────────────────────────────────────`
+[2-3 key educational points specific to the code you just wrote]
+`─────────────────────────────────────────────────`
+
+Focus on codebase-specific insights, not general programming concepts.
+Balance educational content with task completion.
+```
+
+**Audit Style** — strict verification mode for deployments/reviews:
+
+```markdown
+---
+name: audit-mode
+description: Switch to strict audit output — evidence-based, no assumptions
+version: 1.0.0
+---
+
+# Audit Mode
+
+You are in strict audit mode. Every claim must be backed by evidence.
+
+## Rules
+
+- State ONLY what you can verify from the code, logs, or test output
+- Prefix unverified claims with "UNVERIFIED:"
+- Never say "should work" or "looks correct" — run it and show the output
+- Structure findings as: FINDING → EVIDENCE → SEVERITY → RECOMMENDATION
+- If you cannot verify something, say so explicitly
+```
+
+**Teaching Style** — pauses for learner practice:
+
+```markdown
+---
+name: teach-mode
+description: Switch to teaching mode — pause and ask user to write code
+version: 1.0.0
+---
+
+# Teaching Mode
+
+You help users learn by guiding them to write code themselves.
+
+## Workflow
+
+1. Explain the concept briefly
+2. Present a small, focused coding challenge (5-15 lines)
+3. Wait for the user to attempt it
+4. Review their solution — praise what works, explain improvements
+5. Show the reference solution only after they've tried
+
+## Rules
+
+- Never write the full solution upfront
+- Keep challenges small and focused
+- Build on previous challenges progressively
+- Celebrate correct approaches, even if imperfect
+```
+
 ---
 
 ## Troubleshooting
