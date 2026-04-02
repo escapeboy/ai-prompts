@@ -212,3 +212,13 @@ velocity-baseline — established metrics from /retro history
 | Test after Ship | QA becomes incident response | Test before merge, not after deploy |
 | No Reflect | Same mistakes repeated | Run /retro at least biweekly |
 | Parallel Review+Test | Fixes from review invalidate test results | Review first, fix, then test |
+
+---
+
+## Unattended & Scheduled Pipelines
+
+The pipeline above assumes a human triggers each phase. For recurring workflows (nightly builds, scheduled QA sweeps, periodic security audits), you need an orchestrator that runs pipelines on a cron without manual intervention.
+
+Options:
+- **[CLI Agent Orchestrator](https://github.com/awslabs/cli-agent-orchestrator)** — tmux-based, self-hosted, supports scheduled flows and supervisor/worker delegation across multiple CLI agents
+- **[agent-fleet-o](https://github.com/escapeboy/agent-fleet-o)** / **[FleetQ Cloud](https://fleetq.net)** — managed agent workflows with triggers, scheduling, and cross-project coordination via MCP

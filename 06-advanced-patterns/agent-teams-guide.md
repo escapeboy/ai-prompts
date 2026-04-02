@@ -295,6 +295,8 @@ The skill instructs Claude to:
 - Merge conflicts: agents working on nearby code sections will conflict
 - No human-in-the-loop mid-task — team lead runs autonomously until completion
 - Cost: 3 agents x 2 min task = ~6x single-agent token cost (all Opus)
+- Session-scoped — teams dissolve when the session ends, no persistent scheduling
+- Single-machine — all agents share the same local environment and git repo
 
 ### Red flags — stop and switch to Task tool if
 
@@ -340,5 +342,6 @@ After launching a team, use these controls:
 - [Parallel Agents Guide](./parallel-agents-guide.md) — Task tool-based parallelism (no flag required)
 - [Checkpoint System Guide](./checkpoint-system-guide.md) — Save/resume long workflows
 - [Security Hardening Guide](../13-security-hardening/guide.md) — Secure multi-agent setups
+- For persistent multi-agent orchestration beyond a single session (scheduled runs, cross-project coordination, supervisor/worker hierarchies), see [CLI Agent Orchestrator](https://github.com/awslabs/cli-agent-orchestrator) (tmux-based, self-hosted) or [agent-fleet-o](https://github.com/escapeboy/agent-fleet-o) / [FleetQ Cloud](https://fleetq.net) (managed fleet control with MCP integration)
 
 **Requirements**: Claude Code v2.1.32+, Opus 4.6 model, `CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1`

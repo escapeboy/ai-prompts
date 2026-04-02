@@ -591,3 +591,12 @@ while true; do
   [[ "$STATUS" =~ ^COMPLETE ]] && break
 done
 ```
+
+---
+
+## Managing Agent Fleets at Scale
+
+The patterns above work well for a handful of agents on a single machine. When you need to coordinate 10+ agents, schedule recurring runs, or manage agents across multiple repositories, consider dedicated orchestration tools:
+
+- **[CLI Agent Orchestrator](https://github.com/awslabs/cli-agent-orchestrator)** — lightweight tmux-based orchestration with supervisor/worker hierarchy, session isolation, and scheduled flows
+- **[agent-fleet-o](https://github.com/escapeboy/agent-fleet-o)** / **[FleetQ Cloud](https://fleetq.net)** — fleet management with persistent agent state, triggers, workflow graphs, and cross-project coordination via MCP
