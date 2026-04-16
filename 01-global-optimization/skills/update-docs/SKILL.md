@@ -1,6 +1,6 @@
 ---
 name: update-docs
-description: Keep project documentation current by researching latest patterns, fetching sources, and updating docs with findings
+description: Search the web for latest Claude API changes, compare findings to existing documentation, and apply targeted updates to keep prompts and configs current. Use when docs are outdated, after a Claude API update, to refresh system prompts, or to validate documentation accuracy.
 version: 1.0.0
 ---
 
@@ -56,18 +56,20 @@ Searches for current documentation, changelog entries, and community best practi
 ## Research: Claude Prompt Caching
 
 ### Sources Found
-- https://docs.anthropic.com/en/docs/build-with-claude/prompt-caching (official, current)
-- Anthropic changelog: cache TTL extended to 1 hour in API v2025-01 (new)
-- GitHub discussion: min_tokens threshold reduced to 512 in some regions (unverified)
+- https://docs.claude.com/en/docs/build-with-claude/prompt-caching (official, current)
+- https://docs.claude.com/en/docs/about-claude/pricing (cache pricing multipliers)
 
-### Key Changes Since Last Doc Update
-1. Cache TTL now 1 hour (was 10 min) with explicit cache_control
-2. New cache_read_input_tokens metric in API response
-3. System prompt caching now available in all Claude models (was Sonnet+ only)
+### Key Facts
+1. Two TTL tiers: 5-minute (default) and 1-hour (opt-in via `cache_control: { type: "ephemeral", ttl: "1h" }`).
+2. Pricing multipliers: 5m write 1.25× base input, 1h write 2.00× base input, cache hit 0.10× base input.
+3. Automatic caching: a single top-level `cache_control` field auto-applies a breakpoint to the last cacheable block — no per-block setup.
+4. Mixed TTLs are supported in the same request; usage block reports `ephemeral_5m_input_tokens` and `ephemeral_1h_input_tokens` separately.
+5. Caching is supported on all active Claude models.
 
-### Outdated Content in Your Docs
-- prompt-caching.json: ttl_minutes set to 10 (should be 60)
-- global-optimization.md: mentions "10 minute TTL" (now 60 min)
+### Common Outdated Content to Look For
+- "Cache TTL: 10 minutes" — never existed; it has always been 5m default + 1h opt-in.
+- "ttl_minutes: 60" — internal field name only; the API surface is `ttl: "1h"`.
+- References to a legacy `cache-warming` or `extended-cache` beta header — none currently active.
 
 Run /update-docs analyze to see full comparison.
 ```
@@ -107,13 +109,14 @@ Compares research findings or collected content to your existing documentation a
 ### Comparing against: ~/.claude/system-prompts/global-optimization.md
 
 OUTDATED sections:
-- Line 45: "Cache TTL: 10 minutes" → should be "60 minutes"
+- Line 45: References "Cache TTL: 10 minutes" → never existed; cache is 5m default / 1h opt-in
 - Line 112: Lists claude-sonnet-4-5 as latest → claude-sonnet-4-6 released
-- Line 203: token-efficient-tools beta header — verify if still in beta
+- Line 203: token-efficient-tools-2025-02-19 beta header → no-op on Claude 4+, remove
 
 MISSING sections:
-- No mention of interleaved thinking (added in API v2025-05)
-- cache_read_input_tokens metric not documented
+- No mention of adaptive thinking (`thinking: { type: "adaptive" }`) — replaces deprecated `thinking_budget_tokens`
+- No mention of context-management-2025-06-27 (clear_thinking + clear_tool_uses)
+- No mention of server-side compaction or Fast mode
 
 UP TO DATE:
 - Prompt caching setup instructions ✅
@@ -150,6 +153,7 @@ Updates a specific file or set of files based on research findings.
 2. Apply only the changes identified in `analyze`
 3. Preserve existing structure and formatting
 4. Show diff of what changed
+5. **Verify**: re-read the updated file (or run a regression grep) to confirm the change landed and didn't introduce broken JSON / fence parity issues before reporting done
 
 ---
 
@@ -179,7 +183,7 @@ Issues found: 4
 
 WARNINGS:
 ⚠️ global-optimization.md:45 — model ID "claude-haiku-4-5" may be outdated
-⚠️ beta-features.json:12 — beta header "token-efficient-tools-2025-02-19" may have graduated
+⚠️ beta-features.json:12 — beta header "token-efficient-tools-2025-02-19" is a no-op on Claude 4+, remove
 ⚠️ architecture.md — last updated 47 days ago, consider refreshing
 
 ERRORS:

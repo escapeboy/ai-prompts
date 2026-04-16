@@ -35,6 +35,11 @@ Agent Teams enable multiple Claude instances to work in parallel on different su
 
 **When introduced**: v2.1.32 (2026-02-05) as research preview.
 
+**Subsequent improvements** (relevant to teams):
+- **v2.1.50** — declarative `isolation: worktree` field in agent frontmatter (no more manual `git worktree add`). New `WorktreeCreate` and `WorktreeRemove` hook events fire when isolated worktrees are created/removed — wire these to set up env, install deps, or tear down state. Memory leak in agent-teams session state was fixed in this release.
+- **v2.1.110** — push-notification tool (Claude can ping your phone when a long-running team finishes), `/focus` view to isolate one teammate's transcript, `/tui fullscreen` for flicker-free rendering during multi-pane work, distributed-tracing env vars (`TRACEPARENT` / `TRACESTATE`) for linking team traces in your APM.
+- **Auto-memory** (since v2.1.32) — Claude automatically records and recalls memories across team sessions, reducing context-priming overhead per teammate.
+
 ---
 
 ## 2. Agent Teams vs Other Patterns
@@ -64,7 +69,7 @@ claude --version
 
 # Switch to Opus model inside Claude Code
 > /model opus
-# Expected: "Model changed to claude-opus-4-6-20250624"
+# Expected: "Model changed to claude-opus-4-6"
 ```
 
 ### Enable Feature Flag

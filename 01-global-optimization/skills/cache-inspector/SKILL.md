@@ -1,6 +1,6 @@
 ---
 name: cache-inspector
-description: Monitor and optimize prompt cache performance — analyze hit rates, cost savings, and get recommendations
+description: Analyze prompt cache hit rates, estimate cost savings from cached system prompts and memories, and recommend improvements to caching strategy. Use when checking cache performance, investigating high token costs, optimizing cache hit rates, or diagnosing slow cache warmup.
 version: 1.0.0
 ---
 
@@ -182,7 +182,7 @@ Claude's prompt caching (Anthropic API feature) stores frequently-read content s
 
 **Minimum size**: Content must be ≥1024 tokens to be eligible for caching.
 
-**Cache TTL**: Ephemeral cache lasts 10 minutes; with `cache_control: {type: "ephemeral"}` it lasts up to 60 minutes.
+**Cache TTL**: Two tiers via `cache_control: { type: "ephemeral" }` — `ttl: "5m"` (default) or `ttl: "1h"` (opt-in). Pricing: 5m write `1.25×` base input, 1h write `2.00×`, cache hit `0.10×`. Mixed TTLs in the same request are reported separately as `ephemeral_5m_input_tokens` / `ephemeral_1h_input_tokens`.
 
 ---
 

@@ -195,22 +195,21 @@ mcp__serena__read_memory - Load cached context
 
 ---
 
-### 4. Token-Efficient Tools (14-70% Savings)
+### 4. Token-Efficient Tools (built-in on Claude 4+)
 
 **How it works**:
-- Beta header enables more efficient tool output
-- Claude uses fewer tokens in tool responses
-- No functional change, just efficiency
+- Tool output is automatically token-compressed by the model
+- No beta header required
+- Works with all tools
 
 **Enable**:
 ```
-Beta header: token-efficient-tools-2025-02-19
+No header needed. Remove `token-efficient-tools-2025-02-19` from any client config — it is a no-op on Claude 4+.
 ```
 
-**Impact varies by tool usage**:
+**Historical impact** (when the beta was needed on Claude 3.x):
 - Average: 14% reduction
 - Heavy tool use: Up to 70% reduction
-- Works with all tools
 
 ---
 
@@ -584,6 +583,50 @@ After breakeven, all savings are pure benefit.
 # Check current savings
 /cache-inspector analyze
 ```
+
+---
+
+## Claude 4.6 Token Levers (added 2026-04-16)
+
+These capabilities shipped or graduated in the Claude 4.6 era. Each is a concrete token lever beyond the seven listed above.
+
+### A. Adaptive thinking + `effort` (replaces `extended_thinking`)
+- `thinking: { type: "adaptive" }` — Claude decides per-turn whether and how much to think.
+- Pairs with the GA `effort` parameter: `low` / `medium` / `high` / **`max`** (new tier in 4.6).
+- `extended_thinking` with `thinking_budget_tokens` is **deprecated on Claude 4.6** and will be removed.
+- Adaptive auto-enables interleaved thinking — the `interleaved-thinking-2025-05-14` beta header is no longer needed.
+- Token impact: drops thinking tokens to zero on simple turns; bumps depth when warranted. Use `effort: low` for chat/content, `effort: max` for security reviews / multi-option judgement.
+
+### B. Context editing (`context-management-2025-06-27` beta)
+- Server-side strategies that trim context **before** it's billed:
+  - `clear_thinking_20251015` — drops old thinking blocks; configurable `keep: { type: "thinking_turns", value: N }` or `keep: "all"` (max cache hits).
+  - `clear_tool_uses_20250919` — drops stale tool results.
+- Both can stack in the same `context_management.edits` array (`clear_thinking` first).
+- Response reports `applied_edits` with `cleared_input_tokens` so you can quantify savings.
+- Token impact: routinely reclaims 15K–50K from long agentic conversations.
+
+### C. Server-side compaction
+- Auto-summarises older turns when nearing the context window. Anthropic explicitly recommends server-side over SDK compaction.
+- Effectively infinite conversations without client-side bookkeeping.
+- Token impact: replaces stale full-history with a concise summary the moment context pressure builds.
+
+### D. Dynamic web filtering
+- `web_search_20260209` and `web_fetch_20260209` let Claude write code to filter results **before** they enter context.
+- Token impact: avoids paying for irrelevant page chrome in every web result.
+
+### E. Automatic prompt caching
+- A single top-level `cache_control: { type: "ephemeral" }` field auto-applies a breakpoint to the last cacheable block — no per-block setup.
+- Reduces config drift and forgotten cache breakpoints. Cache hit pricing is `0.10× base input` regardless of TTL tier.
+
+### F. Fast mode (premium, when latency matters)
+- `speed: "fast"` on Opus runs ~2.5× faster at $30 / $150 per MTok (vs. base $5 / $25). Same model, same intelligence.
+- **Not a token lever** — a latency lever. Use only when wall-clock matters more than $.
+
+### Drop list (no-op or deprecated, remove from any client config)
+- `token-efficient-tools-2025-02-19`
+- `fine-grained-tool-streaming-2025-05-14`
+- `effort-2025-11-24`
+- `output-128k-2025-02-19`
 
 ---
 

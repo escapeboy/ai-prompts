@@ -1,6 +1,6 @@
 ---
 name: optimize
-description: Maximum token efficiency mode — activates all optimization strategies for the current task
+description: Reduce token usage by selecting a planning strategy, loading Serena memories, enforcing symbol-first exploration, and reporting savings. Use when starting a non-trivial task, asking to reduce token costs, requesting efficient execution, or wanting optimized Claude Code workflows.
 version: 1.0.0
 ---
 
@@ -190,6 +190,9 @@ System prompts, tool definitions, and memories are cached automatically. First l
 
 ### 4. Minimal Model Use
 Use the cheapest model that can do the job. Don't use Sonnet for template-driven tasks. Never use Opus unless it's a critical architectural/security decision.
+
+### 5. Verify Before Reporting (MANDATORY)
+Run existing tests, a regression grep, or manual validation before reporting a task as done. If a verification step was skipped, say so plainly rather than implying success. Aligns with `~/.claude/CLAUDE.md` §Faithful Reporting.
 
 ---
 

@@ -180,7 +180,7 @@ ls -la ~/.claude/skills/update-docs/SKILL.md
 - [ ] Contains all 6 workflows: detect, fetch, constitution, memories, optimize, --full
 - [ ] Contains auto-detection logic for multiple languages
 - [ ] Contains fastmcp.me integration
-- [ ] Contains caching strategy (7-day TTL)
+- [ ] Contains file caching strategy (local file mtime-based; not the Anthropic prompt cache, which only supports 5m / 1h TTLs)
 - [ ] Contains language-specific constitution templates
 
 **Verify**:

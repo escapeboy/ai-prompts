@@ -43,6 +43,18 @@ A **skill** is a Markdown file that defines a slash command in Claude Code. When
 
 **Priority**: Project skills override global skills with the same name.
 
+### Progressive Disclosure (3 levels)
+
+Skills are designed so Claude only loads what's needed for the current task:
+
+1. **Frontmatter** (`name` + `description`) — pre-loaded into the system prompt for **every** installed skill at session start. This is what Claude scans to decide which skill matches the user's request.
+2. **SKILL.md body** — loaded into context **only** when Claude judges the skill relevant. Holds the full instructions, examples, and decision logic.
+3. **Bundled files** (e.g. `FORMS.md`, `scripts/*.py`, reference docs) — loaded **only** when the SKILL.md instructions explicitly tell Claude to read them.
+
+**Why it matters for token usage**: a skill with 5KB of body and 50KB of bundled reference material costs ~150 tokens (frontmatter only) at session start. Activation costs scale with what Claude actually needs — not the full skill size.
+
+Skills are an open standard published as [agentskills.io](https://agentskills.io) (2025-12-18) for cross-platform portability across Claude apps, Claude Code, and the API. Claude Code auto-discovers `.claude/skills/` in any directory passed via `--add-dir` (since v2.1.32). The skill description budget scales to 2% of the active context window.
+
 ---
 
 ## Skill Structure
@@ -120,7 +132,7 @@ name: skill-name
 description: Brief description
 version: 1.0.0
 model: claude-sonnet-4-6    # Preferred model (alias или full ID)
-effort: medium              # low / medium / high (v2.1.76)
+effort: medium              # low / medium / high / max — Claude 4.6 default is `high`. Set `medium` here as a deliberate downshift for routine skills.
 author: Your Name
 tags: [deployment, docker, ci]
 requires: [serena, docker]

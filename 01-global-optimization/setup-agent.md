@@ -57,7 +57,7 @@ The complete JSON content for all 4 files is in `guide.md` Steps 3.1–3.4. Copy
 See guide.md Step 3.1 — configures ephemeral cache with 60-min TTL for system prompts, memories, tool definitions.
 
 #### File 2: `~/.claude/settings/beta-features.json`
-See guide.md Step 3.2 — enables `token-efficient-tools-2025-02-19` beta header (14-70% tool output reduction).
+See guide.md Step 3.2 — token-efficient tool use is built-in on Claude 4+ (no beta header needed; the legacy `token-efficient-tools-2025-02-19` header is now a no-op). Configure adaptive thinking + effort and the `context-management-2025-06-27` beta here.
 
 #### File 3: `~/.claude/settings/model-strategy.json`
 See guide.md Step 3.3 — maps agent types to Haiku/Sonnet/Opus with cost targets.

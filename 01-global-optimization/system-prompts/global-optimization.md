@@ -105,6 +105,8 @@ Use the cheapest model that produces acceptable quality:
 
 **Never use Opus** for routine implementation, even if complex. Complexity alone does not justify Opus — only criticality and irreversibility do.
 
+**Fast mode (latency lever, not a cost lever)**: `speed: "fast"` on Opus runs ~2.5× faster at premium pricing of $30 / $150 per MTok. Same model, same intelligence. Use only when wall-clock latency genuinely matters more than cost (e.g. interactive judge evaluation in a UI). Not available with the Batch API.
+
 ---
 
 ## AUTOMATIC: Token-Efficient Tools

@@ -23,7 +23,7 @@ This guide explains how to research Claude API updates, community best practices
 ### The Problem
 
 Claude API and best practices evolve rapidly:
-- New features (prompt caching, token-efficient tools, extended thinking)
+- New features (prompt caching, adaptive thinking, context editing, server-side compaction, agent skills)
 - Pricing changes (model costs, caching discounts)
 - Community discoveries (optimization techniques, skill patterns)
 - Tool updates (Serena, MCP servers, integrations)
@@ -318,7 +318,7 @@ Searches web for latest information on a topic.
 **Examples**:
 ```
 /update-docs research prompt-caching
-/update-docs research claude-opus-4.5
+/update-docs research claude-opus-4-6
 /update-docs research token-efficient-tools
 /update-docs research all              # Comprehensive research
 ```
@@ -400,17 +400,19 @@ Checks documentation accuracy.
 1. Update `~/.claude/settings/beta-features.json`:
    ```json
    {
-     "extended_thinking": {
-       "enabled": false,
-       "beta_header": "interleaved-thinking-2025-05-14",
+     "adaptive_thinking": {
+       "enabled": true,
+       "config": { "type": "adaptive" },
+       "effort": "high",
        "use_cases": ["complex_design", "judge_evaluation"]
      }
    }
    ```
+   Note: `thinking: { type: "enabled", budget_tokens: N }` is deprecated on Claude 4.6. Adaptive thinking auto-enables interleaved thinking — no `interleaved-thinking-2025-05-14` header needed.
 
 2. Update `~/.claude/system-prompts/global-optimization.md`:
-   - Add section on when to use extended thinking
-   - Document token budget considerations
+   - Add section on when to bump effort (low / medium / high / max)
+   - Document `effort: max` for security reviews and architectural judgement
 
 3. Test with complex design task
 

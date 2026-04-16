@@ -22,11 +22,11 @@ These are authoritative sources from Anthropic. Always check these first.
 
 **Check frequency**: Weekly
 
-**Key articles** (as of January 2025):
-- [Prompt Caching](https://www.anthropic.com/news/prompt-caching) - 90% cost savings
-- [Token-Saving Updates](https://www.anthropic.com/news/token-saving-updates) - 14-70% reduction
-- [Extended Thinking](https://www.anthropic.com/news/visible-extended-thinking) - Deep reasoning
-- [Claude Opus 4.5](https://www.anthropic.com/news/claude-opus-4-5) - Latest model
+**Key articles** (as of April 2026):
+- [Prompt Caching](https://www.anthropic.com/news/prompt-caching) — 5m default + 1h opt-in TTL, 0.10× cache-hit pricing
+- [Introducing Agent Skills](https://www.anthropic.com/news/skills) — open standard at [agentskills.io](https://agentskills.io)
+- [Equipping agents for the real world with Agent Skills](https://www.anthropic.com/engineering/equipping-agents-for-the-real-world-with-agent-skills) — engineering deep-dive
+- [What's new in Claude 4.6](https://docs.claude.com/en/docs/about-claude/models/whats-new-claude-4-6) — adaptive thinking, `effort: max`, 1M context, server-side compaction
 
 ---
 
@@ -74,13 +74,16 @@ These are authoritative sources from Anthropic. Always check these first.
 - Batch API pricing (50% discount)
 - Any new pricing tiers
 
-**Current pricing** (as of January 2025):
+**Current pricing** (as of April 2026):
 
-| Model | Input (per 1M) | Output (per 1M) | Cache Read |
-|-------|----------------|-----------------|------------|
-| Opus 4.5 | $5.00 | $25.00 | $0.50 |
-| Sonnet 4.5 | $3.00 | $15.00 | $0.30 |
-| Haiku 4.5 | $1.00 | $5.00 | $0.10 |
+| Model | Input (per 1M) | 5m Cache Write | 1h Cache Write | Cache Read | Output (per 1M) |
+|-------|----------------|----------------|----------------|------------|-----------------|
+| Opus 4.6 / 4.5 | $5.00 | $6.25 | $10.00 | $0.50 | $25.00 |
+| Sonnet 4.6 / 4.5 | $3.00 | $3.75 | $6.00 | $0.30 | $15.00 |
+| Haiku 4.5 | $1.00 | $1.25 | $2.00 | $0.10 | $5.00 |
+| Opus Fast mode | $30.00 | — | — | — | $150.00 |
+
+Multipliers: 5m write `1.25×` base input, 1h write `2.00×`, cache hit `0.10×`. Batch API gives 50% off both directions and stacks with cache discounts (Fast mode does not).
 
 **Check frequency**: Monthly
 
@@ -270,6 +273,45 @@ Track when you last checked each source:
 | FastMCP | | | |
 | GitHub Claude Code | | | |
 | Serena MCP | | | |
+
+---
+
+## Beta Headers Inventory (as of 2026-04-16)
+
+Single source of truth for which `anthropic-beta` headers to send. Verify against [docs.claude.com/en/api/beta-headers](https://docs.claude.com/en/api/beta-headers) when in doubt.
+
+### ✅ Active (send when you need the feature)
+
+| Header | Purpose |
+|---|---|
+| `context-management-2025-06-27` | Server-side context editing (`clear_thinking_20251015`, `clear_tool_uses_20250919`) |
+| `managed-agents-2026-04-01` | Managed Agents endpoints (`/v1/agents`, `/v1/sessions`, `/v1/environments`) |
+| `files-api-2025-04-14` | Files API |
+| `interleaved-thinking-2025-05-14` | Interleaved thinking — **only if not using adaptive thinking** (which auto-enables it on 4.6) |
+
+### ❌ Deprecated / no-op on Claude 4+ (REMOVE from client config)
+
+| Header | Why drop |
+|---|---|
+| `token-efficient-tools-2025-02-19` | Built into Claude 4+. Header has no effect. |
+| `fine-grained-tool-streaming-2025-05-14` | GA on Sonnet 4.6+. No longer required. |
+| `effort-2025-11-24` | `effort` parameter is GA. No header needed. |
+| `output-128k-2025-02-19` | Output capacity is now controlled by `max_tokens` directly. |
+
+### Tool versions to bump (April 2026)
+
+- `text_editor_20250728`
+- `code_execution_20250825`
+- `web_search_20260209` and `web_fetch_20260209` — enable dynamic filtering (Claude writes code to filter results before they enter context)
+
+### Canonical sources for future runs
+
+When `/update-docs research` is run, these supplement the default list above:
+
+- https://docs.claude.com/en/api/beta-headers — authoritative beta header list
+- https://github.com/anthropics/claude-code/blob/main/CHANGELOG.md — Claude Code release notes
+- https://agentskills.io — Agent Skills open standard
+- https://docs.claude.com/en/docs/about-claude/models/migration-guide — model migration breaking changes
 
 ---
 

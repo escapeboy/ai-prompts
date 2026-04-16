@@ -489,6 +489,8 @@ Create 4 JSON configuration files in `~/.claude/settings/`.
 
 **Expected savings**: 90% cost reduction on cached content reads, 85% latency reduction
 
+> **Field naming note**: `ttl_minutes` is an internal config knob used by `/cache-inspector`. The actual Anthropic API surface is `cache_control: { type: "ephemeral", ttl: "5m" | "1h" }` — only those two TTL tiers are supported, not arbitrary minute values.
+
 ### 3.2 Beta Features Config
 
 **File**: `~/.claude/settings/beta-features.json`
@@ -500,27 +502,31 @@ Create 4 JSON configuration files in `~/.claude/settings/`.
   "features": {
     "token_efficient_tools": {
       "enabled": true,
-      "beta_header": "token-efficient-tools-2025-02-19",
-      "description": "14-70% reduction in tool output tokens",
-      "apply_to": ["all_agents"],
-      "metrics": {
-        "track_savings": true,
-        "log_file": ".claude/learnings/tool-efficiency.log"
-      }
+      "beta_header": null,
+      "note": "Built-in on Claude 4+. The legacy `token-efficient-tools-2025-02-19` header is a no-op as of Claude 4 and should NOT be sent.",
+      "description": "Tool output is automatically token-compressed by the model",
+      "apply_to": ["all_agents"]
     },
-    "extended_thinking": {
-      "enabled": false,
-      "beta_header": "interleaved-thinking-2025-05-14",
-      "description": "Deeper reasoning for complex decisions (uses extra tokens)",
+    "adaptive_thinking": {
+      "enabled": true,
+      "config": { "type": "adaptive" },
+      "effort": "high",
+      "description": "Claude decides per-turn whether and how much to think. Pairs with the GA `effort` parameter (low / medium / high / max).",
       "apply_to": ["spec-design", "spec-judge"],
-      "thinking_budget_tokens": 10000,
-      "use_only_when": [
+      "use_max_effort_for": [
         "Architectural decisions with long-term impact",
         "Security reviews",
         "Judge evaluation with 3+ competing designs"
       ],
+      "note": "Replaces the deprecated `extended_thinking { thinking_budget_tokens }` block. Adaptive thinking auto-enables interleaved thinking; the `interleaved-thinking-2025-05-14` beta header is no longer required on Claude 4.6."
+    },
+    "context_management": {
+      "enabled": false,
+      "beta_header": "context-management-2025-06-27",
+      "description": "Server-side context editing — clear_thinking_20251015 and clear_tool_uses_20250919 strategies trim stale tool results and old thinking blocks before they consume window space.",
+      "apply_to": ["long_running_agents", "agent_teams"],
       "default": false,
-      "reason_disabled": "Uses additional tokens. Enable only for critical decisions."
+      "reason_disabled": "Opt-in per-workflow; pairs well with server-side compaction."
     }
   },
   "rollout_strategy": {
@@ -531,7 +537,7 @@ Create 4 JSON configuration files in `~/.claude/settings/`.
 }
 ```
 
-**Expected savings**: 14-70% on tool outputs with token-efficient tools
+**Expected savings**: tool-output compression is built-in on Claude 4+ (no header). Adaptive thinking + `effort` lets you scale reasoning depth per workflow. Context-management beta clears stale tool results / thinking blocks server-side.
 
 ### 3.3 Model Strategy Config
 
