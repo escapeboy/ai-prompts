@@ -1,10 +1,11 @@
 ---
-name: module:mcp
-description: Add a Laravel MCP server to any project — full domain coverage with dual transport (HTTP + stdio)
-version: 1.0.0
-model: claude-opus-4-6
-requires: [composer, php]
-tags: [laravel, mcp, ai, integration, module]
+name: module-mcp
+description: "Scaffold a Laravel MCP server with domain-grouped tools, dual transport (HTTP + stdio), and role-based auth. Use when adding MCP to a Laravel project, exposing domain models to AI agents, or setting up Claude Code or Codex access to a Laravel app."
+metadata:
+  version: "1.0.0"
+  model: claude-opus-4-6
+  requires: [composer, php]
+  tags: [laravel, mcp, ai, integration, module]
 ---
 
 # Module: MCP Server
@@ -13,543 +14,160 @@ Implement a complete Model Context Protocol (MCP) server on any Laravel project.
 
 **Reference implementation**: Agent Fleet — 61 tools across 14 domains, dual transport, role-based auth.
 
----
-
 ## Usage
 
 ```
-/module:mcp [action]
+/module-mcp [action]
 ```
 
 ### Quick Examples
 
 ```bash
-/module:mcp                    # Full implementation (analyze → scaffold → implement)
-/module:mcp analyze            # Only analyze the project and produce a tool plan
-/module:mcp add <domain>       # Add MCP tools for a specific domain
-/module:mcp sync               # Sync tools with current domain — find missing coverage
+/module-mcp                    # Full implementation (analyze -> scaffold -> implement)
+/module-mcp analyze            # Only analyze the project and produce a tool plan
+/module-mcp add <domain>       # Add MCP tools for a specific domain
+/module-mcp sync               # Sync tools with current domain — find missing coverage
 ```
-
----
 
 ## Actions
 
 ### 1. Full Implementation (Default)
 
-Analyzes the project, scaffolds the MCP server, and implements all tools.
-
-**Process**:
-
 #### Phase 1: Analyze the Project
 
 1. **Read CLAUDE.md** (or README.md) to understand the domain, models, and architecture.
 
-2. **Discover domain models** — scan for Eloquent models, their relationships, and fillable fields:
+2. **Discover domain models** — scan for Eloquent models, relationships, and fillable fields:
 
 ```bash
-# Find all models
 find app -name "*.php" -path "*/Models/*" | head -50
-
-# Or use Laravel Boost if available
-php artisan model:show
 ```
 
 3. **Discover actions/services** — scan for action classes, service classes, and controllers:
 
 ```bash
-# Find action classes
 find app -name "*Action.php" | head -30
-
-# Find controllers
 find app -name "*Controller.php" -path "*/Controllers/*" | head -30
 ```
 
-4. **Discover existing API routes** — map what's already exposed:
+4. **Discover existing API routes**:
 
 ```bash
 php artisan route:list --columns=method,uri,name,action --json
 ```
 
-5. **Identify domain boundaries** — group models/actions into logical domains. Example:
+5. **Identify domain boundaries** — group models/actions into logical domains (e.g., User domain: User, Role, Team).
 
-```
-User domain:      User, Role, Team
-Product domain:   Product, Category, Variant
-Order domain:     Order, OrderItem, Payment, Refund
-```
+6. **Produce a tool plan** — for each domain, list tools to create with naming convention `{domain}_{action}`:
 
-6. **Produce a tool plan** — for each domain, list the tools to create:
+**Standard CRUD tools per domain**: `{domain}_list`, `{domain}_get`, `{domain}_create`, `{domain}_update`, `{domain}_delete`.
 
-```
-Domain: Order (6 tools)
-  - order_list (read) — List orders with status/date filters
-  - order_get (read) — Get order details with items
-  - order_create (write) — Create a new order
-  - order_update (write) — Update order details
-  - order_cancel (destructive) — Cancel an order
-  - order_refund (write) — Initiate a refund
-```
+**Lifecycle tools** (stateful entities): `{domain}_{transition}` (e.g., `order_cancel`).
 
-**Tool naming convention**: `{domain}_{action}` — lowercase, underscores.
+**System tools** (always include): `dashboard_kpis`, `system_health`, `audit_log`.
 
-**Standard CRUD tools per domain**:
-- `{domain}_list` — List with filters and pagination
-- `{domain}_get` — Get single entity by ID with relations
-- `{domain}_create` — Create new entity
-- `{domain}_update` — Update existing entity
-- `{domain}_delete` — Soft-delete or archive
-
-**Lifecycle tools** (for stateful entities):
-- `{domain}_{transition}` — e.g. `order_cancel`, `experiment_pause`
-
-**System tools** (always include):
-- `dashboard_kpis` — Key metrics summary
-- `system_health` — Database, cache, queue health
-- `audit_log` — Recent activity log (if audit exists)
+7. **Verify**: confirm the tool plan covers all domain models before proceeding.
 
 #### Phase 2: Install and Scaffold
 
-1. **Install `laravel/mcp`**:
+1. **Install `laravel/mcp`**: `composer require laravel/mcp`
 
-```bash
-composer require laravel/mcp
-```
+2. **Create the MCP Server class** at `app/Mcp/Servers/{ProjectName}Server.php` — extend `Laravel\Mcp\Server`, set name/version/instructions, register tools in `$tools` array.
 
-2. **Create the MCP Server class** at `app/Mcp/Servers/{ProjectName}Server.php`:
-
-```php
-<?php
-
-namespace App\Mcp\Servers;
-
-use App\Mcp\Concerns\BootstrapsMcpAuth;
-use Laravel\Mcp\Server;
-
-class ProjectNameServer extends Server
-{
-    use BootstrapsMcpAuth;
-
-    protected string $name = 'Project Name';
-    protected string $version = '1.0.0';
-    protected string $instructions = 'Project Name MCP Server — describe what this project does.';
-
-    protected function boot(): void
-    {
-        $this->bootstrapMcpAuth();
-    }
-
-    protected array $tools = [
-        // Tools are registered here — one class per tool
-    ];
-}
-```
-
-3. **Create the auth bootstrap trait** at `app/Mcp/Concerns/BootstrapsMcpAuth.php`:
-
-```php
-<?php
-
-namespace App\Mcp\Concerns;
-
-use App\Models\User;
-use Illuminate\Support\Facades\Auth;
-
-trait BootstrapsMcpAuth
-{
-    /**
-     * Bootstrap authentication for stdio MCP sessions.
-     * HTTP sessions use Sanctum middleware instead.
-     */
-    protected function bootstrapMcpAuth(): void
-    {
-        if (auth()->check()) {
-            return;
-        }
-
-        // Resolve default user for stdio (local CLI) sessions.
-        // Adapt this to your auth model — find the first admin or owner.
-        $user = User::where('is_admin', true)->first()
-             ?? User::first();
-
-        if (! $user) {
-            throw new \RuntimeException('No user found. Run your install/seed command first.');
-        }
-
-        Auth::login($user);
-
-        // If your app uses team/tenant scoping, set the team context here:
-        // app()->instance('mcp.active', true);
-    }
-}
-```
+3. **Create auth bootstrap trait** at `app/Mcp/Concerns/BootstrapsMcpAuth.php` — auto-resolve default user for stdio sessions (CLI agents). HTTP sessions use Sanctum middleware instead.
 
 4. **Create routes** at `routes/ai.php`:
 
 ```php
-<?php
-
-use App\Mcp\Servers\ProjectNameServer;
 use Laravel\Mcp\Facades\Mcp;
 
 // HTTP/SSE endpoint — for Cursor, remote MCP clients
-Mcp::web('/mcp', ProjectNameServer::class)
-    ->middleware(['auth:sanctum']);
+Mcp::web('/mcp', ProjectNameServer::class)->middleware(['auth:sanctum']);
 
 // Local stdio server — for Claude Code, Codex
 Mcp::local('project-name', ProjectNameServer::class);
 ```
 
-5. **Register the routes** in `bootstrap/app.php` or `RouteServiceProvider`:
+5. **Register routes** in `bootstrap/app.php` (Laravel 12+) via `->withRouting(then: fn () => require base_path('routes/ai.php'))`.
 
-```php
-// In bootstrap/app.php (Laravel 12+)
-->withRouting(
-    // ... existing routes ...
-    then: function () {
-        require base_path('routes/ai.php');
-    },
-)
-```
-
-6. **Fix global scopes** (if using team/tenant scoping). Console commands bypass global scopes by default, but MCP stdio runs in console context. If your models use a tenant scope:
-
-```php
-// In your TeamScope (or similar global scope)
-public function apply(Builder $builder, Model $model): void
-{
-    // Allow MCP stdio sessions to use the scope
-    if (app()->runningInConsole() && ! app()->bound('mcp.active')) {
-        return; // Skip scope in regular console (migrations, seeders)
-    }
-
-    // Apply normal scope
-    $builder->where($model->getTable().'.team_id', auth()->user()?->current_team_id);
-}
-```
+6. **Fix global scopes** if using team/tenant scoping — MCP stdio runs in console context, so check `app()->bound('mcp.active')` before skipping scopes.
 
 #### Phase 3: Implement Tools
 
-For each tool in the plan, create a class in `app/Mcp/Tools/{Domain}/`.
+Create one class per tool in `app/Mcp/Tools/{Domain}/`. Each tool extends `Laravel\Mcp\Server\Tool`.
 
 **Read tool pattern** (list):
 
 ```php
-<?php
-
-namespace App\Mcp\Tools\Order;
-
-use App\Models\Order;
-use Illuminate\Contracts\JsonSchema\JsonSchema;
-use Laravel\Mcp\Request;
-use Laravel\Mcp\Response;
-use Laravel\Mcp\Server\Tool;
-use Laravel\Mcp\Server\Tools\Annotations\IsIdempotent;
-use Laravel\Mcp\Server\Tools\Annotations\IsReadOnly;
-
 #[IsReadOnly]
 #[IsIdempotent]
 class OrderListTool extends Tool
 {
     protected string $name = 'order_list';
-
-    protected string $description = 'List orders with optional status and date filters. Returns id, number, status, total, created_at.';
+    protected string $description = 'List orders with optional status and date filters.';
 
     public function schema(JsonSchema $schema): array
     {
         return [
-            'status' => $schema->string()
-                ->description('Filter by status: pending, processing, completed, cancelled')
+            'status' => $schema->string()->description('Filter: pending, processing, completed, cancelled')
                 ->enum(['pending', 'processing', 'completed', 'cancelled']),
-            'limit' => $schema->integer()
-                ->description('Max results (default 10, max 100)')
-                ->default(10),
+            'limit' => $schema->integer()->description('Max results (default 10, max 100)')->default(10),
         ];
     }
 
     public function handle(Request $request): Response
     {
         $query = Order::query()->orderByDesc('created_at');
-
         if ($status = $request->get('status')) {
             $query->where('status', $status);
         }
-
-        $limit = min((int) ($request->get('limit', 10)), 100);
-        $items = $query->limit($limit)->get(['id', 'order_number', 'status', 'total', 'created_at']);
-
-        return Response::text(json_encode([
-            'count' => $items->count(),
-            'orders' => $items->toArray(),
-        ]));
+        $items = $query->limit(min((int) ($request->get('limit', 10)), 100))
+            ->get(['id', 'order_number', 'status', 'total', 'created_at']);
+        return Response::text(json_encode(['count' => $items->count(), 'orders' => $items->toArray()]));
     }
 }
 ```
 
-**Read tool pattern** (get single):
+**Write tool pattern** — same structure but use `$request->validate()` for input validation. Prefer existing action classes over duplicating business logic.
 
-```php
-#[IsReadOnly]
-#[IsIdempotent]
-class OrderGetTool extends Tool
-{
-    protected string $name = 'order_get';
+**Destructive tool pattern** — annotate with `#[IsDestructive]`, validate state transitions before executing (e.g., only cancel pending/processing orders).
 
-    protected string $description = 'Get order details by ID, including items and payment info.';
-
-    public function schema(JsonSchema $schema): array
-    {
-        return [
-            'id' => $schema->string()->description('Order ID (UUID)')->required(),
-        ];
-    }
-
-    public function handle(Request $request): Response
-    {
-        $order = Order::with(['items', 'payment'])->find($request->get('id'));
-
-        if (! $order) {
-            return Response::error('Order not found');
-        }
-
-        return Response::text(json_encode($order->toArray()));
-    }
-}
-```
-
-**Write tool pattern**:
-
-```php
-class OrderCreateTool extends Tool
-{
-    protected string $name = 'order_create';
-
-    protected string $description = 'Create a new order. Specify customer and items.';
-
-    public function schema(JsonSchema $schema): array
-    {
-        return [
-            'customer_id' => $schema->string()->description('Customer ID')->required(),
-            'items' => $schema->string()->description('JSON array of items: [{product_id, quantity}]')->required(),
-            'notes' => $schema->string()->description('Order notes'),
-        ];
-    }
-
-    public function handle(Request $request): Response
-    {
-        $validated = $request->validate([
-            'customer_id' => 'required|exists:customers,id',
-            'items' => 'required|json',
-            'notes' => 'nullable|string',
-        ]);
-
-        try {
-            // Prefer using existing action classes
-            $order = app(CreateOrderAction::class)->execute(
-                customerId: $validated['customer_id'],
-                items: json_decode($validated['items'], true),
-                notes: $validated['notes'] ?? null,
-            );
-
-            return Response::text(json_encode([
-                'success' => true,
-                'order_id' => $order->id,
-                'status' => $order->status,
-            ]));
-        } catch (\Throwable $e) {
-            return Response::error($e->getMessage());
-        }
-    }
-}
-```
-
-**Destructive tool pattern**:
-
-```php
-use Laravel\Mcp\Server\Tools\Annotations\IsDestructive;
-
-#[IsDestructive]
-class OrderCancelTool extends Tool
-{
-    protected string $name = 'order_cancel';
-
-    protected string $description = 'Cancel an order. Only pending/processing orders can be cancelled.';
-
-    public function schema(JsonSchema $schema): array
-    {
-        return [
-            'id' => $schema->string()->description('Order ID')->required(),
-            'reason' => $schema->string()->description('Cancellation reason')->required(),
-        ];
-    }
-
-    public function handle(Request $request): Response
-    {
-        $order = Order::find($request->get('id'));
-
-        if (! $order) {
-            return Response::error('Order not found');
-        }
-
-        if (! in_array($order->status, ['pending', 'processing'])) {
-            return Response::error("Cannot cancel order in '{$order->status}' status");
-        }
-
-        try {
-            app(CancelOrderAction::class)->execute($order, $request->get('reason'));
-
-            return Response::text(json_encode([
-                'success' => true,
-                'order_id' => $order->id,
-                'status' => 'cancelled',
-            ]));
-        } catch (\Throwable $e) {
-            return Response::error($e->getMessage());
-        }
-    }
-}
-```
-
-**Key rules for all tools**:
-
+**Key rules**:
 - One tool per file, one public method (`handle`)
-- Use `#[IsReadOnly]` + `#[IsIdempotent]` for read tools
-- Use `#[IsDestructive]` for delete/cancel/archive tools
-- Write tools have no annotation (default)
-- Return `Response::text(json_encode(...))` for success
-- Return `Response::error(...)` for failures
-- Use existing action classes when available — don't duplicate business logic
-- Always validate input with `$request->validate()` for write tools
+- `#[IsReadOnly]` + `#[IsIdempotent]` for read tools
+- `#[IsDestructive]` for delete/cancel/archive tools
+- Return `Response::text(json_encode(...))` for success, `Response::error(...)` for failures
+- Use existing action classes — don't duplicate business logic
 - Limit list results (default 10, max 100)
-- Include only essential fields in list responses, full details in get responses
 
 #### Phase 4: Register and Verify
 
-1. **Register all tools** in the Server class `$tools` array.
-
-2. **Test stdio**:
-```bash
-php artisan mcp:start project-name
-```
-
-3. **Test HTTP** (if Sanctum is set up):
-```bash
-curl -X POST http://localhost/mcp \
-  -H "Authorization: Bearer YOUR_TOKEN" \
-  -H "Content-Type: application/json"
-```
-
-4. **Update CLAUDE.md** — add the MCP section:
-
-```markdown
-## MCP Server
-
-The platform exposes a Model Context Protocol (MCP) server via `laravel/mcp`.
-
-### Architecture
-- **Server:** `app/Mcp/Servers/ProjectNameServer.php`
-- **Auth (stdio):** `BootstrapsMcpAuth` trait auto-resolves default user
-- **Auth (HTTP):** Sanctum bearer token via `auth:sanctum` middleware
-- **Routes:** `routes/ai.php`
-
-### Usage
-\`\`\`bash
-# Local stdio (for Codex, Claude Code)
-php artisan mcp:start project-name
-
-# HTTP/SSE (for Cursor, remote clients)
-# POST /mcp with Sanctum bearer token
-\`\`\`
-
-### IMPORTANT: When adding/modifying features
-When any domain functionality is added or changed, the corresponding MCP tool(s)
-must also be created or updated. The MCP server must maintain 100% coverage
-of platform capabilities.
-```
-
----
+1. Register all tools in the Server class `$tools` array.
+2. Test stdio: `php artisan mcp:start project-name`
+3. Test HTTP (if Sanctum is set up): `curl -X POST http://localhost/mcp -H "Authorization: Bearer TOKEN"`
+4. **Verify**: confirm each tool responds correctly before updating docs.
+5. Update CLAUDE.md with MCP server architecture, usage commands, and the rule that new domain features must include corresponding MCP tools.
 
 ### 2. Analyze Only (`analyze`)
 
-Scans the project and produces a tool plan without implementing anything.
-
-```
-/module:mcp analyze
-```
-
-**Output**: A markdown table of proposed tools grouped by domain, with tool name, type (read/write/destructive), and description.
-
----
+Scans the project and produces a tool plan without implementing anything. Output: markdown table of proposed tools grouped by domain with tool name, type (read/write/destructive), and description.
 
 ### 3. Add Domain (`add <domain>`)
 
-Adds MCP tools for a specific domain to an existing MCP server.
-
-```
-/module:mcp add orders
-/module:mcp add users
-```
-
-**Process**:
-1. Read the existing Server class to see what's registered
-2. Scan the domain models and actions
-3. Create tool classes for the domain
-4. Register them in the Server's `$tools` array
-
----
+Adds MCP tools for a specific domain to an existing MCP server. Reads the existing Server class, scans domain models/actions, creates tool classes, and registers them.
 
 ### 4. Sync (`sync`)
 
-Finds domain functionality that's not covered by MCP tools.
-
-```
-/module:mcp sync
-```
-
-**Process**:
-1. List all registered MCP tools
-2. List all domain models and their CRUD actions
-3. List all API routes
-4. Diff: what's in the API/actions but missing from MCP?
-5. Output a list of missing tools with suggested implementations
-
----
+Finds domain functionality not covered by MCP tools. Lists all registered tools, all domain models/actions, and all API routes, then diffs to show missing tool coverage.
 
 ## Tool Annotations Reference
 
 | Annotation | When to Use | Example |
 |------------|-------------|---------|
 | `#[IsReadOnly]` | Tool only reads data | `order_list`, `order_get` |
-| `#[IsIdempotent]` | Same input → same result | `order_list`, `order_get` |
+| `#[IsIdempotent]` | Same input = same result | `order_list`, `order_get` |
 | `#[IsDestructive]` | Irreversible action | `order_cancel`, `user_delete` |
 | *(none)* | Write that's not destructive | `order_create`, `order_update` |
-
----
-
-## Response Format Convention
-
-All tools return JSON via `Response::text(json_encode(...))`.
-
-**List tools**:
-```json
-{"count": 5, "orders": [{...}, {...}]}
-```
-
-**Get tools**:
-```json
-{"id": "...", "name": "...", "status": "...", "relations": [...]}
-```
-
-**Write tools** (success):
-```json
-{"success": true, "order_id": "...", "status": "created"}
-```
-
-**Error**:
-```json
-Response::error("Human-readable error message")
-```
-
----
 
 ## Checklist
 
@@ -563,16 +181,13 @@ After implementation, verify:
 - [ ] Global scopes handle `mcp.active` flag (if applicable)
 - [ ] All domain models have at minimum `list` + `get` tools
 - [ ] All write actions have corresponding tools
-- [ ] All tools follow naming convention: `{domain}_{action}`
-- [ ] Tool annotations are correct (ReadOnly, Idempotent, Destructive)
+- [ ] Tool annotations are correct
 - [ ] CLAUDE.md updated with MCP documentation
 - [ ] `php artisan mcp:start project-name` works
 - [ ] All existing tests still pass
 
----
-
 ## See Also
 
-- [/module:assistant](../module-assistant/SKILL.md) — Add an AI assistant chat panel
+- [/module-assistant](../module-assistant/SKILL.md) — Add an AI assistant chat panel
 - [Laravel MCP docs](https://laravel.com/ai/mcp)
 - [MCP Specification](https://modelcontextprotocol.io)
