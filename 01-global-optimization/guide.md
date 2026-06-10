@@ -581,7 +581,7 @@ Create 4 JSON configuration files in `~/.claude/settings/`.
       "default": true
     },
     "opus": {
-      "id": "claude-opus-4-6",
+      "id": "claude-opus-4-8",
       "cost_per_million": {
         "input": 5,
         "output": 25

@@ -377,7 +377,7 @@ User can specify topics:
 ```
 Research: prompt-caching
 Research: extended-thinking
-Research: claude-opus-4-6
+Research: claude-opus-4-8
 Research: laravel-optimization
 ```
 

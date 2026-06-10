@@ -2,7 +2,7 @@
 name: module:assistant
 description: Add an AI assistant chat panel to any Laravel project — with tool calling, streaming, and MCP support
 version: 1.0.0
-model: claude-opus-4-6
+model: claude-opus-4-8
 requires: [composer, php, npm]
 tags: [laravel, assistant, ai, livewire, module]
 ---
@@ -340,7 +340,7 @@ class SendAssistantMessageAction
 
         // 2. Resolve provider (from settings or defaults)
         $provider = $provider ?? config('assistant.default_provider', 'anthropic');
-        $model = $model ?? config('assistant.default_model', 'claude-sonnet-4-5');
+        $model = $model ?? config('assistant.default_model', 'claude-sonnet-4-6');
 
         // 3. Detect local vs cloud provider
         $isLocal = in_array($provider, ['codex', 'claude-code']);

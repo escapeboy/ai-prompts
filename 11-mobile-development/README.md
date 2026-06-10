@@ -97,7 +97,7 @@ Claude Code Session
 | Requirement | Version |
 |-------------|---------|
 | **Claude Code** | All versions with MCP support |
-| **Models** | Opus 4.6, Sonnet 4.5, Haiku 4.5 |
+| **Models** | Fable 5, Opus 4.8/4.7/4.6, Sonnet 4.6, Haiku 4.5 |
 | **Xcode** | 16.0+ (iOS) |
 | **Android Studio** | 2025.2+ (Android, for JetBrains MCP) |
 | **Node.js** | 18+ (React Native, XcodeBuildMCP) |

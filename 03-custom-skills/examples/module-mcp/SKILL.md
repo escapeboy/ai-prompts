@@ -2,7 +2,7 @@
 name: module:mcp
 description: Add a Laravel MCP server to any project — full domain coverage with dual transport (HTTP + stdio)
 version: 1.0.0
-model: claude-opus-4-6
+model: claude-opus-4-8
 requires: [composer, php]
 tags: [laravel, mcp, ai, integration, module]
 ---

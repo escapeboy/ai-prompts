@@ -2,7 +2,7 @@
 
 **Run multiple Claude instances that coordinate autonomously on a shared codebase.**
 
-Agent Teams is an experimental feature (v2.1.32+, Opus 4.6 required) where one Claude session acts as team lead, spawns teammates, and all coordinate via git-based messaging without human intervention between steps.
+Agent Teams is an experimental feature (v2.1.32+, Opus 4.6 or newer required) where one Claude session acts as team lead, spawns teammates, and all coordinate via git-based messaging without human intervention between steps.
 
 ---
 
@@ -69,7 +69,7 @@ claude --version
 
 # Switch to Opus model inside Claude Code
 > /model opus
-# Expected: "Model changed to claude-opus-4-6"
+# Expected: "Model changed to claude-opus-4-8"
 ```
 
 ### Enable Feature Flag
@@ -349,4 +349,4 @@ After launching a team, use these controls:
 - [Security Hardening Guide](../13-security-hardening/guide.md) — Secure multi-agent setups
 - For persistent multi-agent orchestration beyond a single session (scheduled runs, cross-project coordination, supervisor/worker hierarchies), see [CLI Agent Orchestrator](https://github.com/awslabs/cli-agent-orchestrator) (tmux-based, self-hosted) or [agent-fleet-o](https://github.com/escapeboy/agent-fleet-o) / [FleetQ Cloud](https://fleetq.net) (managed fleet control with MCP integration)
 
-**Requirements**: Claude Code v2.1.32+, Opus 4.6 model, `CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1`
+**Requirements**: Claude Code v2.1.32+, Opus 4.6 or newer, `CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1`

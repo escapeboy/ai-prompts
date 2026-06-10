@@ -180,15 +180,16 @@ print(f"  Cost:   ${cost:.2f}")
 PYEOF
 ```
 
-### Pricing Reference (2026)
+### Pricing Reference (June 2026)
 
-| Model | Input | Output | Cache read |
-|-------|-------|--------|------------|
-| Opus 4.6 | $15/M | $75/M | $1.50/M |
-| Sonnet 4.5 | $3/M | $15/M | $0.30/M |
-| Haiku 4.5 | $0.80/M | $4/M | $0.08/M |
+| Model | Input | Output | Cache read (0.10×) |
+|-------|-------|--------|--------------------|
+| Fable 5 | $10/M | $50/M | $1/M |
+| Opus 4.8 / 4.7 / 4.6 | $5/M | $25/M | $0.50/M |
+| Sonnet 4.6 | $3/M | $15/M | $0.30/M |
+| Haiku 4.5 | $1/M | $5/M | $0.10/M |
 
-**Rule of thumb**: Medium task (new feature, ~8,500 tokens optimized) ≈ $0.26 on Sonnet 4.5.
+**Rule of thumb**: Medium task (new feature, ~8,500 tokens optimized) ≈ $0.26 on Sonnet 4.6.
 
 ---
 

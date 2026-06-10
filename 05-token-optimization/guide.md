@@ -41,8 +41,9 @@ Tokens are the units Claude uses to process text:
 
 | Model | Input | Output | Cache Read |
 |-------|-------|--------|------------|
-| Opus 4.5 | $5.00 | $25.00 | $0.50 (90% off) |
-| Sonnet 4.5 | $3.00 | $15.00 | $0.30 (90% off) |
+| Fable 5 | $10.00 | $50.00 | $1.00 (90% off) |
+| Opus 4.8 / 4.7 / 4.6 | $5.00 | $25.00 | $0.50 (90% off) |
+| Sonnet 4.6 | $3.00 | $15.00 | $0.30 (90% off) |
 | Haiku 4.5 | $1.00 | $5.00 | $0.10 (90% off) |
 
 ### Why Token Optimization Matters
@@ -586,16 +587,21 @@ After breakeven, all savings are pure benefit.
 
 ---
 
-## Claude 4.6 Token Levers (added 2026-04-16)
+## Claude 4.6+ Token Levers (added 2026-04-16, refreshed 2026-06-10 for Fable 5 / Opus 4.8 / 4.7)
 
-These capabilities shipped or graduated in the Claude 4.6 era. Each is a concrete token lever beyond the seven listed above.
+These capabilities shipped or graduated in the Claude 4.6–4.8 era. Each is a concrete token lever beyond the seven listed above.
 
 ### A. Adaptive thinking + `effort` (replaces `extended_thinking`)
 - `thinking: { type: "adaptive" }` — Claude decides per-turn whether and how much to think.
-- Pairs with the GA `effort` parameter: `low` / `medium` / `high` / **`max`** (new tier in 4.6).
-- `extended_thinking` with `thinking_budget_tokens` is **deprecated on Claude 4.6** and will be removed.
+- Pairs with the GA `effort` parameter: `low` / `medium` / `high` / **`xhigh`** (added in Opus 4.7 — the Claude Code default for coding/agentic work) / **`max`**. Default is `high` (equivalent to omitting it).
+- `extended_thinking` with `thinking_budget_tokens` was deprecated on Claude 4.6 and is **removed on Fable 5 / Opus 4.8 / 4.7 — sending `budget_tokens` returns a 400**. Sampling params (`temperature`, `top_p`, `top_k`) are also removed on those models.
 - Adaptive auto-enables interleaved thinking — the `interleaved-thinking-2025-05-14` beta header is no longer needed.
-- Token impact: drops thinking tokens to zero on simple turns; bumps depth when warranted. Use `effort: low` for chat/content, `effort: max` for security reviews / multi-option judgement.
+- On Fable 5 / Opus 4.8 / 4.7, thinking text is **omitted by default** in responses; opt in with `thinking: { type: "adaptive", display: "summarized" }` if you surface reasoning to users.
+- Token impact: drops thinking tokens to zero on simple turns; bumps depth when warranted. Use `effort: low` for chat/content, `effort: high`/`xhigh` for coding and agentic loops, `effort: max` for security reviews / multi-option judgement.
+
+### A2. Task Budgets (beta, Fable 5 / Opus 4.8 / 4.7)
+- `output_config: { task_budget: { type: "tokens", total: N } }` with beta header `task-budgets-2026-03-13` — tells the model how many tokens it has for a full agentic loop; it sees a running countdown and self-moderates (minimum 20,000).
+- Distinct from `max_tokens` (enforced per-response cap the model is not aware of). The primary lever for capping cumulative spend in multi-turn agent loops.
 
 ### B. Context editing (`context-management-2025-06-27` beta)
 - Server-side strategies that trim context **before** it's billed:
@@ -607,7 +613,8 @@ These capabilities shipped or graduated in the Claude 4.6 era. Each is a concret
 
 ### C. Server-side compaction
 - Auto-summarises older turns when nearing the context window. Anthropic explicitly recommends server-side over SDK compaction.
-- Effectively infinite conversations without client-side bookkeeping.
+- Beta header `compact-2026-01-12` + `context_management: { edits: [{ type: "compact_20260112" }] }` on Fable 5 / Opus 4.8 / 4.7 / 4.6 / Sonnet 4.6.
+- **Critical**: append the full `response.content` (not just the text) back into `messages` — compaction blocks must be preserved or the state is silently lost.
 - Token impact: replaces stale full-history with a concise summary the moment context pressure builds.
 
 ### D. Dynamic web filtering
@@ -619,8 +626,13 @@ These capabilities shipped or graduated in the Claude 4.6 era. Each is a concret
 - Reduces config drift and forgotten cache breakpoints. Cache hit pricing is `0.10× base input` regardless of TTL tier.
 
 ### F. Fast mode (premium, when latency matters)
-- `speed: "fast"` on Opus runs ~2.5× faster at $30 / $150 per MTok (vs. base $5 / $25). Same model, same intelligence.
+- `speed: "fast"` runs ~2.5× faster at $30 / $150 per MTok (vs. base $5 / $25). Same model, same intelligence. **API support is Opus 4.6 only** — Opus 4.7/4.8 have no fast variant.
 - **Not a token lever** — a latency lever. Use only when wall-clock matters more than $.
+
+### G. Mid-conversation system messages (beta, cache saver)
+- Beta header `mid-conversation-system-2026-04-07` (Opus 4.7+): append `{ "role": "system", ... }` to `messages[]` instead of editing the top-level system prompt.
+- Editing top-level `system` invalidates the cached prefix for the entire conversation; a mid-conversation system message sits after the cached history and invalidates nothing.
+- Token impact: preserves 90%-discounted cache reads across mode switches and injected context in long sessions.
 
 ### Drop list (no-op or deprecated, remove from any client config)
 - `token-efficient-tools-2025-02-19`

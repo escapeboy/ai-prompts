@@ -87,7 +87,7 @@ Claude Code Session
 | Requirement | Version |
 |-------------|---------|
 | **Claude Code** | All versions with MCP support |
-| **Models** | Opus 4.6, Sonnet 4.5, Haiku 4.5 |
+| **Models** | Fable 5, Opus 4.8/4.7/4.6, Sonnet 4.6, Haiku 4.5 |
 | **Xcode** | 16.0+ (macOS native) |
 | **Rust** | 1.77+ (Tauri) |
 | **Tauri CLI** | 2.x (Tauri) |

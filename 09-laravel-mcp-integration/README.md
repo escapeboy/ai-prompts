@@ -100,4 +100,4 @@ Claude Code Session
 - **Laravel**: 11.x, 12.x
 - **PHP**: 8.2+
 - **Claude Code**: All versions with MCP support
-- **Models**: Opus 4.6, Sonnet 4.5, Haiku 4.5
+- **Models**: Fable 5, Opus 4.8/4.7/4.6, Sonnet 4.6, Haiku 4.5
