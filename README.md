@@ -619,7 +619,14 @@ These prompts are project-agnostic and can be freely shared, modified, and adapt
 - Fast mode caveat: `speed: "fast"` API param is Opus 4.6-only; no fast variant on 4.7/4.8
 - All `claude-opus-4-6` example/frontmatter references bumped to `claude-opus-4-8`; stray `claude-sonnet-4-5` default bumped to `claude-sonnet-4-6`
 
-### v1.14.0 (2026-03-31)
+### v1.15.0 (2026-03-31)
+**Added**: Source-informed improvements from analysis of Claude Code's actual system prompt architecture
+- 4 new MANDATORY sections for the global CLAUDE.md template: Code Discipline, Faithful Reporting, Communication Protocol, Action Safety
+- Memory type system (user/feedback/project/reference) with "what NOT to save" exclusion list in 02-project-activation
+- Cache-friendly prompt ordering (static/dynamic boundary pattern) in 05-token-optimization
+- Subagent advanced patterns: fork context protection, read-only agent template, anti-delegation rule
+- Output style skill examples (explanatory, audit, teaching) in 03-custom-skills
+
 **Added**: Sprint lifecycle patterns inspired by [gstack](https://github.com/garrytan/gstack) analysis
 - `/retro` skill — sprint retrospective with git analytics, per-author breakdowns, shipping streaks
 - Sprint orchestration guide — Think → Plan → Build → Review → Test → Ship → Reflect pipeline
@@ -637,6 +644,17 @@ These prompts are project-agnostic and can be freely shared, modified, and adapt
 - Savings benchmarks: 94-99.9% context reduction vs raw tool output
 
 **Updated**: README.md — added context-mode to Related Tools, bumped to v1.13.0
+
+### v1.12.0 (2026-03-27)
+**Added**: Hooks library, production agents & agent-team skill
+- "Production Hook Library" section in 13-security-hardening — `dangerous-actions-blocker.sh`, `pre-commit-secrets.sh`, `smart-suggest.sh` with matcher-based `settings.json` registration and `exit 2` vs `exit 0` semantics
+- "/agent-team Skill" section in agent-teams guide — 4 preset modes (`pr-review`, `debug`, `feature`, `custom`), feature flag via `settings.json` env block, navigation shortcuts
+- "Production Agents (Real Examples)" section in 10-subagents — `plan-challenger` (adversarial plan review), `output-evaluator` (LLM-as-Judge verdict gate), `loop-monitor` (autonomous session watchdog)
+
+### v1.11.0 (2026-03-26)
+**Updated**: New subagent and skill frontmatter fields from Claude Code v2.0.43–v2.1.83
+- Subagents: `disallowedTools`, `permissionMode`, `background`, `isolation: "worktree"`, `effort`, `maxTurns`, `hooks`, `memory`, `initialPrompt`, `skills`, full model IDs in `model:`
+- Skills: `context: fork`, `agent`, `user-invocable: false`, `effort`, `allowed-tools` wildcard syntax, `$0`/`$1` argument shorthand, `${CLAUDE_SESSION_ID}` and `${CLAUDE_SKILL_DIR}` variables
 
 ### v1.10.0 (2026-03-21)
 **Added**: `/content-review` skill (07-custom-commands/content-review.md)
@@ -656,6 +674,44 @@ These prompts are project-agnostic and can be freely shared, modified, and adapt
 - 89% token savings vs screenshot-based approaches
 
 **Updated**: README.md — added 14-webmcp section, bumped to v1.9.0
+
+### v1.8.0 (2026-03-20)
+**Fixed**: Critical audit of `~/.claude/` setup — identified files Claude Code never reads
+- `~/.claude/system-prompts/` is NOT loaded by Claude Code — migrated content to `~/.claude/CLAUDE.md` (which IS loaded globally)
+- `~/.claude/settings/*.json` files (prompt-caching, beta-features, model-strategy, token-optimization) are reference docs only, not active config
+- Removed 13 duplicate skill copies from `~/.claude/settings/` (already in `~/.claude/skills/`)
+- Removed 15 misplaced .md files from `~/.claude/settings/` (agent/command copies)
+- Removed dead docs from `~/.claude/` root (README.md, QUICK-REFERENCE.md, INSTALLATION-COMPLETE.md)
+- Updated all model IDs: `claude-opus-4-6`, `claude-sonnet-4-6`, `claude-haiku-4-5-20251001`
+
+**Added**: Important compatibility notice in `01-global-optimization/guide.md` explaining what Claude Code actually reads from `~/.claude/`
+
+**Updated**: `CLAUDE.md` — corrected architecture description and model compatibility
+
+### v1.7.1 (2026-03-20)
+**Added**: Git isolation with Worktrunk section in `06-advanced-patterns/parallel-agents-guide.md`
+- [Worktrunk](https://worktrunk.dev/) CLI integration for running parallel Claude agents in isolated git worktrees
+- Installation guide, core commands, Claude Code parallel workflow example
+- Hooks integration and decision table (when to use worktrees vs in-process parallelism)
+- Added Worktrunk to Related Tools in README
+
+### v1.7.0 (2026-03-18)
+**Fixed**: Critical content gaps in `01-global-optimization/` (reported in issue #1)
+
+**Added**: Complete SKILL.md files for all 5 global skills (previously placeholder text):
+- `/optimize` — task complexity analysis, planning strategy selection, model routing, metrics reporting
+- `/context` — full memory management (load, save, refresh, list, inspect, clear) with token savings docs
+- `/cache-inspector` — cache hit rate analysis, cost breakdown, optimization recommendations
+- `/update-docs` — web research + doc comparison + targeted update workflow
+- `/init-project` — full stack detection, constitution generation, memory creation, per-framework support
+
+**Added**: Complete system prompt files (previously placeholder text):
+- `global-optimization.md` — all mandatory/automatic optimization rules ready to copy to `~/.claude/`
+- `symbol-first-protocol.md` — complete symbol-first protocol with patterns, examples, token savings table
+
+**Fixed**: `setup-agent.md` no longer has circular references — now points to actual files in repo
+**Fixed**: `03-custom-skills/guide.md` now references `pwa.md` example
+**Fixed**: `04-research-integration/guide.md` now links to `sources.md`
 
 ### v1.6.0 (2026-03-09)
 **Added**: Security Hardening Section (13-security-hardening/)
@@ -698,44 +754,6 @@ These prompts are project-agnostic and can be freely shared, modified, and adapt
   - Three provider strategies: cloud (native tools), Claude Code (`<tool_call>` loop), Codex (MCP native)
   - System prompt architecture with domain description, user context, and tool schemas
   - Based on Agent Fleet reference implementation (streaming, optimistic UI, local agents)
-
-### v1.8.0 (2026-03-20)
-**Fixed**: Critical audit of `~/.claude/` setup — identified files Claude Code never reads
-- `~/.claude/system-prompts/` is NOT loaded by Claude Code — migrated content to `~/.claude/CLAUDE.md` (which IS loaded globally)
-- `~/.claude/settings/*.json` files (prompt-caching, beta-features, model-strategy, token-optimization) are reference docs only, not active config
-- Removed 13 duplicate skill copies from `~/.claude/settings/` (already in `~/.claude/skills/`)
-- Removed 15 misplaced .md files from `~/.claude/settings/` (agent/command copies)
-- Removed dead docs from `~/.claude/` root (README.md, QUICK-REFERENCE.md, INSTALLATION-COMPLETE.md)
-- Updated all model IDs: `claude-opus-4-6`, `claude-sonnet-4-6`, `claude-haiku-4-5-20251001`
-
-**Added**: Important compatibility notice in `01-global-optimization/guide.md` explaining what Claude Code actually reads from `~/.claude/`
-
-**Updated**: `CLAUDE.md` — corrected architecture description and model compatibility
-
-### v1.7.1 (2026-03-20)
-**Added**: Git isolation with Worktrunk section in `06-advanced-patterns/parallel-agents-guide.md`
-- [Worktrunk](https://worktrunk.dev/) CLI integration for running parallel Claude agents in isolated git worktrees
-- Installation guide, core commands, Claude Code parallel workflow example
-- Hooks integration and decision table (when to use worktrees vs in-process parallelism)
-- Added Worktrunk to Related Tools in README
-
-### v1.7.0 (2026-03-18)
-**Fixed**: Critical content gaps in `01-global-optimization/` (reported in issue #1)
-
-**Added**: Complete SKILL.md files for all 5 global skills (previously placeholder text):
-- `/optimize` — task complexity analysis, planning strategy selection, model routing, metrics reporting
-- `/context` — full memory management (load, save, refresh, list, inspect, clear) with token savings docs
-- `/cache-inspector` — cache hit rate analysis, cost breakdown, optimization recommendations
-- `/update-docs` — web research + doc comparison + targeted update workflow
-- `/init-project` — full stack detection, constitution generation, memory creation, per-framework support
-
-**Added**: Complete system prompt files (previously placeholder text):
-- `global-optimization.md` — all mandatory/automatic optimization rules ready to copy to `~/.claude/`
-- `symbol-first-protocol.md` — complete symbol-first protocol with patterns, examples, token savings table
-
-**Fixed**: `setup-agent.md` no longer has circular references — now points to actual files in repo
-**Fixed**: `03-custom-skills/guide.md` now references `pwa.md` example
-**Fixed**: `04-research-integration/guide.md` now links to `sources.md`
 
 ### v1.4.0 (2026-02-14)
 **Added**: Desktop Development Section (12-desktop-development/)

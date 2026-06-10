@@ -125,33 +125,52 @@ All notable changes to this library are documented here.
 
 ---
 
+## [1.13.0] — 2026-03-28
+
+### Added
+
+**15-context-mode/** (new section) — context-mode MCP plugin guide
+
+- Installation via Claude Code plugin (`/plugin marketplace add mksglu/context-mode`) and MCP-only mode
+- Tool reference: `ctx_batch_execute`, `ctx_search`, `ctx_execute`, `ctx_execute_file`, `ctx_fetch_and_index`, `ctx_index`
+- Mandatory tool selection hierarchy (Tier 1 → Tier 2 → Tier 3) and forbidden patterns
+- Session continuity: SQLite FTS5 event capture, `--continue` restoration across compaction
+- Integration matrix with Serena, memory system, prompt caching, and Agent Teams
+- Savings benchmarks: 94-99.9% context reduction vs raw tool output
+
+### Updated
+
+- `README.md` — added context-mode to Related Tools, bumped to v1.13.0
+
+---
+
 ## [1.12.0] — 2026-03-27
 
 ### Added
 
-**13-security-hardening/guide.md** — нова секция "Production Hook Library" (секция 8)
+**13-security-hardening/guide.md** — new section "Production Hook Library" (section 8)
 
-- Пълна файлова структура: `~/.claude/hooks/` с 3 bash скрипта
-- `settings.json` регистрация с matcher-based формат (нов в Claude Code)
-- `dangerous-actions-blocker.sh` — PreToolUse (всички tools): блокира `rm -rf /`, `DROP TABLE`, force push към main, protected files
-- `pre-commit-secrets.sh` — PreToolUse (Bash): сканира staged файлове за API ключове преди `git commit`
-- `smart-suggest.sh` — UserPromptSubmit: предлага правилния инструмент на базата на prompt intent (1 suggestion max, silent on no match)
-- Обяснение на `exit 2` vs `exit 0` семантиката и `async: true` за Stop hooks
-- PostToolUse hook примери: PHP syntax check, migration safety warning, .env guard
+- Full file structure: `~/.claude/hooks/` with 3 bash scripts
+- `settings.json` registration with matcher-based format (new in Claude Code)
+- `dangerous-actions-blocker.sh` — PreToolUse (all tools): blocks `rm -rf /`, `DROP TABLE`, force push to main, protected files
+- `pre-commit-secrets.sh` — PreToolUse (Bash): scans staged files for API keys before `git commit`
+- `smart-suggest.sh` — UserPromptSubmit: suggests the right tool based on prompt intent (1 suggestion max, silent on no match)
+- Explanation of `exit 2` vs `exit 0` semantics and `async: true` for Stop hooks
+- PostToolUse hook examples: PHP syntax check, migration safety warning, .env guard
 
-**06-advanced-patterns/agent-teams-guide.md** — нова секция 7 "/agent-team Skill (Recommended)"
+**06-advanced-patterns/agent-teams-guide.md** — new section 7 "/agent-team Skill (Recommended)"
 
-- `/agent-team` skill като препоръчан начин за стартиране на agent teams (вместо ad-hoc prompts)
-- 4 preset режима: `pr-review`, `debug`, `feature`, `custom`
-- Feature flag чрез `settings.json env` блок (не само environment variable)
-- Навигационна таблица: `Shift+Down`, `Ctrl+T`, `Escape`
-- Skill поведение: confirm → warn cost → brief teammates → wait → synthesize → cleanup
+- `/agent-team` skill as the recommended way to launch agent teams (instead of ad-hoc prompts)
+- 4 preset modes: `pr-review`, `debug`, `feature`, `custom`
+- Feature flag via `settings.json env` block (not just an environment variable)
+- Navigation table: `Shift+Down`, `Ctrl+T`, `Escape`
+- Skill behavior: confirm → warn cost → brief teammates → wait → synthesize → cleanup
 
-**10-subagents/guide.md** — нова секция "Production Agents (Real Examples)"
+**10-subagents/guide.md** — new section "Production Agents (Real Examples)"
 
-- `plan-challenger` (Opus) — adversarial plan review по 5 измерения с refutation check. Laravel-специфични проверки включени
-- `output-evaluator` (Haiku) — LLM-as-Judge: APPROVE/NEEDS_REVIEW/REJECT verdict преди commit
-- `loop-monitor` (Haiku) — watchdog за автономни сесии: stall/runaway/loop detection с bash integration пример
+- `plan-challenger` (Opus) — adversarial plan review across 5 dimensions with refutation check. Laravel-specific checks included
+- `output-evaluator` (Haiku) — LLM-as-Judge: APPROVE/NEEDS_REVIEW/REJECT verdict before commit
+- `loop-monitor` (Haiku) — watchdog for autonomous sessions: stall/runaway/loop detection with bash integration example
 
 ### Updated
 
@@ -163,7 +182,7 @@ All notable changes to this library are documented here.
 
 ### Updated
 
-**10-subagents/guide.md** — нови frontmatter полета от v2.0.43–v2.1.83
+**10-subagents/guide.md** — new frontmatter fields from v2.0.43–v2.1.83
 
 - `disallowedTools` — explicitly block tools incl. `Task(AgentName)` syntax
 - `permissionMode` — `default` / `acceptEdits` / `plan` / `bypassPermissions`
@@ -176,9 +195,9 @@ All notable changes to this library are documented here.
 - `initialPrompt` — auto-submit first turn on agent start (v2.1.83)
 - `skills` — skills to auto-load for this agent (v2.0.43)
 - Full model IDs accepted in `model:` field (e.g. `claude-sonnet-4-6`) (v2.1.74)
-- Full-featured example с всички нови полета добавен
+- Full-featured example with all new fields added
 
-**03-custom-skills/guide.md** — нови frontmatter полета и variables
+**03-custom-skills/guide.md** — new frontmatter fields and variables
 
 - `context: fork` — run in isolated forked sub-agent (v2.1.0)
 - `agent` — delegate execution to specific agent type (v2.1.0)
@@ -186,7 +205,7 @@ All notable changes to this library are documented here.
 - `effort` — override model effort level per skill (v2.1.76)
 - `allowed-tools` — YAML list syntax + wildcard `mcp__server__*` (v2.1.0)
 - `hooks` — hooks scoped to skill run (v2.0.43)
-- Arguments: `$0`, `$1` shorthand (v2.1.19) и `$ARGUMENTS[N]` bracket syntax
+- Arguments: `$0`, `$1` shorthand (v2.1.19) and `$ARGUMENTS[N]` bracket syntax
 - Variables: `${CLAUDE_SESSION_ID}` (v2.1.9), `${CLAUDE_SKILL_DIR}` (v2.1.69)
 
 ### Updated

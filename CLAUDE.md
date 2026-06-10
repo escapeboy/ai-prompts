@@ -55,3 +55,14 @@ The library follows a sequential learning path (01 through 14), where each direc
 - Keep the numbered directory ordering consistent (don't renumber)
 - Update the version history in `README.md` when adding new sections or making significant changes
 - Cross-reference related guides when adding new content (e.g., link from a new skill to `03-custom-skills/guide.md`)
+
+## Releasing
+
+Every version bump produces four artifacts, kept in sync:
+
+1. **CHANGELOG.md** — full entry (`## [X.Y.Z] — YYYY-MM-DD` with Added/Updated sections)
+2. **README.md** — "Version History" entry + footer `**Version**:` bump; also bump the `current: vX.Y.Z` line in this file
+3. **Annotated git tag** — `git tag -a vX.Y.Z -m "vX.Y.Z — <theme>"`, pushed with `--follow-tags`
+4. **GitHub Release** — `gh release create vX.Y.Z --verify-tag --title "vX.Y.Z — <Theme>" --notes-file <file>`, where the notes file is that version's CHANGELOG section body
+
+Before publishing, sweep changed files for private references (personal project names, hostnames, usernames, local paths) — this is a public repo.
