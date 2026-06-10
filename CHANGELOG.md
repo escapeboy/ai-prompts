@@ -4,6 +4,45 @@ All notable changes to this library are documented here.
 
 ---
 
+## [1.17.0] — 2026-06-10
+
+### Added
+
+**Production patterns from real usage** — distilled from ~3 months / ~450 Claude Code sessions; everything sanitized (no personal projects, hostnames, or infrastructure details):
+
+- **16-autonomous-agents/** (new section) — `guide.md` (cron journaling agent with idempotent in-place note editing, heartbeat watchdog protocol, watchdog detection heuristics, `/loop`, anti-pattern table), `heartbeat-template.md` (copy-paste protocol file), `session-summary-hook.py` (Stop hook: Haiku session summaries → daily note)
+- **13-security-hardening/hooks/** — hooks library as real files: `dangerous-actions-blocker.sh`, `pre-commit-secrets.sh`, README with settings.json wiring + PreToolUse contract
+- **01-global-optimization/hooks/** — productivity hooks: `check-package-latest.sh` (registry lookup on package installs), `session-start-memory-load.sh` (cwd-mapped memory injection), README with production design rules
+- **06-advanced-patterns/headless-review-fanout-guide.md** — diff-scoped parallel review pipeline: worktree per branch, 4–6 lens-sharded headless sessions, structured JSON findings, dedupe + adversarial verify pass
+- **06-advanced-patterns/cross-project-delegation-guide.md** — concept: MCP message bus between project-scoped agents (12-tool surface: delegate/await/ask/fan-out/clarify/recall)
+- **03-custom-skills/skill-taxonomy-guide.md** — three-layer architecture for 40+ skill families (methodology orchestrator → dispatcher → leaf skills + gates), uniform leaf conventions, dated-backup versioning, when-to-split signals
+- **03-custom-skills/examples/** — 5 new full skill examples: `fix-bug`, `git-sync-branches`, `image-optimize`, `compliance-audit`, `onepassword-integrate`
+- **10-subagents/examples/** — 4 new agent definitions: `loop-monitor`, `output-evaluator`, `plan-challenger`, `self-review`
+
+### Updated
+
+- **01-global-optimization/system-prompts/global-optimization.md** — ported 11 sections that previously existed only as changelog descriptions or weren't documented at all: Code Discipline, Faithful Reporting, Code Changes (rename/removal discipline), Bug Fix Completeness, Background Delegation, Communication Protocol, Action Safety, Worktree Isolation, Auto-Memory, Recurring Tasks, Effort Levels
+- **02-project-activation/guide.md** — Memory Hygiene & Garbage Collection section: write discipline (durable-facts-only, append-don't-create, immediate deletion of wrong memories), monthly GC pass, feature-inventory sync
+- **04-research-integration/guide.md** — Evaluating External Code & Vendor Contributions: license-compatibility gate (incl. AGPL/SSPL concept-only rule), 4-step procedure for unsolicited vendor audit PRs
+- **README.md** — 16-autonomous-agents TOC section, hooks library links, bumped to 1.17.0
+
+---
+
+## [1.16.0] — 2026-06-10
+
+### Updated
+
+**Model lineup refresh** — docs were last synced in the Claude 4.6 era; current lineup is Fable 5 / Opus 4.8 / Opus 4.7 / Sonnet 4.6 / Haiku 4.5:
+
+- **README.md** — compatibility line now lists Fable 5 (`claude-fable-5`), Opus 4.8 (`claude-opus-4-8`), Opus 4.7 (`claude-opus-4-7`); version bumped to 1.16.0
+- **06-advanced-patterns/observability-guide.md** — corrected pricing table: Opus 4.x is $5/$25 per MTok (was wrongly listed as $15/$75), Haiku 4.5 is $1/$5 (was $0.80/$4); added Fable 5 ($10/$50) and Sonnet 4.6 rows
+- **01-global-optimization/system-prompts/global-optimization.md** — added Fable 5 tier to model-selection table; fast-mode note now flags `speed: "fast"` as Opus 4.6-only
+- **05-token-optimization/guide.md** — token-levers section refreshed: `budget_tokens` and sampling params **removed (400)** on Fable 5 / Opus 4.8 / 4.7; `effort: xhigh` (Claude Code default for coding); thinking display omitted by default on 4.7+; new levers — Task Budgets (`task-budgets-2026-03-13`), compaction header (`compact-2026-01-12`), mid-conversation system messages (`mid-conversation-system-2026-04-07`)
+- **04-research-integration/sources.md** — key-articles list points at platform.claude.com models overview + migration guide; beta-headers table gained `compact-2026-01-12`, `task-budgets-2026-03-13`, `mid-conversation-system-2026-04-07`
+- **Model ID sweep** — `claude-opus-4-6` → `claude-opus-4-8` in skill frontmatter (03), settings examples (01), agent-teams guide (06), and research examples (04); `claude-sonnet-4-5` default → `claude-sonnet-4-6` in module-assistant example. Sonnet 4.6 / Haiku 4.5 references unchanged (still current).
+
+---
+
 ## [1.15.0] — 2026-03-31
 
 ### Added

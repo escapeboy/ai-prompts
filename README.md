@@ -80,7 +80,7 @@ This library contains reusable prompts for implementing global Claude Code optim
 **Advanced techniques for complex scenarios**
 
 - **[parallel-agents-guide.md](06-advanced-patterns/parallel-agents-guide.md)** - Multi-agent coordination via Task tool + git isolation with [Worktrunk](https://worktrunk.dev/)
-- **[agent-teams-guide.md](06-advanced-patterns/agent-teams-guide.md)** - Native Agent Teams (v2.1.32+, Opus 4.6) — autonomous peer-to-peer coordination on shared codebases; includes `/agent-team` skill with `pr-review`, `debug`, `feature`, `custom` presets
+- **[agent-teams-guide.md](06-advanced-patterns/agent-teams-guide.md)** - Native Agent Teams (v2.1.32+, Opus 4.6+) — autonomous peer-to-peer coordination on shared codebases; includes `/agent-team` skill with `pr-review`, `debug`, `feature`, `custom` presets
 - **[checkpoint-system-guide.md](06-advanced-patterns/checkpoint-system-guide.md)** - Save/resume workflows
 - **[constitution-guide.md](06-advanced-patterns/constitution-guide.md)** - Architectural decision frameworks
 - **[observability-guide.md](06-advanced-patterns/observability-guide.md)** - Session monitoring, cost tracking, usage pattern analysis
@@ -211,11 +211,31 @@ This library contains reusable prompts for implementing global Claude Code optim
   - 6 production safety rules with `settings.json` + hook implementations
   - `permissions.deny` hardening templates (global + project-level)
   - Agent Skills supply chain risks and scanning
-  - **Production Hook Library** (`~/.claude/hooks/`): `dangerous-actions-blocker.sh`, `pre-commit-secrets.sh`, `smart-suggest.sh` — copy-paste ready with matcher-based `settings.json` registration
+- **[hooks/](13-security-hardening/hooks/)** - Production hook library (actual scripts, copy-paste ready)
+  - `dangerous-actions-blocker.sh` — blocks rm -rf /-class commands, force-push to main, DROP TABLE, edits to key files
+  - `pre-commit-secrets.sh` — scans staged content for API keys / private keys / DB URLs before every `git commit`
+  - README with `settings.json` wiring and the PreToolUse hook contract
+  - Productivity hooks (package-version checker, session-start memory loader) live in [01-global-optimization/hooks/](01-global-optimization/hooks/)
 
 **Use when**: Team environments, production codebases, regulated industries, before adding new MCP servers
 **Benefit**: Prevent data exfiltration, block destructive operations, audit MCP supply chain
 **Time**: 15-30 minutes for initial hardening; 5 minutes per new MCP added
+
+### [16-autonomous-agents](16-autonomous-agents/)
+**Run Claude Code unattended — cron agents, heartbeat watchdogs, and session journaling**
+
+- **[guide.md](16-autonomous-agents/guide.md)** - Autonomous & scheduled agents guide
+  - The three primitives: headless cron runs, `/loop`, and hooks — and when each applies
+  - Daily journaling agent recipe (~120 production runs/month): idempotent in-place note editing, replace-vs-append sections, self-contained cron briefs
+  - Heartbeat watchdog protocol: exact `HEARTBEAT_OK` token, 200-token failure budget, probe allowlist — born from sessions killed for drifting into investigations
+  - Watchdog patterns: stall / token-runaway / repeated-action-loop detection
+  - Anti-pattern table — each entry cost a real incident
+- **[heartbeat-template.md](16-autonomous-agents/heartbeat-template.md)** - Copy-paste HEARTBEAT protocol file
+- **[session-summary-hook.py](16-autonomous-agents/session-summary-hook.py)** - Stop hook: Haiku-summarized session entries appended to a daily note (~$0.001/session)
+
+**Use when**: Scheduled health checks, automated journaling, any unattended Claude Code run
+**Benefit**: Agents that complete within budget instead of drifting; a daily work journal nobody has to write
+**Time**: 30-60 minutes for the first cron agent
 
 ---
 
@@ -567,13 +587,37 @@ These prompts are project-agnostic and can be freely shared, modified, and adapt
 ---
 
 **Created**: 2026-01-04
-**Last Updated**: 2026-03-28
-**Version**: 1.13.0
-**Compatibility**: Claude Code v2.1.32+, Claude API (Opus 4.6: `claude-opus-4-6`, Sonnet 4.6: `claude-sonnet-4-6`, Haiku 4.5: `claude-haiku-4-5-20251001`)
+**Last Updated**: 2026-06-10
+**Version**: 1.17.0
+**Compatibility**: Claude Code v2.1.32+, Claude API (Fable 5: `claude-fable-5`, Opus 4.8: `claude-opus-4-8`, Opus 4.7: `claude-opus-4-7`, Sonnet 4.6: `claude-sonnet-4-6`, Haiku 4.5: `claude-haiku-4-5`)
 
 ---
 
 ## 📝 Version History
+
+### v1.17.0 (2026-06-10)
+**Added**: Production patterns distilled from 3 months / ~450 sessions of real Claude Code work (all content sanitized — no personal projects, hosts, or infrastructure)
+- **16-autonomous-agents/** — new section: cron journaling agent recipe, heartbeat watchdog protocol (`HEARTBEAT_OK` token + budget design), watchdog detection patterns, `/loop` usage, copy-paste heartbeat template + session-summary Stop hook
+- **Hooks as actual files** — `13-security-hardening/hooks/` (dangerous-actions-blocker, pre-commit-secrets) and `01-global-optimization/hooks/` (check-package-latest, session-start-memory-load), each with settings.json wiring and design notes
+- **06-advanced-patterns/headless-review-fanout-guide.md** — diff-scoped parallel reviewers in worktrees with structured output + adversarial verify pass (caught a real cross-tenant IDOR in production use)
+- **06-advanced-patterns/cross-project-delegation-guide.md** — concept guide: MCP message bus between project-scoped agents (delegation, fan-out Q&A, clarification loop)
+- **03-custom-skills/skill-taxonomy-guide.md** — designing families of 40+ skills: methodology → dispatcher → leaf skills → validation gates, dated-backup versioning, token economics
+- **5 new skill examples** in 03: `fix-bug` (three-phase), `git-sync-branches` (submodule-aware), `image-optimize`, `compliance-audit`, `onepassword-integrate`
+- **4 new subagent examples** in 10: `loop-monitor` (watchdog), `output-evaluator` (LLM-as-Judge gate), `plan-challenger` (adversarial + refutation), `self-review`
+
+**Updated**:
+- **01 global template** — ported 11 battle-tested sections: Code Discipline, Faithful Reporting, rename/removal discipline, bug-fix completeness, background delegation, communication protocol, action safety, worktree isolation, auto-memory, recurring tasks, effort levels
+- **02-project-activation** — new Memory Hygiene & GC section (append-don't-create, durable-facts-only, periodic GC, feature-inventory sync)
+- **04-research-integration** — new section: license-compatibility gate (AGPL/SSPL blockers) + evaluating unsolicited vendor audit PRs
+
+### v1.16.0 (2026-06-10)
+**Updated**: Model lineup refresh for the Fable 5 / Opus 4.8 era
+- New model tier documented: Fable 5 (`claude-fable-5`, $10/$50 per MTok); Opus 4.8/4.7 (`claude-opus-4-8`/`-4-7`, $5/$25, 1M context) replace Opus 4.6 as the recommended Opus
+- Fixed wrong pricing in observability guide (Opus listed at $15/$75 → actual $5/$25; Haiku $0.80/$4 → $1/$5)
+- Opus 4.7+ breaking changes documented: `budget_tokens` and `temperature`/`top_p`/`top_k` removed (400), thinking text omitted by default (`display: "summarized"` to opt in), `effort: xhigh` added
+- New token levers in 05: Task Budgets beta (`task-budgets-2026-03-13`), server-side compaction header (`compact-2026-01-12`), mid-conversation system messages (`mid-conversation-system-2026-04-07`)
+- Fast mode caveat: `speed: "fast"` API param is Opus 4.6-only; no fast variant on 4.7/4.8
+- All `claude-opus-4-6` example/frontmatter references bumped to `claude-opus-4-8`; stray `claude-sonnet-4-5` default bumped to `claude-sonnet-4-6`
 
 ### v1.14.0 (2026-03-31)
 **Added**: Sprint lifecycle patterns inspired by [gstack](https://github.com/garrytan/gstack) analysis
@@ -624,7 +668,7 @@ These prompts are project-agnostic and can be freely shared, modified, and adapt
 - Incident response playbook
 
 **Added**: Agent Teams Guide (06-advanced-patterns/agent-teams-guide.md)
-- Native experimental feature (v2.1.32+, Opus 4.6, `CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1`)
+- Native experimental feature (v2.1.32+, Opus 4.6+, `CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1`)
 - Architecture: peer-to-peer messaging, git-based locking, isolated 1M-token contexts per agent
 - Decision matrix: Agent Teams vs Parallel Agents vs Dual-Instance vs Multi-Instance
 - 4 copy-paste patterns: pre-release review, security PR review, multi-file doc update, parallel refactor

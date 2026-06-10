@@ -67,7 +67,7 @@ The "unknown frontmatter key warnings" come from Tessl's *own* linter, not from 
 **Verdict**: 🔴 **False for Claude Code.** `<scope>:<name>` is an official Claude Code pattern.
 
 **Evidence**:
-- The active Claude Code session this report is being written in lists ~300 skills, at least 100 of which use `<scope>:<name>`: `sc:agent`, `sc:implement`, `commit-commands:commit`, `commit-commands:commit-push-pr`, `sentry:getIssues`, `sentry:seer`, `stripe:explain-error`, `context-mode:ctx-doctor`, `compound-engineering:ce-review`, `feature-dev:feature-dev`, `worktrunk:worktrunk`, `katsarov-dotclaude:pinporn-pipeline`, etc.
+- The active Claude Code session this report is being written in lists ~300 skills, at least 100 of which use `<scope>:<name>`: `sc:agent`, `sc:implement`, `commit-commands:commit`, `commit-commands:commit-push-pr`, `sentry:getIssues`, `sentry:seer`, `stripe:explain-error`, `context-mode:ctx-doctor`, `compound-engineering:ce-review`, `feature-dev:feature-dev`, `worktrunk:worktrunk`, `my-dotclaude:deploy-pipeline`, etc.
 - Plugins **register** their skills under the plugin namespace using the colon. Renaming `module:assistant` to `module-assistant` breaks the user's implicit namespacing design (these are *Laravel module examples* — the `module:` prefix is a deliberate namespace for that family).
 - The only source that considers the colon "invalid" is Tessl's rubric.
 

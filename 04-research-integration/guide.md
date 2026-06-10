@@ -318,7 +318,7 @@ Searches web for latest information on a topic.
 **Examples**:
 ```
 /update-docs research prompt-caching
-/update-docs research claude-opus-4-6
+/update-docs research claude-opus-4-8
 /update-docs research token-efficient-tools
 /update-docs research all              # Comprehensive research
 ```
@@ -527,6 +527,37 @@ After updating:
 - [ ] Validate existing features
 - [ ] Document changes
 - [ ] Update changelog
+
+---
+
+## Evaluating External Code & Vendor Contributions
+
+Research often surfaces external repos and tools worth borrowing from — and occasionally, third parties contribute unsolicited "audit" or "optimization" PRs to your own repos. Both need a gate before anything is merged or copied.
+
+### License-compatibility gate (before borrowing code)
+
+When deep-evaluating an external repo, check the license **before** studying the implementation closely:
+
+| License | What you may do |
+|---------|-----------------|
+| MIT, Apache-2.0, BSD | Copy/adapt with attribution; Apache adds patent-grant and NOTICE requirements |
+| MPL-2.0, LGPL | Use as dependency freely; modifications to *their* files stay open |
+| GPL | Viral — linking/embedding makes your project GPL; usually a blocker for proprietary code |
+| AGPL, SSPL | Hard blocker for SaaS — network use counts as distribution. **Do not copy code. Do not closely paraphrase.** Learn the *concepts* and reimplement independently from your own design |
+| No license | All rights reserved — treat as AGPL-level blocker |
+
+Practical workflow: read the architecture and ideas at concept level first; only open implementation files once the license allows reuse. This prevents accidental contamination ("I already saw exactly how they did it") on AGPL-class projects.
+
+### Evaluating unsolicited vendor audit/optimization PRs
+
+A recurring pattern: an automated vendor opens a PR against your public repo claiming spec-compliance fixes or optimizations. Do not rubber-stamp, do not reflexively close. The reliable procedure:
+
+1. **Verify every claim against the official spec/docs** — not against the vendor's framing. Some claims check out, many are stylistic or wrong for your context.
+2. **Separate factual fixes from opinion** — "this field name is invalid per the spec" (verifiable) vs "this prompt would read better as…" (taste).
+3. **Cherry-pick by hand** — re-implement the verified fixes as your own commits rather than merging the PR. You keep authorship clarity, avoid bundled changes you didn't review, and avoid implicitly endorsing the tool.
+4. **Close politely with a summary** — note what was adopted and why the PR itself wasn't merged.
+
+The same procedure applies to "AI-generated improvement" issues and automated dependency-bump PRs that touch more than the lockfile.
 
 ---
 

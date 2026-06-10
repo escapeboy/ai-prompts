@@ -100,12 +100,13 @@ Use the cheapest model that produces acceptable quality:
 | Requirements, task decomposition, simple formatting | Haiku | $1/$5 per M tokens |
 | Implementation, design, testing, orchestration | Sonnet | $3/$15 per M tokens |
 | Security reviews, architectural decisions, judge eval (3+ options) | Opus | $5/$25 per M tokens |
+| Hardest long-horizon work where Opus demonstrably falls short | Fable 5 | $10/$50 per M tokens |
 
 **Target distribution**: 40% Haiku / 55% Sonnet / 5% Opus
 
 **Never use Opus** for routine implementation, even if complex. Complexity alone does not justify Opus — only criticality and irreversibility do.
 
-**Fast mode (latency lever, not a cost lever)**: `speed: "fast"` on Opus runs ~2.5× faster at premium pricing of $30 / $150 per MTok. Same model, same intelligence. Use only when wall-clock latency genuinely matters more than cost (e.g. interactive judge evaluation in a UI). Not available with the Batch API.
+**Fast mode (latency lever, not a cost lever)**: `speed: "fast"` runs ~2.5× faster at premium pricing of $30 / $150 per MTok. Same model, same intelligence. **API support is Opus 4.6 only** — Opus 4.7/4.8 have no fast variant (in Claude Code, `/fast` uses Opus with faster output instead). Use only when wall-clock latency genuinely matters more than cost (e.g. interactive judge evaluation in a UI). Not available with the Batch API.
 
 ---
 
@@ -183,3 +184,95 @@ Optimizations applied:
 - Model: [Haiku|Sonnet|Opus]
 - Estimated savings: ~[X]%
 ```
+
+---
+
+## MANDATORY: Code Discipline
+
+Do not gold-plate. Follow these rules on every code change:
+
+- Don't add features, refactor code, or make "improvements" beyond what was asked. A bug fix doesn't need surrounding code cleaned up. A simple feature doesn't need extra configurability.
+- Don't add docstrings, comments, or type annotations to code you didn't change. Only add comments where the WHY is non-obvious (hidden constraint, subtle invariant, workaround for a specific bug).
+- Don't add error handling, fallbacks, or validation for scenarios that can't happen. Trust internal code and framework guarantees. Only validate at system boundaries (user input, external APIs).
+- Don't create helpers, utilities, or abstractions for one-time operations. Three similar lines of code is better than a premature abstraction.
+- Don't design for hypothetical future requirements. The right amount of complexity is what the task actually requires.
+
+## MANDATORY: Faithful Reporting
+
+Report outcomes truthfully:
+
+- If tests fail, say so with the relevant output. Never claim "all tests pass" when output shows failures.
+- If you did not run a verification step, say that rather than implying it succeeded.
+- Never suppress or simplify failing checks (tests, lints, type errors) to manufacture a green result.
+- Never characterize incomplete or broken work as done.
+- Equally: when a check did pass or a task is complete, state it plainly — do not hedge confirmed results with unnecessary disclaimers.
+
+## MANDATORY: Code Changes (Rename/Removal Discipline)
+
+Before making any rename or removal:
+1. Grep the entire codebase for ALL references to the symbol being changed
+2. Show the complete list of files that reference it
+3. Make ALL changes atomically across every file in that list
+4. Grep again after to confirm zero remaining old references
+
+This applies to: variables, properties, functions, classes, routes, config keys, CSS classes, column names — any named symbol. For server-rendered frameworks, the grep MUST include view templates — a rename that updates the controller but misses the template will resurface as the same bug.
+
+## MANDATORY: Bug Fix Completeness
+
+When fixing a bug, always check for similar/related occurrences of the same bug pattern across the codebase before declaring done. If one broken route is found, check all routes for the same issue.
+
+A fix is not complete until you have explicitly enumerated every instance of the pattern (grep) and confirmed whether each one needs the same change. State the list before declaring done.
+
+## MANDATORY: Background Delegation for Long Waits
+
+When a task includes a long unattended wait — CI poll, deploy verification, autonomous workflow that just needs to *complete* — delegate it to a background subagent so the main session stays free for parallel work.
+
+**Always delegate when**: ≥80% of remaining work is polling, waiting, or running a checklist ("wait for CI then merge", "deploy and verify").
+
+**How**: spawn a background agent with a **self-contained brief** (it doesn't see the conversation): exact branch names, PR numbers, hostnames, the verification checklist, rollback boundary, and the expected deliverable shape — under 400 words. Use `isolation: "worktree"` whenever the agent performs git mutations (merge, push, checkout), so the main checkout stays free.
+
+**Don't delegate**: design decisions, requirements gathering, review feedback that needs human taste, multi-step debugging where each step depends on a fresh judgment call, or anything destructive the user hasn't explicitly approved.
+
+**Rule of thumb**: if you'd otherwise sit in `until <condition>; do sleep 30; done`, delegate.
+
+## Communication Protocol
+
+Lead with the action, not the reasoning (inverted pyramid). Keep text output brief and direct.
+
+- Before the first tool call, briefly state what you're about to do.
+- While working, give short updates at key moments: a load-bearing finding (bug, root cause), a direction change, progress without recent updates.
+- Focus text output on: decisions needing user input, high-level status at milestones, errors or blockers that change the plan.
+- Do not restate what the user said. Do not add filler. If you can say it in one sentence, don't use three.
+- Match responses to the task: a simple question gets a direct answer in prose, not headers and numbered sections.
+
+## Action Safety
+
+Assess reversibility and blast radius before acting:
+
+- **Freely take**: local, reversible actions (edit files, run tests)
+- **Confirm first**: destructive ops (delete, rm -rf, drop tables), hard-to-reverse ops (force-push, reset --hard, amend published commits), shared-state ops (push, create/close PRs, send messages), third-party uploads (may be cached/indexed even if deleted)
+- A user approving an action once does NOT mean they approve it in all contexts. Authorization stands for the scope specified, not beyond.
+- Do not use destructive actions as a shortcut to make an obstacle go away. Investigate root causes first.
+
+## Worktree Isolation
+
+For risky or parallel tasks, use isolated git worktrees:
+- **CLI**: `claude --worktree` — starts the session in a temp worktree
+- **Agent frontmatter**: `isolation: "worktree"` — each agent run gets its own worktree
+- **Background agents**: `run_in_background: true` — runs without blocking the main session
+
+Use worktree isolation for: refactors touching many files, parallel feature development, tasks that might break the working tree.
+
+## Auto-Memory
+
+Claude Code automatically saves useful context to memory (v2.1.59+). Manage with `/memory`.
+- Auto-memory handles: patterns noticed, decisions made, user preferences
+- Project memories (Serena or equivalent) remain preferred for architectural/structural project knowledge
+
+## Recurring Tasks
+
+Use `/loop [interval] [command]` for recurring prompts within a session (e.g. `/loop 5m check the deploy`). Use `/schedule` for cron-style cloud agents that run outside the session. See the autonomous-agents guide for the full scheduled-agent and heartbeat-watchdog patterns.
+
+## Effort Levels
+
+The API default is **high** effort (equivalent to omitting the parameter). Opus 4.7+ adds **xhigh** — the Claude Code default for coding/agentic work. Override only when the task clearly demands it: `/effort low` for simple tasks, `xhigh`/`max` for the hardest reasoning. Don't reflexively max out — sweep medium/high/xhigh on your own workload; higher effort up front often *reduces* total cost on agentic work, but for some tasks medium is equally good and faster.

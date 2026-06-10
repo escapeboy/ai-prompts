@@ -1179,4 +1179,32 @@ With global setup complete, each new project takes only 10-15 minutes!
 
 ---
 
+## Memory Hygiene & Garbage Collection
+
+Memories compound — a long-lived project can accumulate 150+ memory files. Without write discipline they degrade from "instant context" into noise that costs tokens and misleads recall. These rules come from maintaining real projects with 180+ memories:
+
+### Write discipline (every session)
+
+1. **Durable structural facts only.** Before writing, ask: "will this still be true and useful in a month?" Architecture, conventions, module boundaries, testing strategy — yes. Today's bug fix, a one-off command output, session-specific state — no (it's derivable from git history or current code).
+2. **Append, don't create.** If an existing memory covers the topic, add one line to it instead of creating a new file. One memory per topic; growth happens *inside* files, not in file count.
+3. **Curate at session end.** Before closing a non-trivial session, explicitly decide what (if anything) earned a memory update. The default answer is "nothing" — most sessions don't produce durable structural knowledge.
+4. **Delete wrong memories immediately.** A stale memory is worse than no memory: recall presents it with the same confidence as a fresh one. When you discover a memory contradicts current reality, fix or delete it in the same session.
+
+### Garbage collection (monthly or per milestone)
+
+Run a periodic GC pass — a simple skill/command that:
+
+1. Lists all memories with last-modified dates
+2. Flags candidates: not loaded in N sessions, superseded by newer memories, describing removed features
+3. For each candidate: **merge** (fold into the canonical memory), **rewrite** (still relevant, but stale details), or **delete**
+4. Verifies the core set (architecture, conventions, module-structure, testing-strategy) still matches the codebase — re-derive from code where drifted
+
+### Feature-inventory sync (after major changes)
+
+After adding new domains, API endpoints, or major features, run a sync pass that re-scans the codebase and updates the feature-inventory memory — instead of letting it drift until recall confidently describes an app that no longer exists. Make it a skill so it's one command, not a ritual.
+
+**Rule of thumb**: trust memory for *orientation*, verify against code for *facts*. A memory that names a file, route, or flag is a claim about the past — confirm it still exists before acting on it.
+
+---
+
 **Next**: Start working with optimized workflows! See `../03-custom-skills/` for creating project-specific skills, or jump straight to coding with `/optimize "your task"`.
