@@ -550,9 +550,9 @@ If you create custom skills, guides, or improvements:
 
 ## 📄 License
 
-These prompts are project-agnostic and can be freely shared, modified, and adapted for your team's needs.
+Released under the [MIT License](LICENSE) — free to use, copy, modify, and share, including commercially. The only condition is keeping the copyright notice.
 
-**Attribution appreciated but not required.**
+These prompts are project-agnostic and can be freely adapted for your team's needs.
 
 ---
 
@@ -587,13 +587,18 @@ These prompts are project-agnostic and can be freely shared, modified, and adapt
 ---
 
 **Created**: 2026-01-04
-**Last Updated**: 2026-06-10
-**Version**: 1.17.0
+**Last Updated**: 2026-06-15
+**Version**: 1.17.1
 **Compatibility**: Claude Code v2.1.32+, Claude API (Fable 5: `claude-fable-5`, Opus 4.8: `claude-opus-4-8`, Opus 4.7: `claude-opus-4-7`, Sonnet 4.6: `claude-sonnet-4-6`, Haiku 4.5: `claude-haiku-4-5`)
 
 ---
 
 ## 📝 Version History
+
+### v1.17.1 (2026-06-15)
+**Added**: `LICENSE` file — the repository is now released under the **MIT License**
+- Previously the README declared a "freely shared" intent but had no `LICENSE` file, so GitHub reported "No license" (all-rights-reserved by default)
+- MIT covers both the prose guides and the executable hook/skill files; README License section updated to match
 
 ### v1.17.0 (2026-06-10)
 **Added**: Production patterns distilled from 3 months / ~450 sessions of real Claude Code work (all content sanitized — no personal projects, hosts, or infrastructure)

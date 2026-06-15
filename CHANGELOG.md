@@ -4,6 +4,18 @@ All notable changes to this library are documented here.
 
 ---
 
+## [1.17.1] — 2026-06-15
+
+### Added
+
+- **LICENSE** — the repository is now released under the MIT License. Previously the README declared an informal "freely shared" intent but no `LICENSE` file existed, so GitHub reported "No license" (legally all-rights-reserved). MIT covers both the prose guides and the executable hook/skill files, and is recognized by GitHub's license detection.
+
+### Updated
+
+- **README.md** — License section now points to the `LICENSE` file and describes MIT terms (use/copy/modify/share, keep the copyright notice) instead of the prior ambiguous free-text wording.
+
+---
+
 ## [1.17.0] — 2026-06-10
 
 ### Added
