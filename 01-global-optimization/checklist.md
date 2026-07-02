@@ -76,7 +76,7 @@ cat ~/.claude/settings/beta-features.json | python -m json.tool
 
 - [ ] `~/.claude/settings/model-strategy.json` exists
 - [ ] Valid JSON syntax
-- [ ] Contains `default_model` = "claude-sonnet-4-6"
+- [ ] Contains `default_model` = "claude-sonnet-5"
 - [ ] Contains all 3 models: haiku, sonnet, opus
 - [ ] Each model has: id, cost_per_million, use_for, agents
 - [ ] Contains `complexity_overrides` section

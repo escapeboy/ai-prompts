@@ -1,7 +1,7 @@
 ---
 name: update-docs
 description: Search the web for latest Claude API changes, compare findings to existing documentation, and apply targeted updates to keep prompts and configs current. Use when docs are outdated, after a Claude API update, to refresh system prompts, or to validate documentation accuracy.
-version: 1.0.0
+version: 1.1.0
 ---
 
 # /update-docs — Documentation Updater
@@ -9,6 +9,8 @@ version: 1.0.0
 Keeps your Claude Code configuration documentation current with the latest Claude API changes, best practices, and framework updates. Searches the web, compares findings to existing docs, and applies targeted updates.
 
 Especially useful for keeping `~/.claude/` system prompts, skill files, and project memories accurate after Claude API updates.
+
+> **Scope**: `/update-docs` handles **external freshness** — API / model / pricing / beta-header drift sourced from the web. For **internal consistency** (dead links, README↔CHANGELOG version parity, terminology, stray Cyrillic, privacy leaks) use [`/content-review`](../../../07-custom-commands/content-review.md) instead. The two are complementary, not overlapping — don't duplicate content-review's checks here.
 
 ---
 
@@ -21,7 +23,7 @@ Especially useful for keeping `~/.claude/` system prompts, skill files, and proj
 ### Quick Examples
 
 ```
-/update-docs                           # Interactive mode — ask what to update
+/update-docs                           # Default: analyze (read-only drift check, no edits)
 /update-docs research "prompt caching" # Search web for latest info
 /update-docs collect https://docs.anthropic.com/en/docs/build-with-claude/prompt-caching
 /update-docs analyze                   # Compare findings to existing docs
@@ -46,10 +48,16 @@ Searches for current documentation, changelog entries, and community best practi
 ```
 
 **Process**:
-1. Web search for official docs, Anthropic changelog, GitHub issues
+1. Search + fetch the authoritative sources (see **Primary sources** below). Prefer **Lattice** for browser/search if it is available; otherwise note that plain `WebFetch` is intercepted by context-mode — use `ctx_fetch_and_index(url, source)` then `ctx_search`.
 2. Identify version-specific changes and deprecations
 3. Extract actionable guidance
 4. Store findings as a research summary
+
+**Primary sources** (authoritative for model/API facts — lead with these, not community mirrors like fastmcp.me):
+- `platform.claude.com/docs/en/about-claude/models/overview` — current lineup + model IDs
+- `platform.claude.com/docs/en/about-claude/pricing` — per-model pricing, including introductory rates and their end dates
+- `platform.claude.com/docs/en/about-claude/models/migration-guide` — breaking API changes per model
+- the bundled **`claude-api`** skill — the in-harness source of truth for IDs / pricing / params (read it before editing any model fact; it has no file on disk to grep)
 
 **Output**:
 ```
@@ -86,7 +94,7 @@ Fetches and extracts relevant content from a specific documentation URL.
 ```
 
 **Process**:
-1. Fetch URL content
+1. Fetch URL content — prefer **Lattice** if available; otherwise use `ctx_fetch_and_index(url, source)` (plain `WebFetch` is intercepted by context-mode)
 2. Extract key technical information
 3. Summarize relevant sections
 4. Add to research findings for `analyze` step
@@ -108,15 +116,15 @@ Compares research findings or collected content to your existing documentation a
 
 ### Comparing against: ~/.claude/system-prompts/global-optimization.md
 
-OUTDATED sections:
-- Line 45: References "Cache TTL: 10 minutes" → never existed; cache is 5m default / 1h opt-in
-- Line 112: Lists claude-sonnet-4-5 as latest → claude-sonnet-4-6 released
-- Line 203: token-efficient-tools-2025-02-19 beta header → no-op on Claude 4+, remove
+OUTDATED sections (sweep the known drift hotspots first):
+- Pricing tables — verify $/MTok against the live pricing page, including any introductory rates
+- Model IDs in skill/agent frontmatter and config examples — bump superseded IDs to the current release (but NOT in historical records — see the `update` rules)
+- Compatibility lines in section READMEs + the README footer
+- Beta-header / API-param tables — flag headers that have graduated to GA and become a no-op
 
 MISSING sections:
-- No mention of adaptive thinking (`thinking: { type: "adaptive" }`) — replaces deprecated `thinking_budget_tokens`
-- No mention of context-management-2025-06-27 (clear_thinking + clear_tool_uses)
-- No mention of server-side compaction or Fast mode
+- A newly released model tier or a changed default (e.g. a new current Sonnet/Opus)
+- New API params or beta headers introduced since the last refresh
 
 UP TO DATE:
 - Prompt caching setup instructions ✅
@@ -154,6 +162,10 @@ Updates a specific file or set of files based on research findings.
 3. Preserve existing structure and formatting
 4. Show diff of what changed
 5. **Verify**: re-read the updated file (or run a regression grep) to confirm the change landed and didn't introduce broken JSON / fence parity issues before reporting done
+
+**Rules when applying updates**:
+- **Never retro-edit historical records.** Model IDs, prices, and dates inside CHANGELOG entries, README "Version History", and any `.backups/` directory are frozen records — leave them exactly as written. Only touch live/current claims: frontmatter, config examples, compatibility lines, and pricing-reference tables.
+- **When updating the `ai-prompts` repo, follow the Releasing convention** (repo `CLAUDE.md` → "Releasing"): every change ships as four synced artifacts — CHANGELOG entry, README "Version History" entry + footer version bump (and the `current: vX.Y.Z` line in the repo `CLAUDE.md`), an annotated git tag, and a GitHub Release.
 
 ---
 
@@ -234,6 +246,8 @@ This skill is designed to be efficient:
 - `update [file]`: ~2-5K tokens per file
 - `validate`: ~1-3K tokens
 
+> These are **per-action** figures. A **full refresh that ends in a release** (research → analyze → update across many files → CHANGELOG/README parity → tag + GitHub Release) is a multi-step, sometimes multi-hour job — budget for that, not a single-digit-K cycle.
+
 ---
 
 ## Troubleshooting
@@ -242,13 +256,13 @@ This skill is designed to be efficient:
 
 Your docs are up to date. Run `/update-docs validate` monthly to stay current.
 
-### "URL fetch failed"
+### "URL fetch failed" or "WebFetch blocked"
 
-Some documentation sites block automated fetches. Try:
+`WebFetch` is intercepted by the context-mode hook — that's expected, not an error. Fetch via **Lattice** (if available) or `ctx_fetch_and_index(url, source)` + `ctx_search` instead. If a site blocks automated fetches entirely, try an alternative URL:
 ```
 /update-docs collect [alternative-url]
 ```
-Or search for the content manually and paste into the conversation.
+Or search for the content manually and paste it into the conversation.
 
 ### "Changes look wrong"
 

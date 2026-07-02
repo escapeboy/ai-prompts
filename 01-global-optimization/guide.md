@@ -159,7 +159,7 @@ Open `~/.claude/agents/pm-orchestrator.md` in your text editor and paste:
 ---
 name: pm-orchestrator
 description: Central project management coordinator with adaptive planning and token optimization
-model: claude-sonnet-4-6
+model: claude-sonnet-5
 version: 1.0.0
 ---
 
@@ -547,7 +547,7 @@ Create 4 JSON configuration files in `~/.claude/settings/`.
 {
   "version": "1.0.0",
   "description": "Model selection strategy for cost optimization",
-  "default_model": "claude-sonnet-4-6",
+  "default_model": "claude-sonnet-5",
   "models": {
     "haiku": {
       "id": "claude-haiku-4-5",
@@ -565,7 +565,7 @@ Create 4 JSON configuration files in `~/.claude/settings/`.
       "cost_savings_vs_sonnet": "60%"
     },
     "sonnet": {
-      "id": "claude-sonnet-4-6",
+      "id": "claude-sonnet-5",
       "cost_per_million": {
         "input": 3,
         "output": 15

@@ -340,7 +340,7 @@ class SendAssistantMessageAction
 
         // 2. Resolve provider (from settings or defaults)
         $provider = $provider ?? config('assistant.default_provider', 'anthropic');
-        $model = $model ?? config('assistant.default_model', 'claude-sonnet-4-6');
+        $model = $model ?? config('assistant.default_model', 'claude-sonnet-5');
 
         // 3. Detect local vs cloud provider
         $isLocal = in_array($provider, ['codex', 'claude-code']);

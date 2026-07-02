@@ -587,13 +587,24 @@ These prompts are project-agnostic and can be freely adapted for your team's nee
 ---
 
 **Created**: 2026-01-04
-**Last Updated**: 2026-06-15
-**Version**: 1.17.1
-**Compatibility**: Claude Code v2.1.32+, Claude API (Fable 5: `claude-fable-5`, Opus 4.8: `claude-opus-4-8`, Opus 4.7: `claude-opus-4-7`, Sonnet 4.6: `claude-sonnet-4-6`, Haiku 4.5: `claude-haiku-4-5`)
+**Last Updated**: 2026-07-02
+**Version**: 1.19.0
+**Compatibility**: Claude Code v2.1.32+, Claude API (Fable 5: `claude-fable-5`, Opus 4.8: `claude-opus-4-8`, Opus 4.7: `claude-opus-4-7`, Sonnet 5: `claude-sonnet-5`, Haiku 4.5: `claude-haiku-4-5`)
 
 ---
 
 ## 📝 Version History
+
+### v1.19.0 (2026-07-02)
+**Added**: Default Tooling Stack in the global template — Lattice (browser + web search), Svod (persistent memory), Svod Foundry (reusable tools), Harbormaster (cross-project agent comms), each with a fallback
+**Updated**: `/update-docs` skill hardened (→ v1.1.0) from two real runs — prefer Lattice / `ctx_fetch_and_index` over the context-mode-blocked `WebFetch`, lead with authoritative `platform.claude.com` + `claude-api` sources, `analyze` as the default action, an immutable-historical-records rule + Releasing-convention pointer, de-staled examples, and clearer scope vs `/content-review`
+
+### v1.18.0 (2026-07-02)
+**Updated**: Sonnet 5 model refresh (from a `/update-docs` research pass against the live Claude docs)
+- **Claude Sonnet 5** (`claude-sonnet-5`) is now the current Sonnet — a drop-in upgrade for Sonnet 4.6 with adaptive thinking on by default and manual extended thinking / non-default sampling params returning 400
+- Bumped live `claude-sonnet-4-6` example/frontmatter/config references to `claude-sonnet-5` across 01–05 and 10; updated compatibility lines (README footer, `CLAUDE.md`, 09/11/12) and pricing tables (04/05/06) with Sonnet 5's intro $2/$10 (through 2026-08-31) → $3/$15 standard
+- Fable 5 / Opus 4.8 / Haiku 4.5 lineup and pricing re-verified against the live docs — unchanged
+- **Content hygiene**: translated untranslated Bulgarian prose/comments to English (03, 06, 10); kept deliberate Bulgarian example content (07 content-review language rules, 08 native-script language-switcher sample)
 
 ### v1.17.1 (2026-06-15)
 **Added**: `LICENSE` file — the repository is now released under the **MIT License**

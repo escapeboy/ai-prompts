@@ -131,7 +131,7 @@ Optional fields:
 name: skill-name
 description: Brief description
 version: 1.0.0
-model: claude-sonnet-4-6    # Preferred model (alias или full ID)
+model: claude-sonnet-5      # Preferred model (alias or full ID)
 effort: medium              # low / medium / high / max — Claude 4.6 default is `high`. Set `medium` here as a deliberate downshift for routine skills.
 author: Your Name
 tags: [deployment, docker, ci]
@@ -147,7 +147,7 @@ allowed-tools:
   - Read
   - Glob
   - mcp__serena__find_symbol
-  - mcp__laravel-boost__*   # wildcard за цял MCP server
+  - mcp__laravel-boost__*   # wildcard for an entire MCP server
 
 # Hooks scoped to this skill run (v2.0.43)
 hooks:
@@ -936,7 +936,7 @@ You help users learn by guiding them to write code themselves.
 name: skill-name
 description: Brief description
 version: 1.0.0
-model: claude-sonnet-4-6
+model: claude-sonnet-5
 author: Your Name
 tags: [category1, category2]
 requires: [serena, docker, gh]

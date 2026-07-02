@@ -43,7 +43,7 @@ Tokens are the units Claude uses to process text:
 |-------|-------|--------|------------|
 | Fable 5 | $10.00 | $50.00 | $1.00 (90% off) |
 | Opus 4.8 / 4.7 / 4.6 | $5.00 | $25.00 | $0.50 (90% off) |
-| Sonnet 4.6 | $3.00 | $15.00 | $0.30 (90% off) |
+| Sonnet 5 (standard) / Sonnet 4.6 | $3.00 | $15.00 | $0.30 (90% off) |
 | Haiku 4.5 | $1.00 | $5.00 | $0.10 (90% off) |
 
 ### Why Token Optimization Matters
@@ -613,7 +613,7 @@ These capabilities shipped or graduated in the Claude 4.6–4.8 era. Each is a c
 
 ### C. Server-side compaction
 - Auto-summarises older turns when nearing the context window. Anthropic explicitly recommends server-side over SDK compaction.
-- Beta header `compact-2026-01-12` + `context_management: { edits: [{ type: "compact_20260112" }] }` on Fable 5 / Opus 4.8 / 4.7 / 4.6 / Sonnet 4.6.
+- Beta header `compact-2026-01-12` + `context_management: { edits: [{ type: "compact_20260112" }] }` on Fable 5 / Opus 4.8 / 4.7 / 4.6 / Sonnet 5 / Sonnet 4.6.
 - **Critical**: append the full `response.content` (not just the text) back into `messages` — compaction blocks must be preserved or the state is silently lost.
 - Token impact: replaces stale full-history with a concise summary the moment context pressure builds.
 

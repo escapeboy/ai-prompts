@@ -15,7 +15,7 @@ These are authoritative sources from Anthropic. Always check these first.
 **URL**: https://www.anthropic.com/news
 
 **What to find**:
-- New model announcements (Claude Fable 5, Opus 4.8, Sonnet 4.6, etc.)
+- New model announcements (Claude Fable 5, Opus 4.8, Sonnet 5, etc.)
 - API feature releases (prompt caching, token-efficient tools)
 - Best practice guides
 - Research papers and findings
@@ -26,8 +26,8 @@ These are authoritative sources from Anthropic. Always check these first.
 - [Prompt Caching](https://www.anthropic.com/news/prompt-caching) — 5m default + 1h opt-in TTL, 0.10× cache-hit pricing
 - [Introducing Agent Skills](https://www.anthropic.com/news/skills) — open standard at [agentskills.io](https://agentskills.io)
 - [Equipping agents for the real world with Agent Skills](https://www.anthropic.com/engineering/equipping-agents-for-the-real-world-with-agent-skills) — engineering deep-dive
-- [Models Overview](https://platform.claude.com/docs/en/about-claude/models/overview.md) — current lineup: Fable 5 (`claude-fable-5`, $10/$50), Opus 4.8/4.7 (`claude-opus-4-8`/`-4-7`, $5/$25, 1M context), Sonnet 4.6, Haiku 4.5
-- [Migration Guide](https://platform.claude.com/docs/en/about-claude/models/migration-guide.md) — breaking changes per model: `budget_tokens` and sampling params removed on Opus 4.7+, `effort: xhigh` (4.7+), Task Budgets beta, prefills 400 on 4.6+
+- [Models Overview](https://platform.claude.com/docs/en/about-claude/models/overview.md) — current lineup: Fable 5 (`claude-fable-5`, $10/$50), Opus 4.8/4.7 (`claude-opus-4-8`/`-4-7`, $5/$25, 1M context), Sonnet 5 (`claude-sonnet-5`, intro $2/$10 through 2026-08-31, then $3/$15; drop-in upgrade for Sonnet 4.6), Haiku 4.5
+- [Migration Guide](https://platform.claude.com/docs/en/about-claude/models/migration-guide.md) — breaking changes per model: `budget_tokens` and sampling params removed on Opus 4.7+ and Sonnet 5 (manual extended thinking also returns 400 on Sonnet 5; adaptive thinking is on by default), `effort: xhigh` (4.7+), Task Budgets beta, prefills 400 on 4.6+
 
 ---
 
@@ -75,13 +75,14 @@ These are authoritative sources from Anthropic. Always check these first.
 - Batch API pricing (50% discount)
 - Any new pricing tiers
 
-**Current pricing** (as of June 2026):
+**Current pricing** (as of July 2026):
 
 | Model | Input (per 1M) | 5m Cache Write | 1h Cache Write | Cache Read | Output (per 1M) |
 |-------|----------------|----------------|----------------|------------|-----------------|
-| Fable 5 | $10.00 | $12.50 | $20.00 | $1.00 | $50.00 |
+| Fable 5 / Mythos 5 | $10.00 | $12.50 | $20.00 | $1.00 | $50.00 |
 | Opus 4.8 / 4.7 / 4.6 / 4.5 | $5.00 | $6.25 | $10.00 | $0.50 | $25.00 |
-| Sonnet 4.6 / 4.5 | $3.00 | $3.75 | $6.00 | $0.30 | $15.00 |
+| Sonnet 5 (intro, through 2026-08-31) | $2.00 | $2.50 | $4.00 | $0.20 | $10.00 |
+| Sonnet 5 (standard, from 2026-09-01) / Sonnet 4.6 / 4.5 | $3.00 | $3.75 | $6.00 | $0.30 | $15.00 |
 | Haiku 4.5 | $1.00 | $1.25 | $2.00 | $0.10 | $5.00 |
 | Opus Fast mode (4.6 only) | $30.00 | — | — | — | $150.00 |
 
@@ -289,7 +290,7 @@ Single source of truth for which `anthropic-beta` headers to send. Verify agains
 | `context-management-2025-06-27` | Server-side context editing (`clear_thinking_20251015`, `clear_tool_uses_20250919`) |
 | `managed-agents-2026-04-01` | Managed Agents endpoints (`/v1/agents`, `/v1/sessions`, `/v1/environments`) |
 | `files-api-2025-04-14` | Files API |
-| `compact-2026-01-12` | Server-side compaction (Fable 5 / Opus 4.8 / 4.7 / 4.6 / Sonnet 4.6) |
+| `compact-2026-01-12` | Server-side compaction (Fable 5 / Opus 4.8 / 4.7 / 4.6 / Sonnet 5 / Sonnet 4.6) |
 | `task-budgets-2026-03-13` | Task Budgets — model-aware token budget for full agentic loops (Fable 5 / Opus 4.8 / 4.7) |
 | `mid-conversation-system-2026-04-07` | Mid-conversation `role: "system"` messages — cache-safe operator instructions (Opus 4.7+) |
 | `interleaved-thinking-2025-05-14` | Interleaved thinking — **only if not using adaptive thinking** (which auto-enables it on 4.6+) |

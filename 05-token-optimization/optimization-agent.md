@@ -1,7 +1,7 @@
 ---
 name: optimization-agent
 description: Analyze token usage and recommend optimizations
-model: claude-sonnet-4-6
+model: claude-sonnet-5
 version: 1.0.0
 ---
 

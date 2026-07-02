@@ -79,7 +79,7 @@ Always run tests after refactoring. Report what changed and why.
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
-| `model` | string | inherits | `haiku`, `sonnet`, `opus`, or full model ID (e.g. `claude-sonnet-4-6`) |
+| `model` | string | inherits | `haiku`, `sonnet`, `opus`, or full model ID (e.g. `claude-sonnet-5`) |
 | `tools` | list | all | Which tools the agent can use |
 | `disallowedTools` | list | none | Explicitly block tools (e.g. `Bash`, `Task(AgentName)`) |
 | `permissionMode` | string | inherits | `default`, `acceptEdits`, `plan`, `bypassPermissions` |
@@ -104,7 +104,7 @@ Always run tests after refactoring. Report what changed and why.
 
 **Rule of thumb**: Start with `haiku` for read-only tasks, `sonnet` for code writing, `opus` only for critical decisions.
 
-**Full model IDs**: `model:` приема и пълни идентификатори: `claude-sonnet-4-6`, `claude-opus-4-8`, `claude-fable-5`, `claude-haiku-4-5-20251001`. Полезно когато искаш да pinваш конкретна версия вместо alias.
+**Full model IDs**: `model:` also accepts full identifiers: `claude-sonnet-5`, `claude-opus-4-8`, `claude-fable-5`, `claude-haiku-4-5-20251001`. Useful when you want to pin a specific version instead of an alias.
 
 ---
 

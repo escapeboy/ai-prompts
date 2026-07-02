@@ -257,9 +257,9 @@ Instead of crafting ad-hoc team prompts, use the `/agent-team` skill. It enforce
 
 ```
 /agent-team pr-review
-/agent-team debug заявките към /api/alerts връщат 500 след последния deploy
-/agent-team feature нов модул за subscription billing
-/agent-team custom [произволно описание]
+/agent-team debug the /api/alerts requests return 500 after the latest deploy
+/agent-team feature new module for subscription billing
+/agent-team custom [freeform description]
 ```
 
 ### Preset modes

@@ -53,6 +53,24 @@ At the start of every session or when switching tasks:
 
 ---
 
+## Default Tooling Stack
+
+Standardize on these MCP tools **when they are available** in the session; each has a graceful fallback if it is not.
+
+| Need | Preferred tool | Fallback when unavailable |
+|------|----------------|---------------------------|
+| Browser automation + internet search | **Lattice** ([escapeboy/lattice](https://github.com/escapeboy/lattice)) — semantic perception + a governance gate for consequential actions | Built-in browser/screenshot tools; `ctx_fetch_and_index` + `ctx_search` for read-only fetches (plain `WebFetch` may be intercepted by context-mode) |
+| Persistent, durable memory | **Svod** ([FleetQ/svod-engine](https://github.com/FleetQ/svod-engine)) — versioned, attributable, graph-linked note store | Serena project memories / auto-memory for session-scoped facts |
+| Reusable tools & artifacts | **Svod Foundry** ([FleetQ/svod-foundry](https://github.com/FleetQ/svod-foundry)) — synthesize → verify → promote sandboxed tools instead of throwaway scripts | Inline one-off script (only for genuinely single-use operations) |
+| Talking to agents on other projects | **Harbormaster MCP** ([FleetQ/harbormaster](https://github.com/FleetQ/harbormaster)) — delegate tasks, fan-out questions, run a clarification loop across project-scoped agents | Handle the cross-project work in-session, or ask the user to bridge |
+
+**Rules of thumb**:
+- Prefer Lattice for forms, multi-step flows, SPAs, and any consequential action (submit/checkout/delete) that should pass a governance gate. Use built-in browser/screenshot for canvas/WebGL-heavy or purely static pages.
+- Write durable, cross-session knowledge to Svod; keep ephemeral session facts in Serena/auto-memory. Recall before writing to avoid duplicates.
+- When a task needs a reusable operation no existing tool covers, synthesize it in Svod Foundry rather than improvising shell — it verifies in a sandbox and is available next time.
+
+---
+
 ## AUTOMATIC: Prompt Caching
 
 Prompt caching is enabled automatically. The following content is cached after first load and costs only 10% on subsequent reads:

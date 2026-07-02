@@ -2,7 +2,7 @@
 name: deploy
 description: Deploy application to staging or production environments
 version: 1.0.0
-model: claude-sonnet-4-6
+model: claude-sonnet-5
 requires: [git, ssh]
 tags: [deployment, devops, ci-cd]
 ---

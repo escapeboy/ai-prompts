@@ -4,6 +4,40 @@ All notable changes to this library are documented here.
 
 ---
 
+## [1.19.0] — 2026-07-02
+
+### Added
+
+- **Default Tooling Stack** section in `01-global-optimization/system-prompts/global-optimization.md` — standardizes the MCP tools to prefer when available, each with a graceful fallback: **Lattice** ([escapeboy/lattice](https://github.com/escapeboy/lattice)) for browser automation + internet search, **Svod** ([FleetQ/svod-engine](https://github.com/FleetQ/svod-engine)) for persistent/durable memory, **Svod Foundry** ([FleetQ/svod-foundry](https://github.com/FleetQ/svod-foundry)) for reusable tools/artifacts, and **Harbormaster MCP** ([FleetQ/harbormaster](https://github.com/FleetQ/harbormaster)) for cross-project agent communication.
+
+### Updated
+
+**`/update-docs` skill hardened** (`01-global-optimization/skills/update-docs/SKILL.md`, → v1.1.0) from the lessons of two real end-to-end runs:
+
+- Research / collect now prefer **Lattice** for browser + search, and note that plain `WebFetch` is intercepted by context-mode → use `ctx_fetch_and_index(url, source)` + `ctx_search`.
+- **Primary sources** now lead with `platform.claude.com/docs` (models overview / pricing / migration guide) and the bundled `claude-api` skill, instead of community mirrors.
+- Bare `/update-docs` now defaults to `analyze` (read-only drift check) instead of an undefined interactive mode.
+- Added an **immutable-records rule** (never retro-edit model IDs / prices / dates in CHANGELOG, README version history, or `.backups/`) and a pointer to the repo **Releasing** four-artifact convention in the `update` action.
+- De-staled the `analyze` / `validate` examples (dropped frozen 2024–2025 model IDs and beta headers) in favor of the real drift-hotspot checklist.
+- Clarified scope vs `/content-review` (external freshness vs internal consistency) and recalibrated the token-cost note for a full refresh-and-release cycle.
+
+---
+
+## [1.18.0] — 2026-07-02
+
+### Updated
+
+**Sonnet 5 model refresh** — a `/update-docs` research pass against the live Claude Platform docs confirmed **Claude Sonnet 5** (`claude-sonnet-5`) is the current Sonnet: a drop-in upgrade for Sonnet 4.6 with adaptive thinking on by default, manual extended thinking and non-default sampling params returning 400, and a 1M context window by default. The Fable 5 / Opus 4.8 / Haiku 4.5 lineup and all pricing were re-verified against the live docs and are unchanged (the circulating "Fable 5 suspended" claim was checked and is false).
+
+- **Model-ID sweep** — live `claude-sonnet-4-6` example/frontmatter/config references bumped to `claude-sonnet-5` in 01 (settings example, pm-orchestrator, checklist), 02 (activation agent), 03 (skills guide + complex/module-assistant examples), 04 (research agent), 05 (optimization agent), and 10 (subagents guide). Historical CHANGELOG / version-history entries left untouched as records.
+- **Compatibility lines** — README footer, `CLAUDE.md`, and the 09 / 11 / 12 section READMEs now list Sonnet 5.
+- **Pricing** — Sonnet 5 added to the pricing tables in 04 / 05 / 06 with its introductory $2/$10 rate (through 2026-08-31) alongside the $3/$15 standard rate.
+- **Beta headers / API params** — Sonnet 5 added to the `compact-2026-01-12` support list (04, 05) and to the migration note about sampling params returning 400 (04).
+
+**Content hygiene** — translated untranslated Bulgarian fragments in public prose/comments to English: model-ID and MCP-wildcard comments in 03, the full-model-ID note in 10, and `/agent-team` usage examples in 06. Deliberate example content that uses Bulgarian as a concrete illustration was kept: the 07 content-review command's Bulgarian (`bg/`) language-check rules, and the native-script language-switcher sample ("Български") in 08.
+
+---
+
 ## [1.17.1] — 2026-06-15
 
 ### Added
