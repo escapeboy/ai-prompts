@@ -4,6 +4,23 @@ All notable changes to this library are documented here.
 
 ---
 
+## [1.20.0] — 2026-07-14
+
+### Added
+
+- **`/agent-ready` global skill** (`01-global-optimization/skills/agent-ready/`) — the 6th global skill and the repo's first **multi-file** skill (SKILL.md + `scripts/` + `references/`). It audits a project's *public* site for AI-agent readiness using Cloudflare's [isitagentready.com](https://isitagentready.com) scanner and drives a five-phase workflow: determine the production URL → scan → triage each failing check by ROI → confirm the plan at a single checkpoint → implement only the worthwhile fixes → re-scan to verify the level delta.
+  - **`scripts/scan.py`** — stdlib-only scanner that calls the `POST /api/scan` JSON API, prints a compact triage table (per-check `pass`/`fail`/`neutral`/`unableToCheck`, `isCommerce`, and the official `nextLevel` remediation with each fix's `skillUrl`), and saves the full JSON to `--out` so it never floods context. Falls back to direct `.well-known` / robots / sitemap endpoint probes when the API is unreachable.
+  - **`references/applicability.md`** — site-type classification (content vs. web-app-with-API vs. agentic-commerce) and a per-check ROI decision table (DO / DECISION / CONDITIONAL / SKIP), plus the AI-crawler allow-vs-block policy (with the major crawler UA list) framed as a business decision, not a defect.
+  - **`references/implementations.md`** — per-stack recipes (Laravel / Next.js / Node / static) for robots.txt + Content Signals, sitemap, llms.txt, Link headers, Markdown-for-Agents, and the `.well-known` discovery docs.
+  - **Philosophy match**: the skill is *selective by default* — "implement every failing check" is treated as the failure mode (gold-plating), `neutral` means not-applicable, and fabricating an agent/API/commerce surface just to pass a check is forbidden. This mirrors the repo's Code Discipline ethos.
+
+### Cross-referenced
+
+- `14-webmcp/guide.md` — the scanner's `webMcp` discovery check now points back to this section for the in-page tool implementation, and vice versa.
+- `07-custom-commands/seo.md` — `/agent-ready` and the SEO+GEO command share the robots.txt / sitemap / AI-crawler / Markdown-for-Agents surface; each now references the other so they aren't run blindly in conflict.
+
+---
+
 ## [1.19.0] — 2026-07-02
 
 ### Added

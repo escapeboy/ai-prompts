@@ -290,6 +290,9 @@ Follow existing patterns: readOnlyHint for safe operations, requestUserInteracti
 - [WebMCP updates — Patrick Brosset](https://patrickbrosset.com/articles/2026-02-23-webmcp-updates-clarifications-and-next-steps/) — Clarifications and next steps
 - [webmcp.link](https://webmcp.link/) — Community resource hub
 
+### Related in this library
+- [`/agent-ready`](../01-global-optimization/skills/agent-ready/SKILL.md) — the global skill that audits a site's AI-agent readiness. Its scanner reports a `webMcp` discovery check; when it flags WebMCP as a worthwhile fix for a site that genuinely offers agent-usable tools, implement it using the patterns in this guide.
+
 ---
 
 **Added**: v1.9.0 (2026-03-20)

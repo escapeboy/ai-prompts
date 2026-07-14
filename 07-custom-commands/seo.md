@@ -11,6 +11,8 @@ personas: [seo-specialist]
 
 > **Context Framework Note**: This behavioral instruction activates when users type `/seo`. It coordinates browser tools, code analysis, and web standards to deliver comprehensive SEO audits and improvements.
 
+> **Related — AI-agent readiness**: `/seo` and the [`/agent-ready`](../01-global-optimization/skills/agent-ready/SKILL.md) global skill share a surface — robots.txt, sitemap, AI-crawler policy, and Markdown-for-Agents. `/seo` optimizes for **search + human** discoverability; `/agent-ready` optimizes for **AI-agent** discoverability (llms.txt, Link headers, `.well-known` discovery, Content Signals). When both apply, reconcile the robots.txt / AI-crawler decision in one place rather than letting the two commands overwrite each other.
+
 ## Triggers
 - SEO audit requests (technical, content, performance)
 - Search ranking improvement needs

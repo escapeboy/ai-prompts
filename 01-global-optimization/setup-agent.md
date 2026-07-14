@@ -19,11 +19,11 @@ version: 1.0.0
 Create complete `~/.claude/` global configuration including:
 - 1 PM Orchestrator agent
 - 4 settings files (JSON)
-- 5 skills (slash commands)
+- 6 skills (slash commands; `/agent-ready` is multi-file — a directory with `scripts/` + `references/`)
 - 2 system prompts
 - 3 documentation files
 
-**Total**: 15 files providing 70-90% token reduction on all future projects
+**Total**: 16 files providing 70-90% token reduction on all future projects
 
 ---
 
@@ -165,10 +165,10 @@ All commands should be recognized.
 - [ ] Directory structure complete
 - [ ] PM Orchestrator file created and valid YAML
 - [ ] All 4 JSON settings files created and valid JSON
-- [ ] All 5 skills created in subdirectories
+- [ ] All 6 skills created in subdirectories (`/agent-ready` includes its `scripts/` + `references/` files)
 - [ ] Both system prompts created
 - [ ] All 3 documentation files created
-- [ ] Total file count ≥ 15
+- [ ] Total file count ≥ 16
 - [ ] All slash commands recognized
 - [ ] No JSON syntax errors
 
@@ -181,7 +181,7 @@ Provide a completion report:
 ```markdown
 ## Global Optimization Setup Complete ✅
 
-### Files Created: [X]/15
+### Files Created: [X]/16
 
 **Agents** (1):
 - ✅ pm-orchestrator.md
@@ -192,12 +192,13 @@ Provide a completion report:
 - ✅ model-strategy.json
 - ✅ token-optimization.json
 
-**Skills** (5):
+**Skills** (6):
 - ✅ optimize/SKILL.md
 - ✅ context/SKILL.md
 - ✅ cache-inspector/SKILL.md
 - ✅ update-docs/SKILL.md
 - ✅ init-project/SKILL.md
+- ✅ agent-ready/ (SKILL.md + scripts/scan.py + references/)
 
 **System Prompts** (2):
 - ✅ global-optimization.md
@@ -213,7 +214,7 @@ Provide a completion report:
 File count: [X] files ✅
 JSON validation: All valid ✅
 YAML validation: All valid ✅
-Commands available: All 5 skills recognized ✅
+Commands available: All 6 skills recognized ✅
 
 ### Expected Outcomes:
 

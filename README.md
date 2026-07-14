@@ -14,12 +14,13 @@ This library contains reusable prompts for implementing global Claude Code optim
 - **[guide.md](01-global-optimization/guide.md)** - Step-by-step installation guide
 - **[setup-agent.md](01-global-optimization/setup-agent.md)** - Executable agent for automated setup
 - **[checklist.md](01-global-optimization/checklist.md)** - Verification checklist
-- **[skills/](01-global-optimization/skills/)** - Complete SKILL.md files for all 5 global skills (installed to `~/.claude/skills/`)
+- **[skills/](01-global-optimization/skills/)** - Complete SKILL.md files for all 6 global skills (installed to `~/.claude/skills/`)
   - [`optimize/`](01-global-optimization/skills/optimize/SKILL.md) - `/optimize` — max token efficiency mode
   - [`context/`](01-global-optimization/skills/context/SKILL.md) - `/context` — memory management
   - [`cache-inspector/`](01-global-optimization/skills/cache-inspector/SKILL.md) - `/cache-inspector` — cache monitoring
   - [`update-docs/`](01-global-optimization/skills/update-docs/SKILL.md) - `/update-docs` — documentation refresh
   - [`init-project/`](01-global-optimization/skills/init-project/SKILL.md) - `/init-project` — new project setup
+  - [`agent-ready/`](01-global-optimization/skills/agent-ready/SKILL.md) - `/agent-ready` — AI-agent-readiness audit + selective remediation (multi-file: scanner script + ROI/implementation references)
 - **[system-prompts/](01-global-optimization/system-prompts/)** - Global system prompt files
   - [`global-optimization.md`](01-global-optimization/system-prompts/global-optimization.md) - Core optimization rules
   - [`symbol-first-protocol.md`](01-global-optimization/system-prompts/symbol-first-protocol.md) - Symbol-first exploration protocol
@@ -587,13 +588,17 @@ These prompts are project-agnostic and can be freely adapted for your team's nee
 ---
 
 **Created**: 2026-01-04
-**Last Updated**: 2026-07-02
-**Version**: 1.19.0
+**Last Updated**: 2026-07-14
+**Version**: 1.20.0
 **Compatibility**: Claude Code v2.1.32+, Claude API (Fable 5: `claude-fable-5`, Opus 4.8: `claude-opus-4-8`, Opus 4.7: `claude-opus-4-7`, Sonnet 5: `claude-sonnet-5`, Haiku 4.5: `claude-haiku-4-5`)
 
 ---
 
 ## 📝 Version History
+
+### v1.20.0 (2026-07-14)
+**Added**: `/agent-ready` global skill (6th global skill) — audits a project's public site for AI-agent readiness via Cloudflare's [isitagentready.com](https://isitagentready.com) scanner (robots.txt, sitemap, llms.txt, Link headers, Content Signals, Markdown-for-Agents, MCP / OAuth / A2A / Agent-Skills discovery, agentic commerce), then triages each failing check by ROI for the site type (content vs. API vs. agentic-commerce) and implements **only** what pays back — treating "implement every check" as the failure mode. First multi-file skill in the repo: a stdlib-only scanner script (`scripts/scan.py`, API-first with a direct-probe fallback) plus `references/applicability.md` (ROI decision table + AI-crawler policy) and `references/implementations.md` (per-stack recipes for Laravel / Next.js / Node / static).
+**Cross-referenced**: linked from `14-webmcp/guide.md` (the `webMcp` discovery check) and `07-custom-commands/seo.md` (shared robots/sitemap/AI-crawler/GEO surface).
 
 ### v1.19.0 (2026-07-02)
 **Added**: Default Tooling Stack in the global template — Lattice (browser + web search), Svod (persistent memory), Svod Foundry (reusable tools), Harbormaster (cross-project agent comms), each with a fallback

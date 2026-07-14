@@ -75,7 +75,7 @@ If you don't have Serena MCP, many optimizations still work, but you'll get 40-5
 **Global configuration** in `~/.claude/`:
 - **1 central orchestrator** (PM agent)
 - **4 global settings files** (prompt caching, beta features, model strategy, token optimization)
-- **5 global skills** (slash commands: /optimize, /context, /cache-inspector, /update-docs, /init-project)
+- **6 global skills** (slash commands: /optimize, /context, /cache-inspector, /update-docs, /init-project, /agent-ready)
 - **2 system prompts** (global optimization, symbol-first protocol)
 - **3 documentation files** (README, INSTALLATION-COMPLETE, QUICK-REFERENCE)
 
@@ -768,7 +768,7 @@ Create 4 JSON configuration files in `~/.claude/settings/`.
 
 ## Step 4: Create Global Skills
 
-Create 5 slash command skills. Due to length, I'll show the structure for each:
+Create 6 slash command skills. Due to length, I'll show the structure for each:
 
 ### 4.1 `/optimize` Skill
 
@@ -835,6 +835,22 @@ Create 5 slash command skills. Due to length, I'll show the structure for each:
 - `memories` — Create initial Serena memories by analyzing the codebase
 - `optimize` — Configure project-level token optimization settings
 - `--full` — Run all steps in sequence (recommended, 10-15 min)
+
+### 4.6 `/agent-ready` Skill
+
+**File**: `~/.claude/skills/agent-ready/SKILL.md` (multi-file — copy the whole directory, including `scripts/` and `references/`)
+
+**Source**: Copy from [`skills/agent-ready/`](skills/agent-ready/SKILL.md) in this directory.
+
+**What it does**: Audits a project's *public* site for AI-agent readiness (via Cloudflare's [isitagentready.com](https://isitagentready.com) scanner), then implements **only** the fixes worth doing for that site type — treating "implement every failing check" as gold-plating.
+
+**Phases**:
+- `Phase 0` — Determine the production URL (never scan localhost)
+- `Phase 1` — Scan via `scripts/scan.py` (API-first, direct-probe fallback; full JSON saved to `--out`)
+- `Phase 2` — Triage each `fail` by ROI: DO / DECISION / CONDITIONAL / SKIP (`references/applicability.md`)
+- `Phase 3` — Single approval checkpoint (AI-crawler policy + whether an agent API surface exists)
+- `Phase 4` — Implement in the project's stack (`references/implementations.md`); never fake an endpoint
+- `Phase 5` — Re-scan, report the level delta and what was deliberately skipped
 
 ---
 
@@ -1171,7 +1187,7 @@ Track your installation success:
 
 **Setup completion**:
 - [ ] 15+ files created
-- [ ] All 5 skills working
+- [ ] All 6 skills working
 - [ ] PM Orchestrator file valid
 - [ ] All 4 settings JSON valid
 - [ ] Documentation readable
