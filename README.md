@@ -589,12 +589,16 @@ These prompts are project-agnostic and can be freely adapted for your team's nee
 
 **Created**: 2026-01-04
 **Last Updated**: 2026-07-14
-**Version**: 1.20.0
+**Version**: 1.21.0
 **Compatibility**: Claude Code v2.1.32+, Claude API (Fable 5: `claude-fable-5`, Opus 4.8: `claude-opus-4-8`, Opus 4.7: `claude-opus-4-7`, Sonnet 5: `claude-sonnet-5`, Haiku 4.5: `claude-haiku-4-5`)
 
 ---
 
 ## 📝 Version History
+
+### v1.21.0 (2026-07-14)
+**Added**: Five skill-authoring patterns adapted from [garrettw/php-arch-skills](https://github.com/garrettw/php-arch-skills), folded into `03-custom-skills/` and the root `CLAUDE.md`: (1) a **"When to Use (and When NOT to)" decision table** as a standard leading section — the operational form of the don't-gold-plate rule; (2) a **"Boundaries" rubric** (Always Do / Ask First / Never Do), with `Ask First` aligned to Action Safety; (3) **`references/` progressive disclosure as the default** — the template now ships a thin-core + `scripts/` + `references/` multi-file structure; (4) **explicit bidirectional cross-linking** between skills (new guide section + strengthened *When Editing* rule); (5) a **reference-split (matrix) pattern** (guide Pattern 5) for one concern across many variants, with `11-mobile-development` / `12-desktop-development` as worked examples.
+**Updated**: `03-custom-skills/skill-template.md`, `03-custom-skills/guide.md`, and root `CLAUDE.md`.
 
 ### v1.20.0 (2026-07-14)
 **Added**: `/agent-ready` global skill (6th global skill) — audits a project's public site for AI-agent readiness via Cloudflare's [isitagentready.com](https://isitagentready.com) scanner (robots.txt, sitemap, llms.txt, Link headers, Content Signals, Markdown-for-Agents, MCP / OAuth / A2A / Agent-Skills discovery, agentic commerce), then triages each failing check by ROI for the site type (content vs. API vs. agentic-commerce) and implements **only** what pays back — treating "implement every check" as the failure mode. First multi-file skill in the repo: a stdlib-only scanner script (`scripts/scan.py`, API-first with a direct-probe fallback) plus `references/applicability.md` (ROI decision table + AI-crawler policy) and `references/implementations.md` (per-stack recipes for Laravel / Next.js / Node / static).

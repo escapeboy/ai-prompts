@@ -4,6 +4,26 @@ All notable changes to this library are documented here.
 
 ---
 
+## [1.21.0] — 2026-07-14
+
+### Added
+
+Skill-authoring patterns adapted from [garrettw/php-arch-skills](https://github.com/garrettw/php-arch-skills), whose skills lead with decision tables, close with explicit boundaries, and split deep detail into `references/`. Five patterns folded into the repo's skill-authoring system:
+
+- **"When to Use (and When NOT to)" decision table** — a standard leading section (in `03-custom-skills/skill-template.md` and the guide's SKILL.md anatomy) that names the cases where a *simpler* approach wins. The operational form of the Code Discipline / don't-gold-plate rule.
+- **"Boundaries" (Always Do / Ask First / Never Do)** — a consistent closing rubric on every non-trivial skill; the `Ask First` bucket is aligned with the global Action Safety rule (hand control back for destructive / hard-to-reverse / shared-state operations).
+- **`references/` progressive disclosure as the default** — the skill template now ships a multi-file structure (thin `SKILL.md` core + `scripts/` + `references/`), and `03-custom-skills/guide.md` documents it as the norm for any non-trivial skill, not an edge case.
+- **Explicit, bidirectional cross-linking** — a new *Cross-Linking Skills* section in the guide + a strengthened *When Editing* rule in the root `CLAUDE.md`: link sibling skills with relative paths, state the relationship, and add the reciprocal link back. Treat the library as a network, not a list.
+- **Reference-split (matrix) skill** — a new **Pattern 5** in the guide for one concern across many variants (frameworks, platforms, providers): a thin core with a dispatcher table routing to per-variant `references/` files. `11-mobile-development` and `12-desktop-development` are cited as existing worked examples of the shape.
+
+### Updated
+
+- `03-custom-skills/skill-template.md` — added the *When to Use*, *Boundaries*, and *Bundled Files (Progressive Disclosure)* sections, and reworked *See Also* into explicit relative sibling-skill links.
+- `03-custom-skills/guide.md` — single-file **and** multi-file directory structures; the two new standard sections in the SKILL.md anatomy; Pattern 5 + Cross-Linking sections; the quick-reference pattern table and skill-file checklist updated.
+- Root `CLAUDE.md` — *When Editing* now mandates bidirectional cross-links and the matrix reference-split for multi-variant content.
+
+---
+
 ## [1.20.0] — 2026-07-14
 
 ### Added

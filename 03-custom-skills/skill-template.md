@@ -12,6 +12,20 @@ version: 1.0.0
 
 ---
 
+## When to Use This Skill (and When NOT to)
+
+> Lead with this. It stops the skill from being applied where a simpler approach wins — the operational form of the global *Code Discipline / don't gold-plate* rule.
+
+| Use this skill for | Use a simpler approach for |
+|--------------------|----------------------------|
+| [Case complex enough to justify the skill's overhead] | [Trivial case where the skill is overkill] |
+| [Repeated / multi-step workflow] | [One-off action done faster by hand] |
+| [Decision that benefits from the encoded rules] | [Obvious call with one correct answer] |
+
+**Start simple. Reach for this skill only when [threshold that makes it worth the overhead].**
+
+---
+
 ## Usage
 
 ```
@@ -79,6 +93,51 @@ version: 1.0.0
 ### 3. Another Action
 
 [Repeat the action structure as needed]
+
+---
+
+## Boundaries
+
+> A consistent Always / Ask First / Never rubric. `Ask First` is where the skill hands control back to the user — keep it aligned with the global *Action Safety* rule (confirm destructive, hard-to-reverse, or shared-state operations).
+
+### Always Do
+
+- [Invariant the skill must never violate, e.g. "Always run the full test suite after touching $fillable"]
+- [Non-negotiable convention, e.g. "Always scope queries by org_id"]
+
+### Ask First
+
+- [Decision that belongs to the user, e.g. "Ask before deleting or force-pushing"]
+- [Ambiguous trade-off where reasonable people disagree]
+
+### Never Do
+
+- [Hard prohibition, e.g. "Never run `--fresh` migrations against production"]
+- [Anti-pattern the skill exists to prevent]
+
+---
+
+## Bundled Files (Progressive Disclosure)
+
+> Include this section when the skill ships reference material. Keep `SKILL.md` a thin decision core; push deep detail, per-variant guidance, and long examples into `references/` so they load **only** when the body tells Claude to read them.
+
+```
+~/.claude/skills/skill-name/
+├── SKILL.md                      # Thin core: triggers, decisions, boundaries
+├── scripts/
+│   └── helper.py                 # Executable helpers the skill runs
+└── references/
+    ├── decision-flowchart.md     # Loaded only when a decision needs it
+    ├── variant-a.md              # e.g. per-framework / per-platform detail
+    └── variant-b.md
+```
+
+Link a reference from the body with a relative path, and say **when** to read it:
+
+```markdown
+For the full decision tree, read [references/decision-flowchart.md](references/decision-flowchart.md).
+Read only the reference file matching the target platform (see the dispatcher table above).
+```
 
 ---
 
@@ -358,6 +417,8 @@ Error: /skill-name not recognized
 
 ## See Also
 
-- [Related Skill 1](/skill-1) - [Brief description]
-- [Related Skill 2](/skill-2) - [Brief description]
+> Cross-link sibling skills explicitly with relative paths — turn the collection into a network, not a list. When this skill depends on, hands off to, or is a lighter/heavier alternative of another, name it here **and** add a reciprocal link from that skill back to this one.
+
+- [Related Skill 1](../related-skill-1/SKILL.md) - [How they relate: depends-on / hands-off-to / lighter-alternative]
+- [Related Skill 2](../related-skill-2/SKILL.md) - [How they relate]
 - [Documentation](../guide.md) - How to create skills

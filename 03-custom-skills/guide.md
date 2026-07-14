@@ -61,16 +61,35 @@ Skills are an open standard published as [agentskills.io](https://agentskills.io
 
 ### Directory Structure
 
+**Single-file skill** (the default for simple skills):
+
 ```
 ~/.claude/skills/
 └── skill-name/
     └── SKILL.md        # Required: Main skill definition
 ```
 
+**Multi-file skill** (the default once a skill is non-trivial — see [Progressive Disclosure](#progressive-disclosure-3-levels)):
+
+```
+~/.claude/skills/
+└── skill-name/
+    ├── SKILL.md        # Thin decision core: triggers, workflows, boundaries
+    ├── scripts/        # Optional: executable helpers the skill runs
+    │   └── scan.py
+    └── references/     # Loaded ONLY when SKILL.md tells Claude to read them
+        ├── decision-flowchart.md
+        ├── variant-a.md
+        └── variant-b.md
+```
+
+Keep `SKILL.md` small and decision-oriented; push deep detail, long examples, and per-variant guidance into `references/`. This is not an edge case — most skills that cover more than one path benefit from it. In this repo, `agent-ready` (a global skill with `scripts/` + `references/`) and the multi-platform sections `11-mobile-development` / `12-desktop-development` are worked examples.
+
 **Important**:
 - Skill must be in its own subdirectory
 - File must be named exactly `SKILL.md` (case-sensitive)
 - Skill name comes from the directory name
+- `references/` and `scripts/` are conventions, not magic names — the SKILL.md body decides what gets read and when
 
 ### SKILL.md Anatomy
 
@@ -84,6 +103,12 @@ version: 1.0.0
 # Skill Title
 
 [Detailed description of what the skill does]
+
+## When to Use This Skill (and When NOT to)
+
+| Use this skill for | Use a simpler approach for |
+|--------------------|----------------------------|
+| [Case that justifies the skill] | [Trivial case where it is overkill] |
 
 ## Usage
 
@@ -103,6 +128,12 @@ version: 1.0.0
 **Example**:
 /skill-name action-name --option value
 
+## Boundaries
+
+- **Always**: [invariant the skill must never violate]
+- **Ask First**: [decision that belongs to the user — align with Action Safety]
+- **Never**: [hard prohibition / anti-pattern the skill prevents]
+
 ---
 
 ## Integration
@@ -113,6 +144,11 @@ version: 1.0.0
 
 [Token usage and savings information]
 ```
+
+Two sections carry disproportionate weight and belong in every non-trivial skill:
+
+- **When to Use (and When NOT to)** — a two-column table that names the cases where a *simpler* approach wins. This is the operational form of the *don't gold-plate* discipline; it stops the skill from firing where it adds only overhead.
+- **Boundaries (Always / Ask First / Never)** — a consistent rubric that encodes invariants and, crucially, the points where the skill must hand control back to the user (destructive, hard-to-reverse, or shared-state operations).
 
 ### YAML Frontmatter
 
@@ -529,6 +565,58 @@ gh pr create --title "[title]" --body "[generated body]"
 ```
 ```
 
+### Pattern 5: Reference-Split (Matrix) Skill
+
+For a skill that covers **one concern across many variants** (frameworks, platforms, providers, languages). Instead of one long file that loads every variant, keep a thin `SKILL.md` core with a **dispatcher table**, and put each variant in its own `references/` file that loads only when needed.
+
+```
+skills/mobile-build/
+├── SKILL.md                    # Shared logic + dispatcher table
+└── references/
+    ├── ios.md
+    ├── android.md
+    ├── react-native.md
+    └── flutter.md
+```
+
+The `SKILL.md` core holds what is common to every variant plus a table that routes to the right reference:
+
+```markdown
+## Available References
+
+| Variant       | Reference file                        |
+|---------------|---------------------------------------|
+| iOS           | [references/ios.md](references/ios.md) |
+| Android       | [references/android.md](references/android.md) |
+| React Native  | [references/react-native.md](references/react-native.md) |
+| Flutter       | [references/flutter.md](references/flutter.md) |
+
+Read **only** the reference row matching the target platform. The shared workflow below applies to all.
+```
+
+**Why it wins**: a 15-framework skill costs ~150 tokens of frontmatter at rest and loads exactly one variant's detail on use — not all fifteen. Prefer this over one monolithic guide whenever variants share a workflow but differ in specifics.
+
+**Worked examples in this repo**: `11-mobile-development` (iOS / Android / React Native / Flutter) and `12-desktop-development` (macOS / Tauri / Electron) already use this shape — a core README with a **Platform Comparison** + **Files in This Section** dispatcher table routing to per-platform subdirectories. Model new multi-variant content on them.
+
+---
+
+## Cross-Linking Skills
+
+A collection of skills is more useful as a **network** than a list. When one skill depends on, hands off to, or is a lighter/heavier alternative of another, link it **explicitly** with a relative path — and add the reciprocal link back.
+
+```markdown
+<!-- in application-layer/SKILL.md -->
+This is the in-process form of a use case; the [`distribution-patterns`](../distribution-patterns/SKILL.md)
+skill covers exposing it remotely. For lighter features, prefer a
+[Transaction Script](../domain-modeling/references/transaction-script.md) instead.
+```
+
+Guidelines:
+- Link **sibling skills** with `../other-skill/SKILL.md`; link **reference files** with `references/file.md`.
+- State the *relationship* in the link text (depends-on, hands-off-to, lighter-alternative), not just the name.
+- Make links bidirectional — if A points to B, B should acknowledge A.
+- Cross-reference across repo sections too (e.g. a new skill links back to this guide, and to related numbered sections). This repo's convention lives in the root `CLAUDE.md` → *When Editing*.
+
 ---
 
 ## Advanced Features
@@ -915,8 +1003,12 @@ You help users learn by guiding them to write code themselves.
 
 - [ ] Located in `~/.claude/skills/skill-name/SKILL.md` or `.claude/skills/skill-name/SKILL.md`
 - [ ] YAML frontmatter with `name`, `description`, `version`
+- [ ] `## When to Use (and When NOT to)` table (non-trivial skills)
 - [ ] Clear `## Usage` section
 - [ ] Documented actions/parameters
+- [ ] `## Boundaries` (Always / Ask First / Never)
+- [ ] Deep detail split into `references/` (multi-variant or long skills)
+- [ ] Explicit cross-links to related skills (relative paths, bidirectional)
 - [ ] Examples with real commands
 - [ ] Error handling instructions
 
@@ -928,6 +1020,7 @@ You help users learn by guiding them to write code themselves.
 | Multi-action | Related operations (CRUD) |
 | Workflow | Multi-step processes |
 | Integration | Combining multiple tools |
+| Reference-split (matrix) | One concern across many variants (frameworks, platforms, providers) |
 
 ### Useful Frontmatter
 
