@@ -4,6 +4,15 @@ All notable changes to this library are documented here.
 
 ---
 
+## [1.23.1] — 2026-07-18
+
+### Added
+
+- **`.githooks/pre-commit`** — wires `skill-lint.py` (Tier-2) as a version-controlled pre-commit gate. Runs over `01-global-optimization/skills/` only when a staged change touches that tree (docs-only commits pass through); errors block the commit, warnings are advisory, `git commit --no-verify` bypasses. Enable once per clone with `git config core.hooksPath .githooks`. `.githooks/README.md` documents enabling it and the `--strict` (block-on-warnings) opt-in.
+- Root `CLAUDE.md` *When Editing* — a line pointing contributors at the hook.
+
+---
+
 ## [1.23.0] — 2026-07-18
 
 ### Added

@@ -1,0 +1,27 @@
+#!/usr/bin/env bash
+# ai-prompts pre-commit hook — Tier-2 deterministic skill validation.
+# Runs skill-lint.py over the global skills whenever a staged change touches them.
+# Enable once per clone:  git config core.hooksPath .githooks
+set -euo pipefail
+
+ROOT="$(git rev-parse --show-toplevel)"
+SKILLS_DIR="01-global-optimization/skills"
+LINTER="$ROOT/$SKILLS_DIR/self-improve/scripts/skill-lint.py"
+
+# Only gate commits that actually touch the skills tree — docs-only commits pass through.
+if ! git diff --cached --name-only | grep -q "^$SKILLS_DIR/"; then
+  exit 0
+fi
+
+if ! command -v python3 >/dev/null 2>&1; then
+  echo "pre-commit: python3 not found — skipping skill-lint (install python3 to enable the gate)" >&2
+  exit 0
+fi
+
+echo "pre-commit: skill-lint (Tier-2) on $SKILLS_DIR"
+# Errors block the commit; warnings are advisory (add --strict here to also block on warnings).
+if ! python3 "$LINTER" "$ROOT/$SKILLS_DIR"; then
+  echo "" >&2
+  echo "pre-commit BLOCKED: skill-lint failed. Fix the errors above, or bypass with 'git commit --no-verify'." >&2
+  exit 1
+fi

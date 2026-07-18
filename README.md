@@ -591,12 +591,15 @@ These prompts are project-agnostic and can be freely adapted for your team's nee
 
 **Created**: 2026-01-04
 **Last Updated**: 2026-07-18
-**Version**: 1.23.0
+**Version**: 1.23.1
 **Compatibility**: Claude Code v2.1.32+, Claude API (Fable 5: `claude-fable-5`, Opus 4.8: `claude-opus-4-8`, Opus 4.7: `claude-opus-4-7`, Sonnet 5: `claude-sonnet-5`, Haiku 4.5: `claude-haiku-4-5`)
 
 ---
 
 ## 📝 Version History
+
+### v1.23.1 (2026-07-18)
+**Added**: `.githooks/pre-commit` — wires `skill-lint.py` (Tier-2) as a version-controlled pre-commit gate over `01-global-optimization/skills/`. Runs only when a staged change touches the skills tree (docs-only commits pass through); errors block, warnings are advisory, `--no-verify` bypasses. Enable per clone: `git config core.hooksPath .githooks` (see `.githooks/README.md`).
 
 ### v1.23.0 (2026-07-18)
 **Added**: `/self-improve` global skill (8th global skill, `01-global-optimization/skills/self-improve/`) — a **converging** self-improvement loop for the skill library: mine recurring review feedback (frequency threshold → "an undocumented requirement") → apply a bounded edit (≤5 changes / ≤100 lines, regression-aborts) → gate through **three-tier evaluation** → promote the rule → measure convergence. The three tiers: **Tier 2** deterministic `scripts/skill-lint.py` (stdlib linter — frontmatter, kebab-name, description bounds, unreferenced files, duplicate names, trigger-collision; `--json` emits a sealable evidence record; ready as a pre-commit hook), **Tier 1** trigger-accuracy subagent (10 should-trigger / 10 should-not in the real crowded skill env), **Tier 3** rubric LLM-as-judge. Multi-file: linter + `references/rubric.md` (signal-mining + eval protocol) + `references/integration-seams.md` (optional deterministic-execution / decision-memory / governance / code-intelligence seams). Idea from Salesforce Engineering, *"Closing the Loop: How to Build Self-Improving AI Systems with Automated Feedback Loops"* (2026-07-17, `forcedotcom/sf-skills`).

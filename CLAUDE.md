@@ -45,7 +45,7 @@ The library follows a sequential learning path (01 through 14), where each direc
 - Each directory has a `guide.md` as its primary entry point
 - Templates use bracket placeholders: `[Description]`, `[Step 1]`
 - Token savings estimates are included in guides where applicable
-- Version history is tracked in the root `README.md` (current: v1.23.0)
+- Version history is tracked in the root `README.md` (current: v1.23.1)
 - Compatible with Claude Fable 5, Opus 4.8/4.7/4.6, Sonnet 5/4.6, Haiku 4.5
 
 ## When Editing
@@ -56,6 +56,7 @@ The library follows a sequential learning path (01 through 14), where each direc
 - Update the version history in `README.md` when adding new sections or making significant changes
 - Cross-reference related guides when adding new content, and make links **bidirectional** — if a new file points at an existing one, add a reciprocal link back from that file. Use relative paths (e.g., link a new skill to `03-custom-skills/guide.md`, and the related numbered sections back to the skill). Treat the library as a network of cross-links, not a flat list.
 - For content that spans many variants (frameworks, platforms, providers), use the reference-split (matrix) shape: a thin core with a dispatcher table routing to per-variant files, as in `11-mobile-development` / `12-desktop-development`. See `03-custom-skills/guide.md` → *Pattern 5*.
+- Enable the Tier-2 skill-lint pre-commit gate once per clone: `git config core.hooksPath .githooks` (runs `skill-lint.py` over `01-global-optimization/skills/` on skill changes; see `.githooks/README.md`).
 
 ## Releasing
 
