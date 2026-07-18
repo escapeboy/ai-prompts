@@ -14,7 +14,7 @@ This library contains reusable prompts for implementing global Claude Code optim
 - **[guide.md](01-global-optimization/guide.md)** - Step-by-step installation guide
 - **[setup-agent.md](01-global-optimization/setup-agent.md)** - Executable agent for automated setup
 - **[checklist.md](01-global-optimization/checklist.md)** - Verification checklist
-- **[skills/](01-global-optimization/skills/)** - Complete SKILL.md files for all 7 global skills (installed to `~/.claude/skills/`)
+- **[skills/](01-global-optimization/skills/)** - Complete SKILL.md files for all 8 global skills (installed to `~/.claude/skills/`)
   - [`optimize/`](01-global-optimization/skills/optimize/SKILL.md) - `/optimize` — max token efficiency mode
   - [`context/`](01-global-optimization/skills/context/SKILL.md) - `/context` — memory management
   - [`cache-inspector/`](01-global-optimization/skills/cache-inspector/SKILL.md) - `/cache-inspector` — cache monitoring
@@ -22,6 +22,7 @@ This library contains reusable prompts for implementing global Claude Code optim
   - [`init-project/`](01-global-optimization/skills/init-project/SKILL.md) - `/init-project` — new project setup
   - [`agent-ready/`](01-global-optimization/skills/agent-ready/SKILL.md) - `/agent-ready` — AI-agent-readiness audit + selective remediation (multi-file: scanner script + ROI/implementation references)
   - [`continuity/`](01-global-optimization/skills/continuity/SKILL.md) - `/continuity` — repo-local resume→work→finalize lifecycle + evidence-weighted `.continuity/STATE.md` (multi-file: lint/scaffold script + format reference)
+  - [`self-improve/`](01-global-optimization/skills/self-improve/SKILL.md) - `/self-improve` — closing-the-loop for the skill library: mine recurring feedback → bounded edit → three-tier eval gate (deterministic `skill-lint.py` + trigger accuracy + LLM judge) → converge (multi-file: linter script + rubric/integration references)
 - **[system-prompts/](01-global-optimization/system-prompts/)** - Global system prompt files
   - [`global-optimization.md`](01-global-optimization/system-prompts/global-optimization.md) - Core optimization rules
   - [`symbol-first-protocol.md`](01-global-optimization/system-prompts/symbol-first-protocol.md) - Symbol-first exploration protocol
@@ -590,12 +591,16 @@ These prompts are project-agnostic and can be freely adapted for your team's nee
 
 **Created**: 2026-01-04
 **Last Updated**: 2026-07-18
-**Version**: 1.22.0
+**Version**: 1.23.0
 **Compatibility**: Claude Code v2.1.32+, Claude API (Fable 5: `claude-fable-5`, Opus 4.8: `claude-opus-4-8`, Opus 4.7: `claude-opus-4-7`, Sonnet 5: `claude-sonnet-5`, Haiku 4.5: `claude-haiku-4-5`)
 
 ---
 
 ## 📝 Version History
+
+### v1.23.0 (2026-07-18)
+**Added**: `/self-improve` global skill (8th global skill, `01-global-optimization/skills/self-improve/`) — a **converging** self-improvement loop for the skill library: mine recurring review feedback (frequency threshold → "an undocumented requirement") → apply a bounded edit (≤5 changes / ≤100 lines, regression-aborts) → gate through **three-tier evaluation** → promote the rule → measure convergence. The three tiers: **Tier 2** deterministic `scripts/skill-lint.py` (stdlib linter — frontmatter, kebab-name, description bounds, unreferenced files, duplicate names, trigger-collision; `--json` emits a sealable evidence record; ready as a pre-commit hook), **Tier 1** trigger-accuracy subagent (10 should-trigger / 10 should-not in the real crowded skill env), **Tier 3** rubric LLM-as-judge. Multi-file: linter + `references/rubric.md` (signal-mining + eval protocol) + `references/integration-seams.md` (optional deterministic-execution / decision-memory / governance / code-intelligence seams). Idea from Salesforce Engineering, *"Closing the Loop: How to Build Self-Improving AI Systems with Automated Feedback Loops"* (2026-07-17, `forcedotcom/sf-skills`).
+**Updated**: `01-global-optimization/system-prompts/global-optimization.md` (the global `~/.claude/CLAUDE.md` rules) — new *Convention Promotion (recurring feedback → rule)* section: a correction seen ~3+ times is promoted into the generator surface + durable policy instead of accumulating another near-duplicate memory; disputed signal calibrates the rule down.
 
 ### v1.22.0 (2026-07-18)
 **Added**: `/continuity` global skill (7th global skill, `01-global-optimization/skills/continuity/`) — a repo-local **resume → work → finalize** lifecycle that preserves the *operational thread* across coding sessions (what's mid-flight, what already failed, what's next), the gap that bigger context/vector/chat memory doesn't close. State lives in an inspectable, git-diffable `.continuity/STATE.md` where every fact carries an **evidence tag** (`[observed]`/`[validated]`/`[user]` = trust; `[claimed]`/`[contradicted]`/`[unknown]` = low-trust) so uncertainty stays visible. Multi-file: `scripts/continuity.py` (stdlib-only scaffold + lint of structure/tags/provenance) and `references/format.md` (section spec + worked example + local-vs-portable split). Explicitly a **thin layer over** the existing memory stack (Serena/Svod/codebase-memory/auto-memory), not a new store — the skill forbids creating `.continuity/` for single-shot work to avoid a sixth-memory-store. Idea adapted from Santi Santamaria Medel, *"Maybe Coding Agents Don't Need a Bigger Memory. Maybe They Need Continuity."* (Level Up Coding, 2026-06-18).

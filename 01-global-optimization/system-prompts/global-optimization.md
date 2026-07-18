@@ -60,6 +60,10 @@ The between-session gap is the lost *operational thread* (what's mid-flight, wha
 
 **Do NOT** create `.continuity/` for single-shot/throwaway tasks (avoids a sixth memory store). Facts that outlive the task graduate to Svod; architecture stays in Serena; this holds only the live thread. See the `continuity` skill.
 
+## Convention Promotion (recurring feedback → rule)
+
+A correction that recurs is an *undocumented requirement*, not another memory. When the **same** corrective pattern has appeared ~3+ times (across feedback memories, PR threads, or session corrections), **promote it**: fold it into the generator surface (a global `CLAUDE.md` convention, a skill body, a template) and record it as a durable policy (provisional→active) — rather than accumulating another near-duplicate memory. Below that threshold, leave it as a memory; do not mutate conventions on one-off signal. Human-**disputed** signal calibrates a rule *down* (stop enforcing). For a full converging loop (three-tier eval gate before changing the skill library), use the `self-improve` skill.
+
 ---
 
 ## Default Tooling Stack

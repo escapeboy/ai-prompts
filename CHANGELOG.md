@@ -4,6 +4,23 @@ All notable changes to this library are documented here.
 
 ---
 
+## [1.23.0] — 2026-07-18
+
+### Added
+
+- **`/self-improve` global skill** (`01-global-optimization/skills/self-improve/`) — the 8th global skill. A **converging** feedback loop for the skill/convention library: a review comment that recurs is an *undocumented requirement* → fold it into the system, gated by evaluation. Premise from Salesforce Engineering, *"Closing the Loop: How to Build Self-Improving AI Systems with Automated Feedback Loops"* (2026-07-17, `forcedotcom/sf-skills`).
+  - **Loop**: `mine recurring signal (frequency threshold) → apply bounded (≤5 edits / ≤100 lines, regression-aborts) → three-tier gate → promote rule → measure convergence`. Natural damping — a better generator emits fewer repeat comments → less signal → smaller changes → steady state; a convention change restarts it.
+  - **`scripts/skill-lint.py`** — Tier-2 deterministic validation (the `validate-skills.ts` analogue), stdlib-only: frontmatter present/valid, kebab-case `name` matching the directory, description length bounds, unreferenced bundled files (dead weight), duplicate names across the library, and trigger-collision (near-duplicate descriptions via token Jaccard). `--json` emits an evidence record (`input_sha256` + per-rule results + verdict) shaped to be sealed by a deterministic-execution platform; non-zero exit is a hard gate. Ready as a pre-commit hook.
+  - **`references/rubric.md`** — the frequency-threshold signal-mining protocol (with the efficacy metric = decline in repeat-signal per cycle), the Tier-1 trigger-accuracy protocol (10 should-trigger / 10 should-not, ≥9/10 bar), and the Tier-3 judge rubric (scope precision, progressive disclosure, boundary clarity, convention adherence, signal fidelity).
+  - **`references/integration-seams.md`** — optional composition points (deterministic-execution/evidence platform, decision-memory store, governance gate, code-intelligence engine, MCP aggregator); the loop degrades gracefully without any of them.
+  - **Philosophy match**: deterministic validation where quality is objectively measurable, LLM judgement only where it needs context — neither replaces the other. Bounded blast radius and **draft-PR-not-auto-merge** (the reviewer is the deliberate stopping point) mirror the repo's Code Discipline + Action Safety ethos.
+
+### Updated
+
+- `01-global-optimization/system-prompts/global-optimization.md` (the global `~/.claude/CLAUDE.md` rule set) — new **Convention Promotion (recurring feedback → rule)** section: a corrective pattern seen ~3+ times across feedback memories / PR threads / session corrections is an undocumented requirement → promote it into the generator surface + a durable policy, rather than accumulating a fourth near-duplicate memory. Below threshold, leave it as a memory; human-disputed signal calibrates the rule *down*.
+
+---
+
 ## [1.22.0] — 2026-07-18
 
 ### Added
