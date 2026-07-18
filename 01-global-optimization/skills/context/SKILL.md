@@ -10,6 +10,21 @@ Manages the Serena memory system that stores architectural knowledge, convention
 
 ---
 
+## When to Use This Skill (and When NOT to)
+
+| Use this skill for | Use a simpler approach for |
+|--------------------|----------------------------|
+| Starting a session on a project with existing memories — `load` before any code work | A repo with no memories yet and one quick edit — just read the one file |
+| Capturing durable architecture / conventions / deploy knowledge that outlives the session (`save`, `create`) | An ephemeral session fact — let auto-memory / MEMORY.md hold it |
+| Refreshing a memory after a major refactor so Claude stops making stale assumptions | A memory touched days ago on an unchanged codebase — it's still current |
+| Auditing what's loaded and what caching is buying you (`inspect`, `list`) | A single-file lookup where symbolic exploration answers it directly |
+
+**Start simple. Reach for this skill only when the project has (or clearly warrants) reusable
+memories — don't scaffold a memory set for a one-off task.** Without Serena, use
+[`/optimize`](../optimize/SKILL.md) instead; it has fallback strategies.
+
+---
+
 ## Usage
 
 ```
@@ -31,213 +46,21 @@ Manages the Serena memory system that stores architectural knowledge, convention
 
 ## Actions
 
-### `load` — Load all relevant memories
+Compact dispatch below. For the full process steps, parameters, and output formats of any
+action, read **[references/actions.md](references/actions.md)**.
 
-Loads memories relevant to the current project. Run this at the **start of every session** before any code work.
+| Action | What it does | When to run |
+|--------|--------------|-------------|
+| `load` | Load core memories (`architecture`, `codebase-conventions`) + conditionally load module/testing/docker/deployment memories by task context | **Start of every session**, before code work |
+| `list` | List all project memories with last-updated + load/cache status | To see what's available |
+| `save [name]` | Gather context → structure as Markdown → write `.serena/memories/[name].md` | After learning something durable worth persisting |
+| `refresh [name]` | Re-explore the code and **overwrite** an existing memory with current state | After a major refactor, a new module, or a memory >2 weeks old |
+| `inspect` | Show loaded memories, token sizes, cache hit rate, and project/Serena/constitution status | To audit context + caching |
+| `clear` | Unload all memories from the current conversation (does **not** delete files) | Switching projects or context is stale |
+| `create [name]` | Interactive memory creation — asks what to document and how to structure it | When you want to build a memory step by step |
 
-**Process**:
-1. List all memories: `mcp__serena__list_memories()`
-2. Load core memories automatically:
-   - `architecture.md`
-   - `codebase-conventions.md`
-3. Detect task context and conditionally load:
-   - `module-structure.md` — if working on a specific module
-   - `testing-strategy.md` — if tests are involved
-   - `docker-workflow.md` — if Docker config detected
-   - `deployment-config.md` — if deployment work planned
-
-**Token savings**: 60-70% vs reading individual files each time
-
-```
-/context load
-```
-
----
-
-### `list` — Show available memories
-
-Lists all Serena memories for the current project with metadata.
-
-```
-/context list
-```
-
-**Output format**:
-```
-Project memories (.serena/memories/):
-
-Core (always loaded):
-  ✅ architecture.md          — last updated 2026-03-10
-  ✅ codebase-conventions.md  — last updated 2026-03-08
-
-Conditional:
-  📋 module-structure.md      — last updated 2026-02-20
-  📋 testing-strategy.md      — last updated 2026-01-15
-  📋 docker-workflow.md       — last updated 2026-01-10
-
-Project-specific:
-  📋 api-design.md            — last updated 2026-03-01
-  📋 database-schema.md       — last updated 2026-02-28
-
-Status: 2/8 memories loaded | Cache: WARM
-```
-
----
-
-### `save [name]` — Create or update a memory
-
-Creates a new Serena memory capturing current knowledge about the project.
-
-**Usage**:
-```
-/context save [memory-name]
-```
-
-**Parameters**:
-- `[memory-name]` — Name for the memory file (without `.md`), e.g. `architecture`, `api-design`, `deployment-config`
-
-**Process**:
-1. Gather relevant context from current conversation + codebase
-2. Structure as readable Markdown
-3. Write to `.serena/memories/[name].md`
-4. Confirm creation with token size estimate
-
-**Examples**:
-```
-/context save architecture         # Document project structure
-/context save api-design           # Document API conventions
-/context save deployment-config    # Document deploy workflow
-/context save testing-strategy     # Document test patterns
-```
-
-**Recommended memory structure** (Claude writes this automatically):
-```markdown
-# [Topic]
-
-## Overview
-[High-level summary]
-
-## Key Patterns
-[Most important conventions or structures]
-
-## File Locations
-[Where to find relevant code]
-
-## Constraints
-[Rules, limitations, things to avoid]
-
-## Last Updated
-[Date]
-```
-
----
-
-### `refresh [name]` — Regenerate a stale memory
-
-Re-reads the codebase and overwrites an existing memory with current state. Use when the project has changed significantly.
-
-```
-/context refresh architecture
-/context refresh codebase-conventions
-```
-
-**Process**:
-1. Load current memory (for comparison)
-2. Perform fresh symbolic exploration of relevant code
-3. Identify what has changed
-4. Rewrite memory with updated content
-5. Report: what changed, old vs new size
-
-**When to use**:
-- After a major refactor
-- After adding a new module
-- Memory is more than 2 weeks old
-- You notice Claude making incorrect assumptions about the project
-
----
-
-### `inspect` — Show loaded context and cache status
-
-Shows a summary of what's currently in context and the prompt cache status.
-
-```
-/context inspect
-```
-
-**Output format**:
-```
-## Context Inspection
-
-### Loaded Memories
-- architecture.md (2.1K tokens) — CACHED ✅
-- codebase-conventions.md (1.8K tokens) — CACHED ✅
-- testing-strategy.md (1.2K tokens) — WARM 🟡
-
-Total memory tokens: 5.1K
-Cache hit rate: 87%
-Estimated savings vs no-cache: 4.6K tokens (90%)
-
-### Project Context
-Project: my-rails-app
-Framework: Rails 8.0
-Serena: Connected ✅
-Constitution: .claude/settings/constitution.json ✅
-
-### Recommendation
-Context is optimal. Run /optimize to start work.
-```
-
----
-
-### `clear` — Unload all memories from context
-
-Clears loaded memories from the current context. Useful when switching between projects or when context is stale.
-
-```
-/context clear
-```
-
-This does **not** delete the memory files — it only unloads them from the current conversation. Run `/context load` to reload.
-
----
-
-### `create [name]` — Interactive memory creation
-
-Walks through creating a memory interactively, asking what to document.
-
-```
-/context create
-/context create docker-workflow
-```
-
-Claude will ask:
-1. What aspect of the project to capture
-2. Whether to auto-discover from codebase or write from scratch
-3. How to structure the memory
-
----
-
-## Memory Templates
-
-When creating new memories, Claude uses these templates:
-
-### `architecture.md`
-Documents overall project structure, layers, key components, and data flow.
-
-### `codebase-conventions.md`
-Documents naming conventions, file structure rules, preferred patterns, and anti-patterns.
-
-### `module-structure.md`
-Documents a specific module: its purpose, public API, internal structure, and dependencies.
-
-### `testing-strategy.md`
-Documents test frameworks, fixtures, factory patterns, and what/where to test.
-
-### `api-design.md`
-Documents API endpoint conventions, authentication patterns, response formats, and versioning.
-
-### `deployment-config.md`
-Documents deployment environments, commands, CI/CD pipeline, and rollback procedures.
+`save`/`create` follow the house memory structure and per-topic template catalog in
+**[references/memory-templates.md](references/memory-templates.md)** — read it before writing a memory.
 
 ---
 
@@ -252,38 +75,34 @@ Documents deployment environments, commands, CI/CD pipeline, and rollback proced
 
 ---
 
+## Boundaries
+
+**Always**
+- Run `load` at the start of a session before code work — it's the whole point of the memory system.
+- Keep memories concise and current; refresh anything stale (>2 weeks) after significant codebase changes.
+- Follow the house memory structure in [references/memory-templates.md](references/memory-templates.md).
+
+**Ask first**
+- `refresh` and `save` **overwrite** an existing memory — confirm before discarding curated, user-authored content.
+- Writing memories into a shared/team repo's `.serena/` (they become visible in diffs to teammates).
+
+**Never**
+- Delete memory files as part of `clear` — `clear` only unloads from context; the files stay on disk.
+- Fabricate project facts into a memory; write only what you verified from the codebase or the user.
+- Store secrets, tokens, or credentials in a memory.
+
+---
+
 ## Troubleshooting
 
-### "No memories found"
-
-```
-/context list
-# → No memories found for this project
-```
-
-**Fix**: Initialize with `/init-project memories` or create manually:
-```
-/context save architecture
-/context save codebase-conventions
-```
-
-### "Serena not connected"
-
-Context management requires the Serena MCP server. Check MCP availability with `/help`. Without Serena, use `/optimize` which has fallback strategies.
-
-### "Memory is outdated"
-
-```
-/context refresh [memory-name]
-```
-
-Memories older than 2 weeks should be refreshed after significant codebase changes.
+Common failure modes (no memories found, Serena not connected, memory outdated) and their
+fixes are in **[references/troubleshooting.md](references/troubleshooting.md)**.
 
 ---
 
 ## See Also
 
-- [`/optimize`](../optimize/SKILL.md) — Uses loaded context for token-efficient work
+- [`/optimize`](../optimize/SKILL.md) — Uses loaded context for token-efficient work; the fallback when Serena is unavailable
 - [`/init-project`](../init-project/SKILL.md) — Creates initial memory set for a new project
 - [`/cache-inspector`](../cache-inspector/SKILL.md) — Monitor cache performance
 - [Project Activation Guide](../../../02-project-activation/guide.md)

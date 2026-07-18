@@ -4,6 +4,16 @@ All notable changes to this library are documented here.
 
 ---
 
+## [1.24.0] — 2026-07-18
+
+### Changed
+
+- **5 global skills brought to the authoring conventions** — `optimize`, `context`, `cache-inspector`, `update-docs`, `init-project` restructured to the v1.21 conventions (leading *When to Use (and When NOT to)* table, closing *Boundaries* Always/Ask-first/Never, and **progressive-disclosure split** into `references/`) **without changing what they do**. Each was a 250–333-line monolith with no `references/`; each SKILL.md is now a thin decision core (87–180 lines) and the deep detail (per-action process, output formats, templates, troubleshooting) was **moved, not deleted**, into linked `references/*.md`. Total content grew (added the two convention sections), verified by line count + Tier-2 `skill-lint` (0 errors).
+- **How this was found & fixed** — dogfooded the `self-improve` loop's own **Tier-3 subagent judge** across the whole installed library: these 5 scored 0.2–0.4 (failing scope-precision / progressive-disclosure / boundary-clarity). After restructure, the same judge re-scored them **0.8–1.0 (all pass)**. The restructure ran as 5 parallel isolated agents; the audit + re-judge as fan-out workflows.
+- `self-improve` skill (local) — Boundaries now scope audits to **our** authored skills (`01-global-optimization/skills/`) and forbid grading third-party installed skills.
+
+---
+
 ## [1.23.1] — 2026-07-18
 
 ### Added

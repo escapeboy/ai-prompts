@@ -12,6 +12,19 @@ Use this as the default way to start any non-trivial work session.
 
 ---
 
+## When to Use This Skill (and When NOT to)
+
+| Use this skill for | Use a simpler approach for |
+|--------------------|----------------------------|
+| Starting a non-trivial task (a feature, a refactor, a module) where planning + memory loading pays back | A one-line answer or a question you can answer directly — the strategy/memory scaffolding is pure overhead |
+| Work spanning multiple files or subtasks, where symbol-first exploration and model routing save real tokens | A single known edit in a file already open — just make it |
+| A task worth measuring — you want the savings report at the end | Trivial edits where reporting savings costs more than the edit |
+| Any session where Serena memories + constitution should gate the approach before touching code | A repo with no memories/constitution and a one-shot ask — skip straight to the work |
+
+**Start simple. Reach for `/optimize` only when the task is big enough that choosing a strategy, loading memories, and routing models actually reduces total tokens.** For a 1-line fix, the classification step is the overhead this skill exists to avoid elsewhere.
+
+---
+
 ## Usage
 
 ```
@@ -43,115 +56,29 @@ When you run `/optimize "your task"`, Claude will:
 
 ---
 
-## Planning Strategies
+## Planning Strategy Selector
 
-### Unified (1-2 subtasks)
-**Triggers**: Bug fixes, single-file tweaks, small config changes
+Classify by subtask count, then run that strategy:
 
-**Process**:
-1. Symbol-first exploration (find the relevant symbol directly)
-2. Direct implementation with Sonnet or Haiku
-3. Verify with existing tests
+| Strategy | Triggers | Headline savings |
+|----------|----------|------------------|
+| **Unified** (1-2 subtasks) | Bug fixes, single-file tweaks, small config changes | 60-70% vs full spec |
+| **Intent-Planning** (3-7 subtasks) | New features, moderate refactoring, API endpoint additions | 40-50% vs full spec |
+| **Planning-Only** (8+ subtasks) | New modules, architectural changes, cross-cutting concerns | High upfront cost, max long-term clarity |
 
-**Token savings**: 60-70% vs full spec workflow
-
----
-
-### Intent-Planning (3-7 subtasks)
-**Triggers**: New features, moderate refactoring, API endpoint additions
-
-**Process**:
-1. Lightweight design sketch (Sonnet, ~5 min)
-2. Task decomposition (Haiku)
-3. Implementation with Sonnet
-4. Test coverage (Sonnet)
-
-**Token savings**: 40-50% vs full spec workflow
-
----
-
-### Planning-Only (8+ subtasks)
-**Triggers**: New modules, architectural changes, cross-cutting concerns
-
-**Process**:
-1. Requirements spec → `requirements.md`
-2. Design spec → `design.md`
-3. Task breakdown → `tasks.md`
-4. Implementation phases
-5. Tests
-6. Judge evaluation (Opus, only if 3+ competing designs)
-
-**Token savings**: High upfront cost, maximum long-term clarity
+For the per-strategy process steps and how to override the auto-selected strategy, read **[references/planning-strategies.md](references/planning-strategies.md)**.
 
 ---
 
 ## Actions
 
-### `status` — Show current optimization configuration
+Besides running a task, `/optimize` exposes three diagnostic/reporting actions:
 
-Reports what's active:
-- Which Serena memories are loaded
-- Cache hit rate (if available)
-- Constitution file status
-- Recommended strategy for current project state
+- `status` — show the active optimization configuration (loaded memories, cache hit rate, constitution, recommended strategy)
+- `report` — token usage summary for the session (strategy, tokens vs baseline, savings, applied optimizations)
+- `metrics` — the savings targets from `~/.claude/settings/token-optimization.json`
 
-```
-/optimize status
-```
-
----
-
-### `report` — Token usage summary for the session
-
-Produces a session summary:
-
-```
-/optimize report
-```
-
-**Output format**:
-```
-## Optimization Report
-
-Strategy used: Intent-Planning
-Tokens used: ~18K
-Estimated baseline: ~85K
-Savings: 79%
-Cache hit rate: 84%
-
-Optimizations applied:
-- Symbol-first exploration: 65% savings on file reads
-- Memory system: 60% savings on context loading
-- Adaptive planning: 45% savings vs full spec
-- Prompt caching: 90% savings on re-reads
-- Model selection: Haiku used for 3/7 subtasks
-```
-
----
-
-### `metrics` — Show all token optimization targets
-
-Displays the savings targets from `~/.claude/settings/token-optimization.json`.
-
-```
-/optimize metrics
-```
-
----
-
-## Context Preparation
-
-This skill automatically loads:
-
-1. **Serena memories** (if Serena MCP available):
-   - `architecture.md`
-   - `codebase-conventions.md`
-   - `module-structure.md` (if working on a module)
-   - `testing-strategy.md` (if tests involved)
-
-2. **Constitution** (if `.claude/settings/constitution.json` exists) — checks task against architectural rules before starting
-
-3. **Existing specs** — searches `.claude/specs/` for similar past work to reuse patterns
+For the exact output formats, and the full list of context the skill loads automatically (Serena memories, constitution, existing specs), read **[references/actions.md](references/actions.md)**.
 
 ---
 
@@ -196,77 +123,40 @@ Run existing tests, a regression grep, or manual validation before reporting a t
 
 ---
 
-## Examples
+## Examples & Troubleshooting
 
-### Example 1: Bug Fix (Unified)
-
-```
-/optimize "Fix the duplicate email validation in UserService"
-```
-
-**What happens**:
-- Classified as: Unified (1-2 tasks)
-- Symbol-first: `find_symbol("UserService/validate_email")`
-- Fix + verify in one pass
-- ~3K tokens (vs ~20K without optimization)
+For worked end-to-end examples of each strategy (Unified bug fix, Intent-Planning feature, Planning-Only module) and fixes for common failure modes ("Serena not available", "Low token savings", "Wrong strategy selected"), read **[references/examples-troubleshooting.md](references/examples-troubleshooting.md)**.
 
 ---
 
-### Example 2: New Feature (Intent-Planning)
+## Boundaries
 
-```
-/optimize "Add Stripe webhook handling for subscription events"
-```
+### Always
 
-**What happens**:
-- Classified as: Intent-Planning (5 tasks)
-- Design sketch → task list → implementation
-- Haiku for task decomposition
-- Sonnet for webhook logic
-- ~22K tokens (vs ~85K without optimization)
+- Load Serena memories (and constitution, if present) **before** exploring code — memory-first is mandatory.
+- Use symbol-first exploration; never read a full file before attempting symbolic discovery.
+- Use the cheapest model that meets the quality bar (target 40% Haiku / 55% Sonnet / 5% Opus).
+- Verify (tests, regression grep, or manual validation) before reporting a task as done, and state plainly when a verification step was skipped.
 
----
+### Ask First
 
-### Example 3: New Module (Planning-Only)
+- Escalating to Opus — reserve it for critical architectural/security decisions or judge evaluation with 3+ competing designs; don't reach for it silently.
+- Overriding the auto-selected strategy when it changes scope materially (e.g. forcing Planning-Only on what looked like a quick fix) — surface the reclassification.
+- Any destructive, hard-to-reverse, or shared-state step the task itself entails (migrations, force-push, deploys) — those follow the global Action Safety rule, not the optimizer's discretion.
 
-```
-/optimize "Build a multi-tenant billing system with per-seat pricing"
-```
+### Never
 
-**What happens**:
-- Classified as: Planning-Only (12+ tasks)
-- Full spec workflow with checkpoint saves
-- Opus for final architecture evaluation
-- High upfront cost, saves tokens across entire implementation
-
----
-
-## Troubleshooting
-
-### "Serena not available"
-
-Optimization still works at 40-50% savings without Serena. Memory-first and symbol-first strategies fall back to `Read` + `Grep`.
-
-### "Low token savings"
-
-Run `/optimize status` — check if:
-- Memories are loaded (run `/context load` first)
-- Cache is warming up (first session always costs more)
-- Serena MCP is connected
-
-### "Wrong strategy selected"
-
-Override explicitly:
-```
-/optimize --strategy unified "your task"
-/optimize --strategy planning "your task"
-```
+- Report a task as done, or claim savings, without running the verification step — no manufactured green results.
+- Use Opus for template-driven work (requirements, task lists) that Haiku handles.
+- Skip memory/symbol-first steps to "save time" — that inflates tokens, which is the exact failure this skill prevents.
 
 ---
 
 ## See Also
 
-- [`/context`](../context/SKILL.md) — Memory management
-- [`/cache-inspector`](../cache-inspector/SKILL.md) — Cache performance monitoring
-- [`/init-project`](../init-project/SKILL.md) — Initialize optimization for a new project
+- [`/context`](../context/SKILL.md) — Memory management (load these memories before optimizing; depends-on)
+- [`/cache-inspector`](../cache-inspector/SKILL.md) — Cache performance monitoring (complements the `report` action)
+- [`/init-project`](../init-project/SKILL.md) — Initialize optimization for a new project (run once before `/optimize`)
 - [Token Optimization Guide](../../05-token-optimization/guide.md)
+- [Custom Skills Guide](../../../03-custom-skills/guide.md) — skill authoring conventions
+- Bundled references: [planning-strategies.md](references/planning-strategies.md) · [actions.md](references/actions.md) · [examples-troubleshooting.md](references/examples-troubleshooting.md)

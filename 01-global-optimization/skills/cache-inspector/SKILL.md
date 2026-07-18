@@ -8,7 +8,16 @@ version: 1.0.0
 
 Inspects the Claude prompt caching system to report hit rates, cost savings, and optimization opportunities. Prompt caching saves 90% on re-reads of large content (system prompts, memories, tool definitions).
 
----
+## When to Use This Skill (and When NOT to)
+
+| Use this skill for | Use a simpler approach for |
+|--------------------|----------------------------|
+| Investigating why a session's token cost is high | A single expensive read you already understand — just cache that content, no analysis needed |
+| Diagnosing a low or slow-warming cache hit rate | A fresh session that has simply not warmed yet — wait 2-3 messages before measuring |
+| Deciding *which* memories/prompts are worth caching | Content you already know is under 1024 tokens — it can't cache; expand or merge it directly |
+| Producing a cost/hit-rate report or tracking trend over sessions | A one-off "is caching on?" check — read `~/.claude/settings/prompt-caching.json` |
+
+**Start simple. Reach for this skill only when cache behaviour is actually costing tokens or you need to measure/optimize it — not to confirm a single obvious cache decision.**
 
 ## Usage
 
@@ -27,225 +36,52 @@ Inspects the Claude prompt caching system to report hit rates, cost savings, and
 /cache-inspector clear       # Clear cache (for testing only)
 ```
 
----
-
 ## Actions
 
-### `status` (default) — Current cache status
+Each action's full behaviour, options, and exact output shape are in
+[references/actions.md](references/actions.md) — read it for the detail behind the summaries below.
 
-Shows the current state of the prompt cache.
+| Action | Purpose |
+|--------|---------|
+| `status` (default) | Current cache state: active entries, session hits/savings, health verdict. |
+| `analyze` | Deep performance analysis with hit-rate trend, cost impact, and optimization opportunities. |
+| `optimize` | Prioritized, actionable recommendations to raise the hit rate, with an estimated score delta. |
+| `report` | Full report (history, cost breakdown, inventory, TTL timeline, score); `--save` writes to `.claude/learnings/cache-performance.md`. |
+| `clear` | Clears all cached content (testing/stale-cache only). Confirms first; next session re-warms at full cost. |
 
-```
-/cache-inspector status
-```
+## How caching works, config & targets
 
-**Output**:
-```
-## Prompt Cache Status
-
-### Active Cache Entries
-| Content | Size | Status | TTL |
-|---------|------|--------|-----|
-| System prompt (global-optimization.md) | 3.2K tokens | CACHED ✅ | 58 min |
-| Tool definitions (Serena MCP) | 8.4K tokens | CACHED ✅ | 55 min |
-| memory: architecture.md | 2.1K tokens | CACHED ✅ | 52 min |
-| memory: codebase-conventions.md | 1.8K tokens | CACHED ✅ | 52 min |
-| memory: testing-strategy.md | 1.2K tokens | WARMING 🟡 | — |
-
-### Session Stats
-Cache hits: 47 / 54 reads (87%)
-Tokens saved this session: 412K
-Estimated cost saved: $1.24
-
-### Cache Health: ✅ Excellent
-```
-
----
-
-### `analyze` — Performance analysis
-
-Deep analysis of cache performance with trends and comparison to baselines.
-
-```
-/cache-inspector analyze
-```
-
-**Output**:
-```
-## Cache Performance Analysis
-
-### Hit Rate Trend
-Session 1: 45% (warming)
-Session 2: 71% (good)
-Session 3: 87% (excellent) ← current
-Target: >80% ✅
-
-### Cost Impact
-Without caching (estimated): $3.82
-With caching (actual): $0.58
-Savings: $3.24 (85%)
-
-### Most Cached Content
-1. Tool definitions (Serena): 8.4K — 12 reads, 11 cache hits (92%)
-2. System prompt: 3.2K — 8 reads, 8 cache hits (100%)
-3. architecture.md: 2.1K — 15 reads, 13 cache hits (87%)
-
-### Optimization Opportunities
-⚠️ testing-strategy.md: loaded 4 times but never cached (too small at 800 tokens)
-   → Recommend expanding to >1024 tokens or combining with codebase-conventions.md
-
-⚠️ 3 file reads bypassed caching (used Read tool directly)
-   → Use /context load at session start to ensure memories are pre-cached
-```
-
----
-
-### `optimize` — Get actionable recommendations
-
-Analyzes current usage and provides specific recommendations to improve cache hit rate.
-
-```
-/cache-inspector optimize
-```
-
-**Output**:
-```
-## Cache Optimization Recommendations
-
-### Priority 1: Pre-warm Cache at Session Start
-Current: Cache warms gradually (first 3-4 messages cost full tokens)
-Fix: Always run /context load before starting work
-
-Expected improvement: +15% hit rate, -30K tokens per session
-
-### Priority 2: Expand Small Memories
-testing-strategy.md (800 tokens) is below the 1024-token cache threshold
-Fix: Add more detail or merge with codebase-conventions.md
-
-Expected improvement: +8% hit rate on test-related tasks
-
-### Priority 3: Cache Constitution File
-.claude/settings/constitution.json is read 6 times without caching
-Fix: Move architectural rules to a memory file via /context save constitution
-
-Expected improvement: +5% hit rate on all tasks
-
-### Current Score: 72/100
-After applying recommendations: 89/100 (estimated)
-```
-
----
-
-### `report` — Full detailed report
-
-Generates a complete cache performance report and saves it to `.claude/learnings/cache-performance.md`.
-
-```
-/cache-inspector report
-/cache-inspector report --save    # Also saves to file
-```
-
-The report includes:
-- Session-by-session hit rate history
-- Cost breakdown (cached vs uncached reads)
-- Content inventory with sizes
-- TTL expiry timeline
-- Optimization score
-- All recommendations
-
----
-
-### `clear` — Clear cache entries
-
-**Warning**: Clears all cached content. Only use for testing or when cache is stale.
-
-```
-/cache-inspector clear
-```
-
-Claude will ask for confirmation before clearing. After clearing, the next session will re-warm the cache (costs full tokens once).
-
----
-
-## How Prompt Caching Works
-
-Claude's prompt caching (Anthropic API feature) stores frequently-read content server-side for 10 minutes (ephemeral) or 1 hour (with explicit cache control).
-
-**What gets cached**:
-| Content | Size | Cache benefit |
-|---------|------|---------------|
-| System prompts | 2-5K tokens | 90% cost reduction on re-reads |
-| MCP tool definitions | 5-15K tokens | 90% cost reduction |
-| Serena memories | 1-3K each | 90% cost reduction |
-| Constitution files | 0.5-2K | 90% cost reduction |
-| Large spec documents | 5-20K | 90% cost reduction during impl |
-
-**Minimum size**: Content must be ≥1024 tokens to be eligible for caching.
-
-**Cache TTL**: Two tiers via `cache_control: { type: "ephemeral" }` — `ttl: "5m"` (default) or `ttl: "1h"` (opt-in). Pricing: 5m write `1.25×` base input, 1h write `2.00×`, cache hit `0.10×`. Mixed TTLs in the same request are reported separately as `ephemeral_5m_input_tokens` / `ephemeral_1h_input_tokens`.
-
----
-
-## Cache Configuration
-
-The cache is configured in `~/.claude/settings/prompt-caching.json`. Key settings:
-
-```json
-{
-  "cache_control": {
-    "type": "ephemeral",
-    "auto_enable": true
-  },
-  "caching_rules": {
-    "system_prompts": { "enabled": true, "min_tokens": 1024 },
-    "tool_definitions": { "enabled": true, "min_tokens": 1024 },
-    "memories": { "enabled": true, "min_tokens": 1024 }
-  }
-}
-```
-
-To modify: edit `~/.claude/settings/prompt-caching.json` and reload Claude Code.
-
----
-
-## Target Metrics
-
-| Metric | Poor | Good | Excellent |
-|--------|------|------|-----------|
-| Cache hit rate | <50% | 60-80% | >80% |
-| Token savings | <30% | 50-70% | >80% |
-| Session cost | >$3 | $0.75-$1.50 | <$0.75 |
-| Warmup time | >5 messages | 2-4 messages | 1-2 messages |
-
----
+For how Claude's prompt cache behaves (what's cacheable, the ≥1024-token minimum, TTL tiers and
+pricing), where it is configured (`~/.claude/settings/prompt-caching.json`), and the target
+metrics that define a healthy cache, read
+[references/caching-internals.md](references/caching-internals.md).
 
 ## Troubleshooting
 
-### "Cache hit rate is low (<50%)"
+Low hit rate, entries expiring fast, or "no cache data available" — see
+[references/troubleshooting.md](references/troubleshooting.md).
 
-Common causes:
-1. **Not loading memories first** — run `/context load` before starting work
-2. **Sessions too short** — cache needs 2-3 messages to warm up
-3. **Content below threshold** — memories under 1024 tokens won't cache
-4. **Different content each time** — variable prompts can't be cached
+## Boundaries
 
-Run `/cache-inspector optimize` for specific recommendations.
+**Always**
+- Report real numbers (hit rate, tokens saved, cost) from the session/config — never invent metrics.
+- Point fixes at the actual cause: content below the 1024-token threshold, unwarmed sessions, or bypassed caching.
+- Confirm Serena MCP is connected and `prompt-caching.json` is configured before claiming "no cache data".
 
-### "Cache entries expire quickly"
+**Ask first**
+- `clear` — clearing all cached content forces a full-cost re-warm on the next session; confirm before running.
+- Editing `~/.claude/settings/prompt-caching.json` (shared, session-wide config) or moving content into memories via `/context save`.
 
-Cache TTL is 10-60 minutes. For long sessions:
-- Keep the conversation active (don't idle for >10 min)
-- Re-run `/context load` if you've been away
-
-### "No cache data available"
-
-Cache metrics are only available when Serena MCP is connected and prompt-caching.json is configured. Run `/optimize status` to check configuration.
-
----
+**Never**
+- Run `clear` as a shortcut to "fix" a low hit rate — diagnose the cause first (it only makes warmup cost more).
+- Claim a cost saving the metrics don't support, or mark the cache healthy while hit rate is below target.
 
 ## See Also
 
-- [`/context`](../context/SKILL.md) — Load memories to maximize cache hits
-- [`/optimize`](../optimize/SKILL.md) — Full optimization mode
+- [`/context`](../context/SKILL.md) — depends-on: load memories to maximize cache hits (pre-warm before measuring here).
+- [`/optimize`](../optimize/SKILL.md) — heavier-alternative: full optimization mode that includes cache tuning.
+- [references/actions.md](references/actions.md) — full action detail and example outputs.
+- [references/caching-internals.md](references/caching-internals.md) — how caching works, config, target metrics.
+- [references/troubleshooting.md](references/troubleshooting.md) — symptoms and fixes.
 - [Token Optimization Guide](../../../05-token-optimization/guide.md)
 - [Prompt Caching Config](../../settings/prompt-caching.json)

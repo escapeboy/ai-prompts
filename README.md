@@ -591,12 +591,15 @@ These prompts are project-agnostic and can be freely adapted for your team's nee
 
 **Created**: 2026-01-04
 **Last Updated**: 2026-07-18
-**Version**: 1.23.1
+**Version**: 1.24.0
 **Compatibility**: Claude Code v2.1.32+, Claude API (Fable 5: `claude-fable-5`, Opus 4.8: `claude-opus-4-8`, Opus 4.7: `claude-opus-4-7`, Sonnet 5: `claude-sonnet-5`, Haiku 4.5: `claude-haiku-4-5`)
 
 ---
 
 ## 📝 Version History
+
+### v1.24.0 (2026-07-18)
+**Changed**: 5 global skills (`optimize`, `context`, `cache-inspector`, `update-docs`, `init-project`) restructured to the v1.21 authoring conventions — leading *When to Use (and When NOT to)* table, closing *Boundaries*, and progressive-disclosure split into `references/` — **without changing functionality** (250–333-line monoliths → thin 87–180-line cores + linked references; content moved, not deleted). Surfaced by dogfooding the `self-improve` Tier-3 subagent judge over the whole library (these scored 0.2–0.4) and confirmed fixed by re-judging (0.8–1.0, all pass). Tier-2 `skill-lint` clean.
 
 ### v1.23.1 (2026-07-18)
 **Added**: `.githooks/pre-commit` — wires `skill-lint.py` (Tier-2) as a version-controlled pre-commit gate over `01-global-optimization/skills/`. Runs only when a staged change touches the skills tree (docs-only commits pass through); errors block, warnings are advisory, `--no-verify` bypasses. Enable per clone: `git config core.hooksPath .githooks` (see `.githooks/README.md`).

@@ -10,7 +10,16 @@ Sets up Claude Code optimization for a new project in 10-15 minutes. Detects the
 
 Run once per project. After init, use `/optimize` and `/context load` for all subsequent work.
 
----
+## When to Use This Skill (and When NOT to)
+
+| Use this skill for | Use a simpler approach for |
+|--------------------|----------------------------|
+| A project you'll work in repeatedly and want optimized from the start | A repo you'll touch once — just read what you need and go |
+| First-time setup of Serena memories + constitution + optimization config | Re-running work on an already-initialized project — use `/context load` + `/optimize` instead |
+| A codebase whose conventions/architecture Claude should learn once and reuse | Adding a single memory or tweaking one setting — edit the file directly |
+| Standing up the `.claude/` + `.serena/` scaffold in a fresh clone | A throwaway spike or scratch directory |
+
+**Start simple. Reach for this skill only when the project is one you'll return to and the up-front setup pays back across many sessions.** Run it **once** per project — it is initialization, not a per-session command.
 
 ## Usage
 
@@ -29,8 +38,6 @@ Run once per project. After init, use `/optimize` and `/context load` for all su
 /init-project optimize          # Configure optimization settings only
 ```
 
----
-
 ## Quick Start: Full Initialization
 
 ```
@@ -46,93 +53,29 @@ This runs all steps in sequence and produces a fully configured project. Takes 1
 - `.claude/settings/token-optimization.json` (project-level)
 - `.claude/CLAUDE.md` (if it doesn't exist)
 
----
-
 ## Actions
+
+Each action is a step of `--full` and can also be run on its own. High-level decision core below; deep detail lives in `references/` — read the linked file only when running that action.
 
 ### `detect` — Auto-detect project type and stack
 
-Scans the project directory to identify the tech stack, frameworks, and conventions.
+Scans the project directory to identify the tech stack, frameworks, test runner, CI, and conventions, then recommends which memories and constitution rules to create.
 
 ```
 /init-project detect
 ```
 
-**What it checks**:
-- `package.json` → Node.js, framework (Next.js, Express, etc.), test runner
-- `composer.json` → PHP/Laravel version and dependencies
-- `Gemfile` → Ruby/Rails version
-- `requirements.txt` / `pyproject.toml` → Python framework
-- `Cargo.toml` → Rust
-- `go.mod` → Go
-- `*.xcodeproj` / `pubspec.yaml` → iOS/Flutter
-- `Dockerfile` / `docker-compose.yml` → containerization
-- `.github/workflows/` → CI/CD setup
-- `README.md` → project description
-
-**Output**:
-```
-## Project Detection Results
-
-Stack detected:
-- Language: Ruby 3.3
-- Framework: Rails 8.0
-- Database: PostgreSQL (ActiveRecord)
-- Frontend: Hotwire (Turbo + Stimulus)
-- Testing: RSpec + FactoryBot
-- CI: GitHub Actions
-- Docker: Yes (docker-compose.yml)
-- Auth: Devise
-
-Recommended memories to create:
-- architecture.md ✓
-- codebase-conventions.md ✓
-- testing-strategy.md ✓
-- docker-workflow.md ✓
-
-Recommended constitution rules:
-- Rails conventions (service objects, concerns, concerns)
-- RSpec best practices
-- Hotwire patterns
-
-Run /init-project --full to complete setup.
-```
-
----
+For the full list of files scanned and the sample output format, read [references/detection.md](references/detection.md).
 
 ### `fetch [framework]` — Fetch best practices for your stack
 
-Fetches current best practices, conventions, and patterns for the detected or specified framework.
+Fetches current best practices, conventions, and anti-patterns for the detected or specified framework, summarized into memory-ready format.
 
 ```
 /init-project fetch rails
-/init-project fetch nextjs
-/init-project fetch laravel
-/init-project fetch fastapi
-/init-project fetch flutter
 ```
 
-**Supported stacks**:
-
-| Framework | What's fetched |
-|-----------|---------------|
-| `rails` | Rails 8 conventions, Hotwire patterns, service objects |
-| `laravel` | Laravel 11 patterns, Livewire, Eloquent conventions |
-| `nextjs` | App Router patterns, Server Components, data fetching |
-| `fastapi` | Pydantic models, async patterns, dependency injection |
-| `django` | Models, views, serializers, Django REST Framework |
-| `express` | Middleware patterns, route organization, error handling |
-| `flutter` | Widget patterns, state management, platform conventions |
-| `ios` | SwiftUI, UIKit, async/await, MVVM patterns |
-
-**Process**:
-1. Search official documentation for current version
-2. Find community-accepted conventions
-3. Identify anti-patterns to avoid
-4. Extract testing conventions
-5. Summarize into memory-ready format
-
----
+For the supported-stack table, the fetch process, and per-framework CLAUDE.md templates, read [references/frameworks.md](references/frameworks.md).
 
 ### `constitution` — Generate project constitution
 
@@ -144,104 +87,29 @@ Creates `.claude/settings/constitution.json` with architectural rules tailored t
 /init-project constitution --framework nextjs --strict
 ```
 
-**What a constitution contains**:
-```json
-{
-  "version": "1.0.0",
-  "project": "my-rails-app",
-  "framework": "Rails 8.0",
-  "principles": [
-    {
-      "id": "fat-models-skinny-controllers",
-      "rule": "Business logic belongs in models or service objects, not controllers",
-      "enforcement": "mandatory",
-      "examples": {
-        "correct": "UserRegistrationService.call(params)",
-        "incorrect": "def create; @user = User.new; if @user.save_with_team...; end"
-      }
-    },
-    {
-      "id": "no-raw-sql",
-      "rule": "Use ActiveRecord query interface, not raw SQL strings",
-      "enforcement": "mandatory",
-      "exceptions": ["complex reports with CTEs are acceptable"]
-    }
-  ],
-  "code_quality": {
-    "max_method_lines": 15,
-    "max_class_lines": 200,
-    "test_coverage_minimum": "80%"
-  },
-  "security": {
-    "no_user_input_in_sql": true,
-    "validate_at_model_layer": true,
-    "use_strong_parameters": true
-  }
-}
-```
-
-**Constitution rules by framework**:
-
-**Rails**: fat models, service objects, FormRequest for validation, no N+1 queries, Hotwire over JavaScript
-**Laravel**: repositories optional but consistent, FormRequest validation, eager loading, feature flags in config
-**Next.js**: Server Components by default, Client Components only for interactivity, no prop drilling past 2 levels
-**FastAPI**: Pydantic for all I/O, dependency injection for DB/auth, async everywhere
-
----
+For the constitution JSON anatomy and the per-framework rule sets, read [references/constitution.md](references/constitution.md).
 
 ### `memories` — Initialize Serena memories
 
-Creates the initial set of Serena memories by analyzing the codebase.
+Creates the initial Serena memories by analyzing the codebase: `architecture.md`, `codebase-conventions.md`, and `testing-strategy.md` in `.serena/memories/`. Requires Serena MCP.
 
 ```
 /init-project memories
 ```
 
-**Creates these files** in `.serena/memories/`:
-
-#### `architecture.md`
-Analyzes the project structure and documents:
-- Top-level directory layout and purpose
-- Key classes/modules and their responsibilities
-- Data flow between layers
-- External dependencies and integrations
-- Deployment topology
-
-#### `codebase-conventions.md`
-Documents coding standards by scanning the codebase:
-- Naming conventions (files, classes, methods, variables)
-- File organization patterns
-- Preferred libraries and why
-- Anti-patterns found in existing code (to be consistent with or avoid)
-- Comment and documentation style
-
-#### `testing-strategy.md`
-Documents the testing approach:
-- Test frameworks in use
-- Directory structure for tests
-- Factory/fixture patterns
-- What's tested and how (unit vs integration vs e2e)
-- How to run tests locally
-
-**Time**: ~5 minutes per memory (reads relevant files symbolically)
-
----
+For the exact contents of each memory file, read [references/memories.md](references/memories.md).
 
 ### `optimize` — Configure project-level optimization settings
 
-Creates `.claude/settings/token-optimization.json` with project-specific overrides.
-
-```
-/init-project optimize
-```
-
-Customizes the global token optimization settings for this specific project:
+Creates `.claude/settings/token-optimization.json` with project-specific overrides of the global token optimization settings:
 - Which memories to always load
 - Constitution rules to enforce
 - Model selection overrides (e.g., always use Haiku for migrations)
 - Project-specific checkpoint locations
 
----
+```
+/init-project optimize
+```
 
 ## CLAUDE.md Generation
 
@@ -258,8 +126,6 @@ The generated `CLAUDE.md` includes:
 - Common commands
 - Links to Serena memories for architecture details
 
----
-
 ## After Initialization
 
 Once init is complete, start working:
@@ -275,43 +141,6 @@ Once init is complete, start working:
 /optimize status
 ```
 
----
-
-## Per-Framework CLAUDE.md Templates
-
-See framework-specific guides for project-type CLAUDE.md templates:
-- [Laravel](../../../09-laravel-mcp-integration/guide.md)
-- [iOS](../../../11-mobile-development/ios/ios-guide.md)
-- [macOS / Tauri / Electron](../../../12-desktop-development/)
-
----
-
-## Troubleshooting
-
-### "Stack not detected"
-
-```
-/init-project detect
-# → Could not detect stack automatically
-```
-
-Specify manually:
-```
-/init-project fetch [framework] --force
-```
-
-### "Serena not available"
-
-`memories` step requires Serena MCP. The other steps (`constitution`, `optimize`) work without it. Install Serena and run `/init-project memories` separately.
-
-### "Constitution conflicts with existing code"
-
-The generated constitution reflects best practices, not necessarily your current codebase. Either:
-- Use `--lenient` flag to generate more permissive rules
-- Edit `.claude/settings/constitution.json` manually after generation
-
----
-
 ## Time Estimate
 
 | Action | Time |
@@ -323,7 +152,24 @@ The generated constitution reflects best practices, not necessarily your current
 | `optimize` | ~1 min |
 | `--full` (all steps) | 10-15 min |
 
----
+Troubleshooting for failed detection, missing Serena, and constitution conflicts: [references/troubleshooting.md](references/troubleshooting.md).
+
+## Boundaries
+
+**Always**
+- Run `detect` before generating a constitution or memories — the output is tailored to the detected stack.
+- Reflect the codebase's actual conventions in `codebase-conventions.md`, not just framework defaults.
+- Treat init as a one-time setup; on an already-initialized project use `/context load` + `/optimize` instead of re-running.
+
+**Ask first**
+- Overwriting an existing `CLAUDE.md`, `constitution.json`, or `token-optimization.json` — these may hold hand-tuned rules. Confirm before replacing; prefer merging.
+- Committing the generated `.claude/` / `.serena/` files to a shared/team repo (they become visible in diffs and to teammates).
+- Generating a `--strict` constitution that conflicts with the current codebase — surface the conflict and offer `--lenient` rather than imposing rules the code already violates.
+
+**Never**
+- Fabricate stack details the scan didn't find — if detection fails, ask or use `fetch [framework] --force`, don't guess.
+- Silently discard a user's existing memories or settings.
+- Re-run `--full` on an initialized project as a shortcut instead of loading its existing context.
 
 ## See Also
 
@@ -331,3 +177,4 @@ The generated constitution reflects best practices, not necessarily your current
 - [`/optimize`](../optimize/SKILL.md) — Start optimized work sessions
 - [Project Activation Guide](../../../02-project-activation/guide.md)
 - [Custom Skills Guide](../../../03-custom-skills/guide.md)
+- References: [detection](references/detection.md) · [frameworks](references/frameworks.md) · [constitution](references/constitution.md) · [memories](references/memories.md) · [troubleshooting](references/troubleshooting.md)
