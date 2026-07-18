@@ -4,6 +4,14 @@ All notable changes to this library are documented here.
 
 ---
 
+## [1.24.1] — 2026-07-18
+
+### Docs
+
+- **Doc-sync for the 8-skill count + multi-file structure.** Updated stale skill counts and structure notes after the v1.22–v1.24 skill additions/restructures: `README.md` (skills-list now marks the 5 restructured skills as multi-file; the *Bundled Files* list adds the missing `agent-ready`/`continuity`/`self-improve`), `01-global-optimization/guide.md` (6→8 skills, "all multi-file", file total), `01-global-optimization/setup-agent.md` (6→8, "all multi-file", file total), `01-global-optimization/checklist.md` (6→8), `03-custom-skills/guide.md` (5→8, "all multi-file"). Historical version-history entries left as-is. No content behavior change.
+
+---
+
 ## [1.24.0] — 2026-07-18
 
 ### Changed

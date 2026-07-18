@@ -75,11 +75,11 @@ If you don't have Serena MCP, many optimizations still work, but you'll get 40-5
 **Global configuration** in `~/.claude/`:
 - **1 central orchestrator** (PM agent)
 - **4 global settings files** (prompt caching, beta features, model strategy, token optimization)
-- **6 global skills** (slash commands: /optimize, /context, /cache-inspector, /update-docs, /init-project, /agent-ready)
+- **8 global skills** (slash commands: /optimize, /context, /cache-inspector, /update-docs, /init-project, /agent-ready, /continuity, /self-improve — all multi-file directories with `references/` and some with `scripts/`, so copy the whole directory)
 - **2 system prompts** (global optimization, symbol-first protocol)
 - **3 documentation files** (README, INSTALLATION-COMPLETE, QUICK-REFERENCE)
 
-**Total**: 15 files, ~50K tokens of documentation (cached after first load = 5K tokens per subsequent read)
+**Total**: 17 files, ~50K tokens of documentation (cached after first load = 5K tokens per subsequent read)
 
 ### Token Savings Breakdown
 
@@ -1187,7 +1187,7 @@ Track your installation success:
 
 **Setup completion**:
 - [ ] 15+ files created
-- [ ] All 6 skills working
+- [ ] All 8 skills working
 - [ ] PM Orchestrator file valid
 - [ ] All 4 settings JSON valid
 - [ ] Documentation readable
