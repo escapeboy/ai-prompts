@@ -4,6 +4,22 @@ All notable changes to this library are documented here.
 
 ---
 
+## [1.22.0] — 2026-07-18
+
+### Added
+
+- **`/continuity` global skill** (`01-global-optimization/skills/continuity/`) — the 7th global skill. It preserves the **operational thread** across coding sessions with a repo-local `.continuity/STATE.md` surface and a **resume → work → finalize** lifecycle. The premise (from Santi Santamaria Medel, *"Maybe Coding Agents Don't Need a Bigger Memory. Maybe They Need Continuity."*, Level Up Coding, 2026-06-18): the between-session gap is the lost thread (*what's mid-flight, what already failed, what's next*), not memory volume — big context, vector recall, and chat history all "remember more" yet miss the one fact that matters.
+  - **`scripts/continuity.py`** — stdlib-only `init` (scaffold `.continuity/` with a portable `STATE.md` + gitignored `local/` split) and `lint` (validate required sections, evidence tags, and the `_Last finalized:` provenance line; non-zero exit = malformed surface). Doubles as the skill's test harness.
+  - **`references/format.md`** — the `STATE.md` section spec, evidence-tag semantics table, a worked example, and the local-vs-portable (committable) split.
+  - **Evidence-weighted continuity**: every fact carries a tag — `[observed]`/`[validated]`/`[user]` (trust) vs `[claimed]`/`[contradicted]`/`[unknown]` (low-trust) — so hidden uncertainty (where bad continuations begin) is made visible; `resume` also flags a stale surface.
+  - **Philosophy match**: explicitly a *thin lifecycle layer over* the existing memory stack (Serena / Svod / codebase-memory-mcp / auto-memory), **not** a new store. The skill forbids creating `.continuity/` for single-shot/throwaway work — "add another memory store" is treated as the failure mode, mirroring the repo's Code Discipline ethos.
+
+### Updated
+
+- `01-global-optimization/system-prompts/global-optimization.md` (the global `~/.claude/CLAUDE.md` rule set) — new **Session Continuity (resume → work → finalize)** section placed with *Memory-First Context Loading*, wiring the lifecycle into the session-start (`resume`) and session-end (`finalize`) rituals, with the low-trust-tag and stale-surface guardrails.
+
+---
+
 ## [1.21.0] — 2026-07-14
 
 ### Added

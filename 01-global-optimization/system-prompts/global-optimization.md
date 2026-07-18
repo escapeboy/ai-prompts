@@ -51,6 +51,15 @@ At the start of every session or when switching tasks:
 
 **Token savings: 60-70% per session**
 
+## Session Continuity (resume → work → finalize)
+
+The between-session gap is the lost *operational thread* (what's mid-flight, what already failed, what's next), not memory volume. For **multi-session work on one repo**, run the lightweight lifecycle via the `continuity` skill — a thin layer OVER existing memory, not a new store:
+
+- **Resume** (start of substantial repo work): read repo-local `.continuity/STATE.md` → a bounded surface (Now · Next action · Known failures · Validation expectations · Entry points). Treat `[claimed]`/`[unknown]`/`[contradicted]` items and a stale surface as low-trust before acting.
+- **Finalize** (end of session): synthesize the session INTO `.continuity/STATE.md`, evidence-tagging every fact (`[observed]`/`[validated]`/`[user]` = trust; `[claimed]`/`[contradicted]`/`[unknown]` = low-trust), update `_Last finalized:`, then `lint`.
+
+**Do NOT** create `.continuity/` for single-shot/throwaway tasks (avoids a sixth memory store). Facts that outlive the task graduate to Svod; architecture stays in Serena; this holds only the live thread. See the `continuity` skill.
+
 ---
 
 ## Default Tooling Stack

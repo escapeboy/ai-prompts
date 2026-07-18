@@ -14,13 +14,14 @@ This library contains reusable prompts for implementing global Claude Code optim
 - **[guide.md](01-global-optimization/guide.md)** - Step-by-step installation guide
 - **[setup-agent.md](01-global-optimization/setup-agent.md)** - Executable agent for automated setup
 - **[checklist.md](01-global-optimization/checklist.md)** - Verification checklist
-- **[skills/](01-global-optimization/skills/)** - Complete SKILL.md files for all 6 global skills (installed to `~/.claude/skills/`)
+- **[skills/](01-global-optimization/skills/)** - Complete SKILL.md files for all 7 global skills (installed to `~/.claude/skills/`)
   - [`optimize/`](01-global-optimization/skills/optimize/SKILL.md) - `/optimize` — max token efficiency mode
   - [`context/`](01-global-optimization/skills/context/SKILL.md) - `/context` — memory management
   - [`cache-inspector/`](01-global-optimization/skills/cache-inspector/SKILL.md) - `/cache-inspector` — cache monitoring
   - [`update-docs/`](01-global-optimization/skills/update-docs/SKILL.md) - `/update-docs` — documentation refresh
   - [`init-project/`](01-global-optimization/skills/init-project/SKILL.md) - `/init-project` — new project setup
   - [`agent-ready/`](01-global-optimization/skills/agent-ready/SKILL.md) - `/agent-ready` — AI-agent-readiness audit + selective remediation (multi-file: scanner script + ROI/implementation references)
+  - [`continuity/`](01-global-optimization/skills/continuity/SKILL.md) - `/continuity` — repo-local resume→work→finalize lifecycle + evidence-weighted `.continuity/STATE.md` (multi-file: lint/scaffold script + format reference)
 - **[system-prompts/](01-global-optimization/system-prompts/)** - Global system prompt files
   - [`global-optimization.md`](01-global-optimization/system-prompts/global-optimization.md) - Core optimization rules
   - [`symbol-first-protocol.md`](01-global-optimization/system-prompts/symbol-first-protocol.md) - Symbol-first exploration protocol
@@ -588,13 +589,17 @@ These prompts are project-agnostic and can be freely adapted for your team's nee
 ---
 
 **Created**: 2026-01-04
-**Last Updated**: 2026-07-14
-**Version**: 1.21.0
+**Last Updated**: 2026-07-18
+**Version**: 1.22.0
 **Compatibility**: Claude Code v2.1.32+, Claude API (Fable 5: `claude-fable-5`, Opus 4.8: `claude-opus-4-8`, Opus 4.7: `claude-opus-4-7`, Sonnet 5: `claude-sonnet-5`, Haiku 4.5: `claude-haiku-4-5`)
 
 ---
 
 ## 📝 Version History
+
+### v1.22.0 (2026-07-18)
+**Added**: `/continuity` global skill (7th global skill, `01-global-optimization/skills/continuity/`) — a repo-local **resume → work → finalize** lifecycle that preserves the *operational thread* across coding sessions (what's mid-flight, what already failed, what's next), the gap that bigger context/vector/chat memory doesn't close. State lives in an inspectable, git-diffable `.continuity/STATE.md` where every fact carries an **evidence tag** (`[observed]`/`[validated]`/`[user]` = trust; `[claimed]`/`[contradicted]`/`[unknown]` = low-trust) so uncertainty stays visible. Multi-file: `scripts/continuity.py` (stdlib-only scaffold + lint of structure/tags/provenance) and `references/format.md` (section spec + worked example + local-vs-portable split). Explicitly a **thin layer over** the existing memory stack (Serena/Svod/codebase-memory/auto-memory), not a new store — the skill forbids creating `.continuity/` for single-shot work to avoid a sixth-memory-store. Idea adapted from Santi Santamaria Medel, *"Maybe Coding Agents Don't Need a Bigger Memory. Maybe They Need Continuity."* (Level Up Coding, 2026-06-18).
+**Updated**: `01-global-optimization/system-prompts/global-optimization.md` (the global `~/.claude/CLAUDE.md` rules) — new *Session Continuity (resume → work → finalize)* section wiring the lifecycle into the mandatory session-start/session-end rituals.
 
 ### v1.21.0 (2026-07-14)
 **Added**: Five skill-authoring patterns adapted from [garrettw/php-arch-skills](https://github.com/garrettw/php-arch-skills), folded into `03-custom-skills/` and the root `CLAUDE.md`: (1) a **"When to Use (and When NOT to)" decision table** as a standard leading section — the operational form of the don't-gold-plate rule; (2) a **"Boundaries" rubric** (Always Do / Ask First / Never Do), with `Ask First` aligned to Action Safety; (3) **`references/` progressive disclosure as the default** — the template now ships a thin-core + `scripts/` + `references/` multi-file structure; (4) **explicit bidirectional cross-linking** between skills (new guide section + strengthened *When Editing* rule); (5) a **reference-split (matrix) pattern** (guide Pattern 5) for one concern across many variants, with `11-mobile-development` / `12-desktop-development` as worked examples.
