@@ -626,7 +626,7 @@ These capabilities shipped or graduated in the Claude 4.6–4.8 era. Each is a c
 - Reduces config drift and forgotten cache breakpoints. Cache hit pricing is `0.10× base input` regardless of TTL tier.
 
 ### F. Fast mode (premium, when latency matters)
-- `speed: "fast"` runs ~2.5× faster at $30 / $150 per MTok (vs. base $5 / $25). Same model, same intelligence. **API support is Opus 4.6 only** — Opus 4.7/4.8 have no fast variant.
+- `speed: "fast"` (beta `fast-mode-2026-02-01`) runs ~2.5× faster at $10 / $50 per MTok (vs. base $5 / $25). Same model, same intelligence. **API support is Opus 5 / Opus 4.8 only** — Opus 4.7 fast mode was removed; first-party Claude API only (not Bedrock / Vertex / Foundry).
 - **Not a token lever** — a latency lever. Use only when wall-clock matters more than $.
 
 ### G. Mid-conversation system messages (beta, cache saver)

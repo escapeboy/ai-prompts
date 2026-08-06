@@ -4,6 +4,14 @@ All notable changes to this library are documented here.
 
 ---
 
+## [1.24.2] — 2026-08-06
+
+### Docs
+
+- **Model-lineup refresh for the Claude Opus 5 release.** Added Opus 5 (`claude-opus-5`, $5/$25 per M tokens — current Opus, drop-in upgrade from Opus 4.8; thinking on by default, `thinking:{type:"disabled"}` 400s at `xhigh`/`max`; separate rate-limit bucket from the Opus 4.x pool) to the live lineup surfaces: `04-research-integration/sources.md` (Models Overview line + pricing table) and `CLAUDE.md` compatibility line.
+- **Corrected Fast mode facts.** `speed: "fast"` (beta `fast-mode-2026-02-01`) is **Opus 5 / Opus 4.8 only** at **$10/$50 per MTok** — previously documented as "Opus 4.6 only" at "$30/$150", which was stale (Opus 4.7 fast mode was removed; `claude-opus-4-6-fast` retired). Also noted it is first-party Claude API only (not Bedrock / Vertex / Foundry). Fixed in `01-global-optimization/system-prompts/global-optimization.md` and `05-token-optimization/guide.md`.
+- Historical version-history and CHANGELOG entries left frozen per the retro-edit convention.
+
 ## [1.24.1] — 2026-07-18
 
 ### Docs

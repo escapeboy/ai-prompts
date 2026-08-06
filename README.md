@@ -594,12 +594,15 @@ These prompts are project-agnostic and can be freely adapted for your team's nee
 
 **Created**: 2026-01-04
 **Last Updated**: 2026-07-18
-**Version**: 1.24.1
+**Version**: 1.24.2
 **Compatibility**: Claude Code v2.1.32+, Claude API (Fable 5: `claude-fable-5`, Opus 4.8: `claude-opus-4-8`, Opus 4.7: `claude-opus-4-7`, Sonnet 5: `claude-sonnet-5`, Haiku 4.5: `claude-haiku-4-5`)
 
 ---
 
 ## 📝 Version History
+
+### v1.24.2 (2026-08-06)
+**Docs**: model-lineup refresh for the Claude Opus 5 release (`claude-opus-5`, $5/$25, current Opus). Added Opus 5 to the live lineup surfaces — `04-research-integration/sources.md` (Models Overview line + pricing table), `CLAUDE.md` compatibility line. Corrected the Fast mode facts in `01-global-optimization/system-prompts/global-optimization.md` and `05-token-optimization/guide.md`: `speed:"fast"` is **Opus 5 / Opus 4.8 only** at **$10/$50** (was wrongly "Opus 4.6 only, $30/$150"; 4.7 fast mode removed; first-party Claude API only). Historical version-history/CHANGELOG entries left frozen.
 
 ### v1.24.1 (2026-07-18)
 **Docs**: doc-sync after the v1.22–v1.24 skill additions/restructures — updated stale skill counts (6/5 → 8) and multi-file structure notes across README, `01-global-optimization/{guide,setup-agent,checklist}.md`, and `03-custom-skills/guide.md`; added the 3 missing skills to the Bundled-Files list. Historical entries untouched; no behavior change.

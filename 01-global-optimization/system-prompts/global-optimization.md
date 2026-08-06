@@ -137,7 +137,7 @@ Use the cheapest model that produces acceptable quality:
 
 **Never use Opus** for routine implementation, even if complex. Complexity alone does not justify Opus — only criticality and irreversibility do.
 
-**Fast mode (latency lever, not a cost lever)**: `speed: "fast"` runs ~2.5× faster at premium pricing of $30 / $150 per MTok. Same model, same intelligence. **API support is Opus 4.6 only** — Opus 4.7/4.8 have no fast variant (in Claude Code, `/fast` uses Opus with faster output instead). Use only when wall-clock latency genuinely matters more than cost (e.g. interactive judge evaluation in a UI). Not available with the Batch API.
+**Fast mode (latency lever, not a cost lever)**: `speed: "fast"` (beta `fast-mode-2026-02-01`) runs ~2.5× faster at premium pricing of $10 / $50 per MTok. Same model, same intelligence. **API support is Opus 5 / Opus 4.8 only** — Opus 4.7 fast mode was removed, and it is first-party Claude API only (not Bedrock / Vertex / Foundry). In Claude Code, `/fast` uses Opus with faster output. Use only when wall-clock latency genuinely matters more than cost (e.g. interactive judge evaluation in a UI). Not available with the Batch API.
 
 ---
 
