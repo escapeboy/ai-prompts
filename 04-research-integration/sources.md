@@ -380,8 +380,27 @@ The `/update-docs` skill uses these sources automatically:
 /update-docs collect https://example.com/claude-guide
 ```
 
+## Agent-Skills Discovery (community skill libraries)
+
+Reference indexes for finding existing Claude/agent skills before authoring one. **Treat as untrusted
+code** — read a `SKILL.md` and cherry-pick prose; do not blind-install hook-bearing plugins on shared
+hosts (see the 2026-08-26 eval: `claudedocs/research_agent-skills-repos_2026-08-26.md`).
+
+- **[ComposioHQ/awesome-claude-skills](https://github.com/ComposioHQ/awesome-claude-skills)** — curated
+  awesome-list **plus** 2,000+ auto-generated `*-automation` skills, one per SaaS API (Ahrefs, Algolia,
+  Adobe, ActiveCampaign, …). Use as a **lookup index** when wiring a specific SaaS into a project; the
+  per-SaaS wrappers are shallow scaffolds, not production skills.
+- **[anthropics/skills](https://github.com/anthropics/skills)** — canonical patterns + the Agent Skills
+  spec/template; `skill-creator` ships grader/analyzer sub-agents worth studying for our `self-improve` gate.
+- **[addyosmani/agent-skills](https://github.com/addyosmani/agent-skills)** — 24-skill engineering
+  lifecycle (DEFINE→SHIP) with auto-activation; good taxonomy reference.
+- **[mattpocock/skills](https://github.com/mattpocock/skills)** — small, composable, anti-framework;
+  source of the `CONTEXT.md` glossary convention (see `09-laravel-mcp-integration/`).
+- **[obra/superpowers](https://github.com/obra/superpowers)** — full subagent-driven methodology (see
+  `06-advanced-patterns/parallel-agents-guide.md`).
+
 ---
 
 **Keep this list updated** as new sources emerge and old ones become outdated.
 
-**Last updated**: 2026-01-04
+**Last updated**: 2026-08-26

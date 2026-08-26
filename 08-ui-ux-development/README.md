@@ -19,6 +19,11 @@ Systematic browser testing patterns using Chrome DevTools via Claude in Chrome M
 
 ---
 
+### [web-performance-audit.md](web-performance-audit.md)
+
+`/webperf`-style web performance audit — Deep mode (Lighthouse/PSI/CrUX/trace) vs Quick mode
+(source-scan, `potential impact` labels). Measure-before-optimize; adapted from addyosmani/agent-skills.
+
 ## Quick Start
 
 ```bash

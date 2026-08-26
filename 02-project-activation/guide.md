@@ -201,6 +201,14 @@ Claude Code's auto-memory uses a **closed four-type taxonomy**. Each memory must
 
 Serena stores project knowledge in `.serena/memories/` as Markdown files. These are loaded at session start, providing instant context without reading files.
 
+> **Companion, not a memory: `CONTEXT.md`.** Alongside Serena memories, create a committed
+> `CONTEXT.md` at the repo root — a **domain glossary** (ubiquitous language: each term → what it
+> maps to in the code). Serena memories capture *structure*; `CONTEXT.md` captures *vocabulary* so
+> the agent stops paraphrasing domain terms. Seed it with `grill-with-docs` / `sc:brainstorm` and
+> add a term the first time you catch yourself explaining it. Full template + rationale in
+> [`../09-laravel-mcp-integration/laravel-claude-md-template.md`](../09-laravel-mcp-integration/laravel-claude-md-template.md#domain-glossary--contextmd-ubiquitous-language)
+> (framework-agnostic despite the Laravel filename).
+
 **Create 5 core memories**:
 
 #### 3.1 Architecture Memory

@@ -148,6 +148,12 @@ This project uses the following MCP servers:
 - [Example: "The orders table uses soft deletes"]
 - [Example: "All API responses are wrapped in a data key"]
 - [Example: "Multi-tenancy is handled via team_id scope"]
+
+## Domain Glossary
+
+Read `CONTEXT.md` at the repo root before non-trivial work — it decodes this project's
+ubiquitous language (domain terms → what they mean in the code). Use those exact terms in
+diffs, commits, and questions instead of long paraphrases.
 ```
 
 ---
@@ -210,3 +216,49 @@ Add this section:
 - Versioning: URI prefix (`/api/v1/`, `/api/v2/`)
 - Rate limiting: configured in `RouteServiceProvider`
 ```
+
+---
+
+## Domain Glossary — `CONTEXT.md` (ubiquitous language)
+
+**Source:** adapted from [mattpocock/skills](https://github.com/mattpocock/skills) (`grill-with-docs` /
+`domain-modeling`). A cheap, high-leverage convention with no equivalent elsewhere in our stack.
+
+**The problem it solves.** An agent dropped into a project doesn't know the team's jargon, so it
+uses 20 words where 1 will do ("there's a problem when a lesson inside a section of a course is given
+a spot in the filesystem" vs. "there's a problem with the *materialization cascade*"). The fix is a
+**shared vocabulary file the agent reads first**.
+
+**Where it lives and why it is NOT a Serena memory.** `CONTEXT.md` sits at the **repo root**, is
+committed, and is read by humans and agents alike. Serena architecture memories describe *structure*
+(modules, patterns, call graphs); `CONTEXT.md` describes *vocabulary* (what a word means in this
+codebase). They are complementary — keep them separate. In our stack: architecture → Serena memory,
+decisions/why → Svod, **domain vocabulary → `CONTEXT.md`**.
+
+**Template** (`CONTEXT.md` at repo root):
+
+```markdown
+# CONTEXT — Domain Glossary for [Project]
+
+> Ubiquitous language for this codebase. One line per term: the word the team uses, and what it
+> maps to in the code. Add a term the moment you catch yourself paraphrasing it.
+
+## Core entities
+- **Tenant** — a `Team` row; every scoped query filters by `team_id` (see `BelongsToTenant` trait).
+- **Materialization** — the moment a draft `Lesson` is assigned a real path in storage (`LessonMaterializer`).
+- **Signal** — an inbound event from a connector, normalized into `signals` before triage.
+
+## Verbs / processes
+- **Triage** — the ranking pass that turns raw signals into a prioritized surface (`TriageService`).
+- **Cutover** — swapping a project's live DNS/host to a new origin (ops term, not in code).
+
+## Statuses / states
+- **Wedged** — a task stuck Paused+charging that will eat the next run window (watchdog term).
+```
+
+**How to seed it.** Run mattpocock's `grill-with-docs` (or our `sc:brainstorm` / `ce-brainstorm`) at
+the start of a feature — the interview surfaces the terms, and you capture the ones that recur into
+`CONTEXT.md`. Don't front-load 50 terms; add each the first time you paraphrase it.
+
+**Payoff.** Concise diffs and questions, session after session; new agents (and teammates) decode the
+codebase without a re-explanation each time.

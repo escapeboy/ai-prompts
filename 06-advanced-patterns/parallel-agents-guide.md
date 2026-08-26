@@ -793,6 +793,43 @@ post-merge = "npm run lint"        # Validate after merge
 
 > **Note**: Worktrunk is free, open source (Apache 2.0), and available on macOS, Linux, and Windows. See [worktrunk.dev](https://worktrunk.dev/) for full documentation.
 
+## Pattern 5: Subagent-Driven Development (external methodology)
+
+**Source:** [obra/superpowers](https://github.com/obra/superpowers) (277k⭐, MIT), analysed 2026-08-26.
+A formalised end-to-end loop worth borrowing *ideas* from — **not** installing wholesale (it ships a
+session-start hook that auto-executes; harvest the shape, audit before running any bundled code).
+
+The methodology, in four beats:
+
+1. **Spec-out, don't jump to code.** On detecting "build something", the agent interviews the user
+   to tease out a spec instead of coding immediately. (We already do this via `sc:brainstorm` /
+   mattpocock `grill-with-docs`.)
+2. **Chunked design sign-off.** The spec is shown back in chunks short enough to actually read and
+   approve — not one wall of text.
+3. **Plan for an "enthusiastic junior with no context."** The implementation plan is explicit enough
+   that a low-judgement executor can follow it: true red/green TDD, YAGNI, DRY.
+4. **Subagent-driven implementation loop.** Once approved, subagents work through each task, and
+   **other agents inspect/review each one before moving on** — often running autonomously for a
+   couple of hours without deviating from the plan.
+
+**How this maps to our stack** (so we borrow, not duplicate):
+
+| Superpowers beat | Our existing equivalent |
+|------------------|-------------------------|
+| Spec interview | `sc:brainstorm`, `ce-brainstorm`, mattpocock `grill-with-docs` |
+| Chunked sign-off | Adaptive Planning (CLAUDE.md) — design sketch before build |
+| Plan-for-a-junior | `sprint-orchestrate` Plan phase |
+| Implement + inter-agent review | Background-Delegation + `adversarial-verifier` + `output-evaluator` |
+
+**The one genuinely borrowable mechanic:** the **inter-agent review gate between tasks** — each
+implementation subagent's output is checked by a *separate* reviewer subagent before the next task
+starts, not just at the end. That is the unattended-verification discipline from CLAUDE.md
+("the worker must not be the sole grader of its own output") applied at per-task granularity. When
+running a long autonomous plan, insert a verifier subagent after each task, not only at the finish.
+
+**What to skip:** the session-start hook, the "takes over your workflow" framing (mattpocock's
+libraries are the deliberate counter-position), and any blind plugin install on a shared host.
+
 ---
 
 **Use parallel agents strategically** for complex tasks that benefit from multiple perspectives or concurrent execution. Balance the token cost against the value of parallelization.

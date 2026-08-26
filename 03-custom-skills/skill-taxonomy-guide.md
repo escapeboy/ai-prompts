@@ -110,6 +110,26 @@ Split a growing skill into a taxonomy when any of these appear:
 
 And the inverse: **don't** build a taxonomy for a domain with 3 workflows. The dispatcher layer pays for itself at roughly 8–10 leaves; below that, well-named individual skills with cross-references are simpler.
 
+## Case Studies (external skill libraries)
+
+Two large public libraries validate the dispatcher→leaf shape in the wild (analysed 2026-08-26):
+
+- **[addyosmani/agent-skills](https://github.com/addyosmani/agent-skills)** — 24 skills mapped onto an
+  explicit lifecycle (DEFINE→PLAN→BUILD→VERIFY→REVIEW→SHIP) with 8 slash commands (`/spec /plan /build
+  /test /review /webperf /code-simplify /ship`) as the dispatcher layer, plus **auto-activation** (designing
+  an API triggers `api-and-interface-design`, building UI triggers `frontend-ui-engineering`). It also
+  documents a real portability gap — a per-skill `npx` install drops the shared `references/` dir — the
+  exact failure mode this guide's "keep leaves self-contained or vendor shared refs" advice prevents.
+- **[mattpocock/skills](https://github.com/mattpocock/skills)** — the *counter-position*: deliberately
+  **small, composable, model-agnostic** leaves with **no owning framework** ("approaches like GSD/BMAD/
+  Spec-Kit take away your control"). Useful tension for our own library — a dispatcher should route, not
+  seize the workflow. Its `setup-*` skill is the install-time configurator; its `grill-with-docs` leaf
+  produces the `CONTEXT.md` glossary (adopted into `09-laravel-mcp-integration/`).
+
+The lesson across both: **the dispatcher is a routing table, not a controller.** Lifecycle taxonomies
+(addyosmani) and flat composable sets (mattpocock) both work; what fails is a mega-skill or a dispatcher
+that removes the operator's control.
+
 ## Related
 
 - [guide.md](guide.md) — authoring individual skills (leaf-level craft)
