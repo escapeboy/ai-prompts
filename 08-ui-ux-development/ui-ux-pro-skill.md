@@ -4,18 +4,69 @@
 **Command**: `/ui-ux-pro-max`
 **Category**: UI/UX Design & Implementation
 **Token Savings**: 40-60% for UI tasks through specialized context
+**Upstream**: [nextlevelbuilder/ui-ux-pro-max-skill](https://github.com/nextlevelbuilder/ui-ux-pro-max-skill) · **synced to v2.0 catalog `verifiedAt` 2026-08-13**
+**Sync marker**: catalog counts below are from `data/catalog-summary.json`. If upstream `verifiedAt` is newer than 2026-08-13, this guide has drifted — re-sync counts + the query contract.
 
 ---
 
 ## Overview
 
-The UI/UX Pro Max skill is a comprehensive design and implementation agent with extensive built-in knowledge of:
+UI/UX Pro Max is a **data-backed design-intelligence skill**. As of v2.0 it is no longer a static prose catalog — it ships a local searchable dataset queried by a Python tool (`search.py`), plus a reasoning engine that assembles a full design system on demand.
 
-- **50+ UI Styles** (Glassmorphism, Claymorphism, Minimalism, Brutalism, Neumorphism, Bento Grid, etc.)
-- **21 Color Palettes** with semantic naming and accessibility guidance
-- **50 Font Pairings** (Google Fonts and system fonts)
-- **20 Chart Types** (data visualization patterns)
-- **9 Technology Stacks** (React, Next.js, Vue, Svelte, SwiftUI, React Native, Flutter, Tailwind, shadcn/ui)
+**Catalog counts (v2.0, `verifiedAt` 2026-08-13):**
+
+- **88 UI styles** (79 searchable, 50 active, 29 supplemental, 9 deprecated) — Glassmorphism, Claymorphism, Minimalism, Brutalism, Neumorphism, Bento Grid, etc.
+- **192 product palettes + 192 reasoning profiles** (one exact reasoning profile per product archetype)
+- **74 font pairings** drawn from **1,934 licensed Google Fonts** (unlicensed families excluded by policy)
+- **119 UX guidelines** organised into 10 priority categories (accessibility → charts)
+- **105 curated icons** (+ 1,512 upstream Phosphor icons)
+- **25 chart types**, **17 GSAP motion presets**
+- **22 technology stacks** with **1,260 stack-specific guidelines** (React, Next.js, Vue, Svelte, Angular, SwiftUI, React Native, Flutter, Laravel/Blade, html-tailwind, shadcn/ui, …)
+
+> **Why the numbers jumped from the old guide** (50 styles / 21 palettes / 20 charts / 9 stacks): the previous version of this doc was derived from an older release. v2.0 replaced the hand-written catalog with a validated dataset (`data-provenance.json`, sha256-snapshotted sources, a promotion policy requiring explicit approval for family-set changes) and a `search.py` query layer. The conceptual sections lower in this doc (design-system format, component patterns, examples) remain valid; the **counts and the query contract are the parts that go stale**.
+
+---
+
+## v2.0 Architecture: The Search Tool & Query Contract
+
+v2.0's core is `search.py` — a zero-dependency Python 3 tool that queries the local dataset. **This is the part that changed most from the old guide.** Invoke it by full path (it lives in the skill dir, not the project):
+
+```bash
+python "${CLAUDE_PLUGIN_ROOT}/.claude/skills/ui-ux-pro-max/scripts/search.py" "<query>" --domain <domain>
+```
+
+**Query contract — pick the smallest mode that fits:**
+
+1. **New project / page / system-wide direction** → `--design-system` (aggregates product+style+color+typography, applies reasoning rules, returns pattern/style/colors/typography/effects + anti-patterns).
+2. **Targeted concern or component bug** → one explicit `--domain` (`ux`, `style`, `product`, `typography`, `color`, `icons`, `gsap`, `chart`).
+3. **Known stack** → `--stack <name>` for implementation detail; add a domain search only for a distinct design concern.
+
+Rules that matter for good results:
+- Build each query around **one dominant intent**, 2–5 meaningful terms + one constraint (product/platform/interaction).
+- **Verify the returned domain, top result, and product/platform fit before applying.** Retry once with a narrower rewrite; if still empty/off-topic, state "no verified match" and label any general advice as fallback. **Never persist unverified output.**
+- **Never assume a stack.** Detect it (`package.json`, `pubspec.yaml`, `*.xcodeproj`/`Package.swift`, `composer.json`, RN markers); ask if undetectable. A hardcoded default silently misroutes every recommendation.
+- Accessibility: search one observable outcome at a time with explicit WCAG-outcome terms (e.g. `"error summary validation" --domain ux`, then `"decorative icon aria hidden" --domain icons`), then the stack. Don't accept a generic a11y result for a specific criterion.
+
+**Rule categories by priority** (search `--domain ux` unless noted; full text in the skill's `references/quick-reference.md`, app-polish + pre-delivery checklist in `references/pro-rules.md`):
+
+| Pri | Category | Impact | Must-have | Avoid |
+|-----|----------|--------|-----------|-------|
+| 1 | Accessibility | CRIT | Contrast 4.5:1, alt text, keyboard nav, aria-labels | Removing focus rings, icon-only buttons w/o labels |
+| 2 | Touch & Interaction | CRIT | 44×44px min, 8px+ spacing, loading feedback | Hover-only reliance, 0ms state changes |
+| 3 | Performance | HIGH | WebP/AVIF, lazy load, reserve space (CLS <0.1) | Layout thrash, CLS |
+| 4 | Style Selection | HIGH | Match product type, consistency, SVG icons | Mixing flat+skeuomorphic, emoji as icons |
+| 5 | Layout & Responsive | HIGH | Mobile-first, viewport meta, no h-scroll | Fixed px widths, disable zoom |
+| 6 | Typography & Color | MED | Base 16px, line-height 1.5, semantic tokens | Body <12px, gray-on-gray, raw hex |
+| 7 | Animation | MED | Context-aware timing, motion=meaning, reduced-motion | One duration for all, animating width/height |
+| 8 | Forms & Feedback | MED | Visible labels, inline errors, progressive disclosure | Placeholder-only labels, top-only errors |
+| 9 | Navigation | HIGH | Predictable back, bottom nav ≤5, deep linking | Overloaded nav, broken back |
+| 10 | Charts & Data | LOW | Legends, tooltips, accessible colors | Color-alone encoding |
+
+**Persisting a design system** across sessions: add `--persist` **and always** `--output-dir <project-root>` (master + per-page overrides pattern). Without `--output-dir` files land wherever the tool ran.
+
+**Companion CLI (optional, no Claude needed):** `npx ui-ux-pro-max-cli` — same dataset, standalone. Useful for a quick style/palette lookup outside an agent session.
+
+**Adoption note for our fleet:** upstream ships Python `scripts/` and (in `cli/`) an npm package. Per our supply-chain posture, if we install it, install it **as a plugin we've read**, not blindly — the `search.py` is read-only data querying (safe), but audit before trusting any `scripts/` on a shared host. For most of our Laravel + Blade work, the **`--stack laravel` / `--stack html-tailwind`** guidelines + the priority table above are the highest-value slice; the reasoning engine matters mainly for greenfield pages.
 
 ---
 
@@ -175,7 +226,7 @@ dark mode support, and smooth animations
 
 ### Built-in Design Knowledge
 
-**Styles Library** (50+ styles):
+**Styles Library** (88 total / 79 searchable / 50 active — the list below is an illustrative subset; query the full catalog via `--domain style`):
 - Glassmorphism - Frosted glass effects
 - Claymorphism - 3D clay-like surfaces
 - Minimalism - Clean, simple, whitespace
@@ -186,7 +237,7 @@ dark mode support, and smooth animations
 - Material Design - Google's design language
 - Skeuomorphism - Real-world metaphors
 
-**Color Palettes** (21 semantic sets):
+**Color Palettes** (192 product palettes + reasoning profiles — subset below; query via `--domain color` or `--design-system`):
 - Professional Blues - Trust, corporate
 - Vibrant Gradients - Modern, energetic
 - Earth Tones - Natural, calming
@@ -195,7 +246,7 @@ dark mode support, and smooth animations
 - Pastel Soft - Gentle, friendly
 - High Contrast - Accessible, clear
 
-**Font Pairings** (50 combinations):
+**Font Pairings** (74 curated pairings from 1,934 licensed Google Fonts — subset below; query via `--domain typography`):
 - Playfair Display + Source Sans Pro (Editorial)
 - Montserrat + Merriweather (Modern Professional)
 - Inter + Fira Code (Tech SaaS)
