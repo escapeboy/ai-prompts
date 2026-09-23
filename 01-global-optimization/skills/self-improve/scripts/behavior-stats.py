@@ -108,6 +108,8 @@ def main(argv):
         "mean_ng": mean_ng,
         "dead_weight": mean_ng is not None and mean_ng <= 0.05,
         "non_discriminating": [r["case"] for r in results if not r["discriminating"]],
+        # a with-arm that rarely loaded the skill measures triggering, not the skill's content
+        "low_fire": [r["case"] for r in results if r["skill_fired"] is not None and r["skill_fired"] < 0.5],
         "results": results,
         "failures": failures,
         "verdict": "fail" if failures else "pass",
@@ -125,6 +127,8 @@ def main(argv):
             print(f"{r['case'][:28]:28} {r['runs']:>4} {fmt(r['pass_with']):>5} {fmt(r['pass_without']):>5} "
                   f"{fmt(r['ng']):>6} {fmt(r['pass_pow_k']):>7} {fmt(r['skill_fired']):>5}{flag}")
         print(f"\nmean NG {mean_ng} · cost ${record['cost_usd']}")
+        if record["low_fire"]:
+            print(f"skill fired in <50% of with-runs: {', '.join(record['low_fire'])} — result reflects triggering, not content")
         if record["dead_weight"]:
             print("dead weight: the skill does not beat the baseline — candidate for removal")
         for f in failures:

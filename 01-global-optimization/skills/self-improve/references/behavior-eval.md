@@ -47,11 +47,21 @@ allowed_tools: [Read, Glob, Grep, Skill]
 <the task as a user would really phrase it>
 ```
 
+Gated tools (`Write`, `Edit`, `Bash`, `WebFetch`, `mcp__*`) listed in `allowed_tools` are NOT
+granted unless the run also passes `--allow-tools <tool>`. For file-producing cases pass
+`--allow-tools Write` (the agent writes only inside its sandboxed temp cwd); otherwise grade
+`last_message`.
+
 Graders (`graders/<name>.md`, frontmatter only for deterministic types):
 `regex` (`pattern`, `match: contains|not_contains|count:N`, `target: last_message|trace|files`),
 `file_exists` (`path`), `tool_used` (`tool`, `input_match`, `min`/`max`), `tool_order`,
 `llm` (body = criteria; 2-of-3 judge vote, noisy on long output), `baseline`.
 Prefer deterministic graders; use `llm` only where the outcome needs judgement.
+
+Regex gotchas (JavaScript `RegExp`, not PCRE): inline `(?i)` is a syntax error — use the
+separate `flags: i` key. Single-quote every `pattern` — YAML turns `100` into an integer and
+`### x` into a comment (null). Grade meaning, not verbatim identifiers from SKILL.md, unless reciting the
+identifier IS the outcome — otherwise a correct answer fails on wording.
 
 ## Writing good cases (from skillgrade's practice)
 
@@ -80,6 +90,12 @@ claude plugin eval . --trust-plugin --no-publish --max-cost-usd 2 \
 python3 scripts/behavior-stats.py "$SCRATCH/tier4.json" [--json]
 ```
 
+**Model choice matters.** On haiku the Skill tool often does not fire at all (first full sweep,
+16 skills: fired 0–67% on most cases), so a `haiku` run under-rates skills used on Sonnet/Opus.
+Use haiku for cheap grader smoke runs; run the verdict on the model you actually use.
+With `runs: 3` one flipped run moves NG by ±0.5–1.0 — re-run a regression with more runs
+before acting on it.
+
 Presets (skillgrade's idea, our numbers): `--runs 1` smoke (grader check) · `3` routine ·
 `5+` for `critical` cases, where pass^3 needs enough runs to mean anything.
 
@@ -91,6 +107,7 @@ record `{tool, tier: 4, input_sha256, results, failures, verdict}`:
 | Normalized gain | (p_with − p_without) / (1 − p_without) | raw delta under-rates skills on tasks the model half-solves anyway |
 | pass^k | C(c,k)/C(n,k) | chance k runs in a row all pass — the bar for `critical` |
 | discriminating | not (both arms = 1.0) | filters cases that cannot tell the arms apart |
+| low_fire | skill fired in < 50% of with-runs | the case then measures triggering, not the skill's content — fix the description (Tier 1) or test on the model you actually run |
 
 **Fail** (exit 1, aborts the cycle like a red Tier 2): any NG < 0 (the skill makes things
 worse), with-arm pass rate < threshold (0.8), or a `critical` case with pass^k < threshold.
