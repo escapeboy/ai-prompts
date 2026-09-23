@@ -4,6 +4,20 @@ All notable changes to this library are documented here.
 
 ---
 
+## [1.25.0] — 2026-09-23
+
+### Added
+
+- **`self-improve` Tier 4 — behavioral eval.** Tiers 1–3 grade the SKILL.md *text*; nothing measured whether the skill changes what the agent *does*. Tier 4 runs the skill's `evals/` cases through Claude Code's built-in `claude plugin eval`, which by default runs every case with and without the skill (clean baseline: only built-in skills are loaded in both arms).
+- **`scripts/behavior-stats.py`** (stdlib) — reads the `plugin eval --json` result and adds normalized gain, unbiased pass^k (`C(c,k)/C(n,k)`) for cases tagged `critical`, and a discrimination check. Fails (exit 1) on any regression, a with-skill pass rate below threshold, or a `critical` case below the pass^k bar; reports mean gain ≈ 0 as dead weight (removal candidate, never auto-removed). Emits a sealable evidence record like `skill-lint.py --json`.
+- **`references/behavior-eval.md`** — when to run Tier 4, case layout and grader types, case-writing rules (grade outcomes not steps, name the output file, keep the answer key out of the prompt), grader validation (smoke run + discrimination check, since the runner has no reference-solution step), cost, and runner behavior verified on 2.1.280 (bare skill folders resolve as plugins; result JSON drops `tags`).
+
+### Changed
+
+- `skill-lint.py` skips `evals/` (test fixtures are not agent-loaded content, so they are not "dead weight").
+- `self-improve` SKILL.md, `integration-seams.md`, the global system prompt and README describe the gate as tiered (1–4) instead of three-tier.
+- Idea source: [mgechev/skillgrade](https://github.com/mgechev/skillgrade) — evaluated; not adopted as a tool for a Claude-only library (the built-in runner already covers ablation, skill-fired detection, MCP mocks and cost caps), its metrics and grader-validation practice were borrowed.
+
 ## [1.24.2] — 2026-08-06
 
 ### Docs

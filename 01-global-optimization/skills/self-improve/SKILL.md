@@ -3,8 +3,8 @@ name: self-improve
 description: >-
   Close the loop on a skill/prompt/convention library: mine recurring review
   feedback into rules, fold them back into the generator, and gate every change
-  through a three-tier evaluation (deterministic lint + trigger accuracy + LLM
-  judge) that converges instead of drifting. Use when a correction keeps recurring
+  through a tiered evaluation (deterministic lint + trigger accuracy + LLM judge,
+  plus a with/without-skill behavioral eval) that converges instead of drifting. Use when a correction keeps recurring
   across skills/PRs, when adding or revising skills warrants a quality gate, or when
   asked to "harden the skill library", "run the eval", "lint skills", or "close the
   loop". Composes with your existing execution, memory, and governance layers.
@@ -15,7 +15,7 @@ description: >-
 A review comment that recurs is not a comment — it is an **undocumented requirement**.
 Once the same guidance appears often enough it belongs in the *system*, not in a human
 review. This skill turns that insight into a **converging** loop: mine the recurring
-signal → fold it into the generator/conventions → prove the change with a three-tier
+signal → fold it into the generator/conventions → prove the change with a tiered
 gate. As the library improves it produces fewer repeat comments → less signal → smaller
 changes → **steady state** (natural damping, not infinite mutation). When conventions
 change, the surge of new comments restarts the loop exactly where needed.
@@ -38,7 +38,7 @@ only when the same signal repeats — that repetition is the whole trigger.
 ## The loop
 
 ```
-mine signal → apply (bounded) → three-tier gate → promote rule → measure → converge
+mine signal → apply (bounded) → tiered gate → promote rule → measure → converge
 ```
 
 1. **Mine the signal.** Collect recurring corrections (from feedback memories, PR review
@@ -47,14 +47,14 @@ mine signal → apply (bounded) → three-tier gate → promote rule → measure
 2. **Apply, bounded.** Fold the rule into the generator surface (skill body, a global
    `CLAUDE.md` convention, a template). **Blast-radius caps: ≤5 improvements and ≤100
    changed lines per cycle.** Larger → split into cycles. Any regression in the gate **aborts**.
-3. **Three-tier gate** (below). All three must pass before delivery.
+3. **Tiered gate** (below). Tiers 1–3 always; Tier 4 when the skill's procedure changed. All that run must pass.
 4. **Promote the rule** to durable memory (a decision-memory store; see integration seams).
 5. **Deliver transparently.** Consequential steps (auto-edit, push PR) pass a governance
    gate and produce a **draft PR for human review**, never an auto-merge.
 6. **Measure convergence.** Track the decline in repeat-signal frequency across cycles (the
    direct efficacy metric). When signal dries up, stop; it restarts on the next convention change.
 
-## Three-tier evaluation
+## Tiered evaluation
 
 Deterministic checks where quality is objectively measurable; LLM judgement only where it
 needs context. Neither replaces the other — they answer different questions.
@@ -73,6 +73,16 @@ needs context. Neither replaces the other — they answer different questions.
 - **Tier 3 — Rubric LLM-as-judge** (semantic, subagent). Grade the artifact on the dimensions
   in `references/rubric.md` (scope precision, progressive disclosure, boundary clarity,
   convention adherence, signal fidelity).
+- **Tier 4 — Behavioral eval** (runtime, `claude plugin eval`). Tiers 1–3 read the text; this
+  checks that an agent WITH the skill does the task better than one WITHOUT it (built-in
+  with/without ablation on a clean baseline). Run it for a new skill or a procedure change, not
+  for wording edits. Cases live in `<skill>/evals/`; gate with:
+  ```bash
+  python3 ~/.claude/skills/self-improve/scripts/behavior-stats.py <plugin-eval.json> [--json]
+  ```
+  Adds normalized gain, pass^k for `critical` cases, and flags cases both arms pass (they prove
+  nothing). Fails on any regression (NG < 0). Mean NG ≈ 0 = dead weight → removal candidate for
+  a human. Case authoring, grader validation, cost: `references/behavior-eval.md`.
 
 ## Integration seams (optional)
 
@@ -94,12 +104,13 @@ The loop composes with whatever platforms you run — it does not require them. 
 
 **Always**
 - Enforce the frequency threshold — do not promote a one-off correction into a rule.
-- Run all three tiers; a red Tier-2 aborts the cycle. Keep edits within the ≤5 / ≤100 caps.
+- Run Tiers 1–3 (plus Tier 4 when the procedure changed); a red Tier 2 or Tier 4 aborts the cycle. Keep edits within the ≤5 / ≤100 caps.
 - Promote durable rules to a decision-memory store; keep ephemeral facts out of it.
 
 **Ask first**
 - Pushing a PR or editing a shared/team skill library (consequential → governance gate + human).
 - Widening the blast-radius caps for a single cycle.
+- Removing a skill Tier 4 flagged as dead weight, or a Tier-4 run expected to cost over ~$2.
 
 **Never**
 - Auto-merge a self-generated change without human review (stop at draft PR — the blocker is the
