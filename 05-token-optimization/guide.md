@@ -355,7 +355,7 @@ Create optimization log:
 
 **Example workflow**:
 ```
-1. /context load             # 5K tokens (cached)
+1. /ctx load             # 5K tokens (cached)
 2. find_symbol "ErrorMethod" # 200 tokens
 3. Read method body          # 300 tokens
 4. Make fix                  # 500 tokens
@@ -372,7 +372,7 @@ Total: ~6K tokens (vs 20K+ baseline)
 
 **Example workflow**:
 ```
-1. /context load                    # 5K tokens
+1. /ctx load                    # 5K tokens
 2. Find similar feature             # 1K tokens
 3. Intent-planning (medium)         # 3K tokens
 4. Implementation (with patterns)   # 8K tokens
@@ -389,7 +389,7 @@ Total: ~17K tokens (vs 45K+ baseline)
 
 **Example workflow**:
 ```
-1. /context load                     # 5K tokens
+1. /ctx load                     # 5K tokens
 2. Symbol exploration                # 2K tokens
 3. Find references                   # 1K tokens
 4. Targeted edits                    # 4K tokens
@@ -576,7 +576,7 @@ After breakeven, all savings are pure benefit.
 /cache-inspector status
 
 # Load project context
-/context load
+/ctx load
 
 # Run with maximum optimization
 /optimize "task description"

@@ -127,9 +127,9 @@ ls -la ~/.claude/skills/optimize/SKILL.md
 head -10 ~/.claude/skills/optimize/SKILL.md  # Check frontmatter
 ```
 
-#### /context
+#### /ctx
 
-- [ ] `~/.claude/skills/context/SKILL.md` exists
+- [ ] `~/.claude/skills/ctx/SKILL.md` exists
 - [ ] File size > 8KB
 - [ ] YAML frontmatter: name="context"
 - [ ] Contains all 6 actions: load, save, list, refresh, inspect, clear
@@ -139,7 +139,7 @@ head -10 ~/.claude/skills/optimize/SKILL.md  # Check frontmatter
 
 **Verify**:
 ```bash
-ls -la ~/.claude/skills/context/SKILL.md
+ls -la ~/.claude/skills/ctx/SKILL.md
 ```
 
 #### /cache-inspector
@@ -299,7 +299,7 @@ grep "/optimize" ~/.claude/QUICK-REFERENCE.md  # Should find skill
 Test each skill in Claude Code conversation:
 
 - [ ] `/optimize` command recognized
-- [ ] `/context` command recognized
+- [ ] `/ctx` command recognized
 - [ ] `/cache-inspector` command recognized
 - [ ] `/update-docs` command recognized
 - [ ] `/init-project` command recognized
@@ -307,7 +307,7 @@ Test each skill in Claude Code conversation:
 **Test**:
 ```
 /optimize "test"
-/context list
+/ctx list
 /cache-inspector status
 /update-docs validate
 /init-project detect

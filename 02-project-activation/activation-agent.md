@@ -549,7 +549,7 @@ Provide a completion report:
 
 3. **Update memories as project evolves**:
    ```
-   /context refresh
+   /ctx refresh
    ```
 
 4. **Share activation with team**:
@@ -666,7 +666,7 @@ Expected:
 
 **Weekly** (if rapid changes):
 ```
-/context refresh
+/ctx refresh
 ```
 
 **Monthly** (stable projects):
@@ -708,7 +708,7 @@ Track improvements over time:
 
 **How to refresh**:
 ```
-/context refresh
+/ctx refresh
 ```
 
 This will:
@@ -725,7 +725,7 @@ Consider versioning memories for major changes:
 cp -r .serena/memories .serena/memories-backup-2026-01-04
 
 # After refactor
-/context refresh
+/ctx refresh
 ```
 
 ---

@@ -70,7 +70,7 @@ Low hit rate, entries expiring fast, or "no cache data available" — see
 
 **Ask first**
 - `clear` — clearing all cached content forces a full-cost re-warm on the next session; confirm before running.
-- Editing `~/.claude/settings/prompt-caching.json` (shared, session-wide config) or moving content into memories via `/context save`.
+- Editing `~/.claude/settings/prompt-caching.json` (shared, session-wide config) or moving content into memories via `/ctx save`.
 
 **Never**
 - Run `clear` as a shortcut to "fix" a low hit rate — diagnose the cause first (it only makes warmup cost more).
@@ -78,10 +78,10 @@ Low hit rate, entries expiring fast, or "no cache data available" — see
 
 ## See Also
 
-- [`/context`](../context/SKILL.md) — depends-on: load memories to maximize cache hits (pre-warm before measuring here).
+- [`/ctx`](../ctx/SKILL.md) — depends-on: load memories to maximize cache hits (pre-warm before measuring here).
 - [`/optimize`](../optimize/SKILL.md) — heavier-alternative: full optimization mode that includes cache tuning.
 - [references/actions.md](references/actions.md) — full action detail and example outputs.
 - [references/caching-internals.md](references/caching-internals.md) — how caching works, config, target metrics.
 - [references/troubleshooting.md](references/troubleshooting.md) — symptoms and fixes.
-- [Token Optimization Guide](../../../05-token-optimization/guide.md)
-- [Prompt Caching Config](../../settings/prompt-caching.json)
+- [Token Optimization Guide](https://github.com/escapeboy/ai-prompts/blob/master/05-token-optimization/guide.md)
+- [Prompt Caching Config](https://github.com/escapeboy/ai-prompts/blob/master/01-global-optimization/guide.md) (`~/.claude/settings/prompt-caching.json`)

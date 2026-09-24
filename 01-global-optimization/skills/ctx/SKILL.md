@@ -1,10 +1,10 @@
 ---
-name: context
-description: Manage Serena memories and session context — load, save, refresh, inspect, and clear project knowledge
+name: ctx
+description: Manage Serena memories and session context — load, save, refresh, inspect, and clear project knowledge. Use when loading or saving project memories (`/ctx load`, `/ctx save`). Not the built-in `/context`, which shows context-window usage.
 version: 1.0.0
 ---
 
-# /context — Memory & Context Management
+# /ctx — Memory & Context Management
 
 Manages the Serena memory system that stores architectural knowledge, conventions, and project context. Loading memories at the start of a session saves 60-70% of tokens by eliminating repeated file reads.
 
@@ -28,18 +28,18 @@ memories — don't scaffold a memory set for a one-off task.** Without Serena, u
 ## Usage
 
 ```
-/context [action] [name]
+/ctx [action] [name]
 ```
 
 ### Quick Examples
 
 ```
-/context load                    # Load all relevant memories for current project
-/context list                    # Show all available memories
-/context save architecture       # Create or update the architecture memory
-/context refresh codebase-conventions  # Regenerate a stale memory
-/context inspect                 # Show what's currently loaded + cache status
-/context clear                   # Unload all memories from context
+/ctx load                    # Load all relevant memories for current project
+/ctx list                    # Show all available memories
+/ctx save architecture       # Create or update the architecture memory
+/ctx refresh codebase-conventions  # Regenerate a stale memory
+/ctx inspect                 # Show what's currently loaded + cache status
+/ctx clear                   # Unload all memories from context
 ```
 
 ---
@@ -105,4 +105,4 @@ fixes are in **[references/troubleshooting.md](references/troubleshooting.md)**.
 - [`/optimize`](../optimize/SKILL.md) — Uses loaded context for token-efficient work; the fallback when Serena is unavailable
 - [`/init-project`](../init-project/SKILL.md) — Creates initial memory set for a new project
 - [`/cache-inspector`](../cache-inspector/SKILL.md) — Monitor cache performance
-- [Project Activation Guide](../../../02-project-activation/guide.md)
+- [Project Activation Guide](https://github.com/escapeboy/ai-prompts/blob/master/02-project-activation/guide.md)

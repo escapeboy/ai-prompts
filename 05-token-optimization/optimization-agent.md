@@ -297,7 +297,7 @@ After implementing recommendations:
 
 After implementing:
 1. Run `/cache-inspector status` - Check cache hit rate
-2. Run `/context list` - Verify memories loaded
+2. Run `/ctx list` - Verify memories loaded
 3. Complete a typical task - Compare tokens used
 4. Track savings for one week
 

@@ -38,7 +38,7 @@ A **skill** is a Markdown file that defines a slash command in Claude Code. When
 
 | Location | Scope | Example |
 |----------|-------|---------|
-| `~/.claude/skills/` | Global (all projects) | `/optimize`, `/context` |
+| `~/.claude/skills/` | Global (all projects) | `/optimize`, `/ctx` |
 | `.claude/skills/` | Project-specific | `/deploy`, `/migrate` |
 
 **Priority**: Project skills override global skills with the same name.
@@ -860,7 +860,7 @@ See `examples/pwa.md` for a real-world skill that analyzes a project and adds Pr
 
 The 8 global skills in `../01-global-optimization/skills/` are production-ready examples (all multi-file — thin `SKILL.md` core + `references/`, some with `scripts/`):
 - [`/optimize`](../01-global-optimization/skills/optimize/SKILL.md) — multi-action skill with strategy selection
-- [`/context`](../01-global-optimization/skills/context/SKILL.md) — stateful memory management
+- [`/ctx`](../01-global-optimization/skills/ctx/SKILL.md) — stateful memory management
 - [`/cache-inspector`](../01-global-optimization/skills/cache-inspector/SKILL.md) — reporting and analysis skill
 - [`/update-docs`](../01-global-optimization/skills/update-docs/SKILL.md) — web research + file update workflow
 - [`/init-project`](../01-global-optimization/skills/init-project/SKILL.md) — multi-step project initialization

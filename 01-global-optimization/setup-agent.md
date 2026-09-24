@@ -75,11 +75,11 @@ cp -r ~/ai-prompts/01-global-optimization/skills/optimize ~/.claude/skills/
 ```
 Source: [`skills/optimize/SKILL.md`](skills/optimize/SKILL.md)
 
-#### Skill 2: `/context`
+#### Skill 2: `/ctx`
 ```bash
-cp -r ~/ai-prompts/01-global-optimization/skills/context ~/.claude/skills/
+cp -r ~/ai-prompts/01-global-optimization/skills/ctx ~/.claude/skills/
 ```
-Source: [`skills/context/SKILL.md`](skills/context/SKILL.md)
+Source: [`skills/ctx/SKILL.md`](skills/ctx/SKILL.md)
 
 #### Skill 3: `/cache-inspector`
 ```bash
@@ -152,7 +152,7 @@ find ~/.claude -type f | wc -l
 In Claude Code conversation:
 ```
 /optimize "test"
-/context list
+/ctx list
 /cache-inspector status
 /update-docs validate
 /init-project detect

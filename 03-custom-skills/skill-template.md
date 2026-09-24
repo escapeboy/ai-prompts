@@ -230,7 +230,7 @@ npm [command]
 |-------|-------------|
 | `/format` | [How it integrates] |
 | `/test` | [How it integrates] |
-| `/context` | [How it integrates] |
+| `/ctx` | [How it integrates] |
 
 ### With External Tools
 

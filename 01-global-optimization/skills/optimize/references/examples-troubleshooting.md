@@ -58,7 +58,7 @@ Optimization still works at 40-50% savings without Serena. Memory-first and symb
 ### "Low token savings"
 
 Run `/optimize status` — check if:
-- Memories are loaded (run `/context load` first)
+- Memories are loaded (run `/ctx load` first)
 - Cache is warming up (first session always costs more)
 - Serena MCP is connected
 
