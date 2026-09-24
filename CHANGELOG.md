@@ -15,6 +15,7 @@ All notable changes to this library are documented here.
 ### Changed
 
 - `skill-lint.py` skips `evals/` (test fixtures are not agent-loaded content, so they are not "dead weight").
+- `behavior-stats.py` also lists `low_fire` cases (skill fired in < 50% of with-runs — the case then measures triggering, not content). `behavior-eval.md` documents the gotchas found in the first 16-skill sweep: regex graders are JavaScript `RegExp` (use `flags: i`, never `(?i)`; single-quote every `pattern`), gated tools in `allowed_tools` need `--allow-tools`, haiku often does not invoke the Skill tool (use it for grader smoke runs, not the verdict), and `runs: 3` is noisy.
 - `self-improve` SKILL.md, `integration-seams.md`, the global system prompt and README describe the gate as tiered (1–4) instead of three-tier.
 - Idea source: [mgechev/skillgrade](https://github.com/mgechev/skillgrade) — evaluated; not adopted as a tool for a Claude-only library (the built-in runner already covers ablation, skill-fired detection, MCP mocks and cost caps), its metrics and grader-validation practice were borrowed.
 
