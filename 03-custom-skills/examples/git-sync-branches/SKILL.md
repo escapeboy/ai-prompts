@@ -7,6 +7,15 @@ description: Merges all feature branches into develop, syncs master/main with de
 
 Commit everything, merge all feature branches into develop, sync master/main, delete feature branches. Handles submodules.
 
+## When to Use (and When NOT to)
+
+| Use this skill for | Use a simpler approach for |
+|---|---|
+| Cleaning up multiple stale feature branches across a repo (and submodules) into develop/master | Merging a single branch you're actively working on — just `git merge <branch>` |
+| Bulk local + remote branch deletion after a sprint/release | Deleting one branch you already know is safe — `git branch -d <branch>` |
+| Repos with git submodules needing coordinated branch sync | Single-repo, no-submodule projects — plain `git merge` + `git push` |
+| Restoring master/develop to a known-clean, in-sync state | Reviewing a PR before merge — use the code-review skill instead |
+
 ## Workflow
 
 ### Step 1: Commit uncommitted changes
@@ -151,13 +160,19 @@ git log --oneline -3 develop
 
 Both `master`/`main` and `develop` should point to the same commit (or master should be ≥ develop).
 
-## Key rules
+## Boundaries
 
-- **Always merge feature branches into `develop` first**, never directly into `master`/`main`
-- **Submodules first** — sync submodule repos before updating parent's pointer
-- **Submodule pointer conflict**: commit the current pointer before retrying the conflicted merge
-- **Protected branches**: if `main` rejects force-push, use `git pull origin main --rebase` first
-- **Only delete branches that are fully merged** — `git branch -D` force-deletes; verify with `git log develop..<branch>` first
+**Always**
+- Merge feature branches into `develop` first, never directly into `master`/`main`
+- Sync submodules before updating the parent's pointer
+- Verify each branch is fully merged before deleting — `git branch -D` force-deletes, so check `git log develop..<branch>` first
+
+**Ask first**
+- Nothing beyond the invocation itself — branch deletion, remote deletion, and pushes are exactly this skill's stated purpose
+
+**Never**
+- Force-push
+- Delete `develop`, `main`, or `master`
 
 ## Example: parent repo + submodule layout
 

@@ -7,6 +7,14 @@ description: Three-phase autonomous bug fix — investigate all occurrences, fix
 
 Three-phase bug fix that finds ALL occurrences, fixes atomically, and validates with a regression test.
 
+## When to Use (and When NOT to)
+
+| Use this skill for | Use a simpler approach for |
+|---|---|
+| A bug that could touch multiple files (renamed prop, broken route, changed model attribute) | A one-line fix with no cross-file symbol — just fix it directly |
+| The "#1 friction source": partial fixes that miss a reference elsewhere | You already know the single file/line to change and nothing else references it |
+| A bug you want validated with a dedicated regression test | A trivial typo/copy fix that doesn't warrant its own test |
+
 ## Phase 1 — Comprehensive Investigation
 
 Before touching any code:
@@ -56,6 +64,19 @@ Report back:
 - Files changed (list)
 - Regression test location
 - Test suite result (pass/fail count)
+
+## Boundaries
+
+**Always**
+- Grep the entire codebase for every reference to the broken symbol before fixing, and again after to confirm zero remaining old references.
+- Run the full test suite and write a regression test before declaring done.
+
+**Ask first**
+- Nothing beyond the invocation itself — investigating, fixing, and validating the reported bug is what this skill is for.
+
+**Never**
+- Change test assertions just to make them pass trivially.
+- Stop at a partial fix when the grep found more occurrences.
 
 ---
 

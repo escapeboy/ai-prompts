@@ -1,6 +1,6 @@
 ---
 name: init-project
-description: Initialize Claude Code optimization for a new project — detect stack, create memories, generate constitution, configure settings
+description: Initialize Claude Code optimization for a new project — detect stack, create memories, generate constitution, configure settings. Use when starting in a fresh/uninitialized project or the user says "init project"/"set up Claude Code here"; skip on an already-initialized project.
 version: 1.0.0
 ---
 

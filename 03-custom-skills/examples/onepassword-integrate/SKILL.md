@@ -13,6 +13,15 @@ Bring any project to maximum-depth 1Password integration in two layers:
 - **Backend (secret resolution)** — let the team store one Service Account token and reference everything else as `op://vault/item/field`. No more secrets in `.env` files, CI variables, or code.
 - **Frontend (site compatibility)** — make every auth form play perfectly with 1Password autofill, strong-password generation, passkeys, and the W3C `/.well-known/change-password` URL.
 
+## When to Use (and When NOT to)
+
+| Use this skill for | Use a simpler approach for |
+|---|---|
+| Auditing or installing 1Password secret-resolution (Service Accounts, `op://` refs) across a project | Reading one secret ad hoc — just `op read op://vault/item/field` |
+| Bringing every auth form to full 1Password/autofill compatibility (autocomplete attrs, well-known routes) | Fixing one broken `autocomplete` attribute you already spotted — just edit that field |
+| Deciding whether a project's 1Password setup is greenfield, partial, or mature | A project you already know is fully wired — skip straight to the specific fix |
+| Stack-specific 1Password backend wiring (Laravel/Node/Python/Ruby/Go) | Non-secret env var management — use the project's existing `.env` conventions |
+
 ## Operating principles
 
 1. **Always refresh docs first.** 1Password ships SDK/CLI changes monthly. Never trust training data — pull the current developer portal before recommending anything.
@@ -189,11 +198,16 @@ Always finish with one of:
 - "Run the project's test suite filtered to the 1Password tests to verify."
 - "Run `op vault list` inside the prod container with a real token to smoke-test."
 
-## Constraints
+## Boundaries
 
-- **Never paste a real Service Account token into chat or logs.** Even if the user offers — refuse.
-- **Never check a token into git.** Even on branches the user "promises to delete".
-- **Never weaken autocomplete attributes.** `autocomplete="off"` on password fields is almost always wrong (1Password ignores it anyway, but breaks browser autofill).
-- **Never enable Service Account access to Personal/Private vaults.** They're not accessible by spec — recommending it leads to confused users.
-- **No PHP SDK exists.** If the project is PHP and asks for an SDK, fall back to CLI shell-out — do not invent an SDK.
-- **OAuth Authorization Code does not exist for vault access.** Don't propose a "Connect with 1Password" button. Service Account tokens are pasted, not OAuth-redirected.
+**Always**
+- Refresh 1Password developer docs (Phase 1) before recommending anything
+- Detect existing integration (Phase 2) before greenfield-installing
+
+**Ask first**
+- Nothing beyond the invocation itself — auditing and patching backend/frontend 1Password integration is exactly this skill's purpose
+
+**Never**
+- Paste or log a real Service Account token, or commit one to git — even on a branch the user "promises to delete"
+- Weaken autocomplete attributes, or enable Service Account access to Personal/Private vaults
+- Invent a PHP SDK (fall back to CLI) or propose OAuth for vault access — neither exists

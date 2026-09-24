@@ -1,12 +1,21 @@
 ---
 name: image-optimize
-description: Optimize PNG and JPEG images locally using pngquant and mozjpeg/jpegtran — TinyPNG-level compression without API keys.
+description: Optimize PNG and JPEG images locally using pngquant and mozjpeg/jpegtran — TinyPNG-level compression without API keys. Use when compressing images before web deploy or asked to optimize/shrink a directory of image assets.
 version: 1.0.0
 ---
 
 # Image Optimizer
 
 Compress PNG and JPEG images locally. Achieves 60–80% size reduction with no visible quality loss.
+
+## When to Use (and When NOT to)
+
+| Use this skill for | Use a simpler approach for |
+|---|---|
+| Batch-compressing a directory of PNG/JPEG images before shipping | A single one-off image — just run the pngquant/jpegtran command directly |
+| Local, offline compression without API keys or upload limits | Images already served through a CDN/image pipeline (e.g. Cloudflare Images, imgix) — let the pipeline handle it |
+| Hitting web-asset size budgets (hero/thumbnail targets) | Vector graphics (SVG) — use an SVG optimizer such as `svgo` instead |
+| Lossy PNG + lossless JPEG recompression in one pass | Format conversion (e.g. to WebP/AVIF) — use `cwebp`/`avifenc` instead |
 
 ## Requirements
 
@@ -19,6 +28,18 @@ Verify:
 pngquant --version          # 3.0.3+
 /opt/homebrew/opt/mozjpeg/bin/jpegtran -version
 ```
+
+## Keep the originals first
+
+pngquant is lossy and the loops below overwrite in place, so copy the originals out before
+any batch run (skip only when the images are already in git or otherwise backed up):
+
+```bash
+BK="/path/to/dir/.originals-$(date +%Y%m%d-%H%M%S)"
+mkdir -p "$BK" && cp -p /path/to/dir/*.{png,PNG,jpg,jpeg,JPG} "$BK"/ 2>/dev/null
+```
+
+Tell the user where the backup is; they delete it once they have checked the results.
 
 ## PNG Optimization (pngquant — lossy, best ratio)
 
@@ -69,6 +90,9 @@ done
 # Usage: optimize-images.sh /path/to/dir
 DIR="${1:-.}"
 JPEGTRAN=/opt/homebrew/opt/mozjpeg/bin/jpegtran
+BK="$DIR/.originals-$(date +%Y%m%d-%H%M%S)"
+mkdir -p "$BK" && cp -p "$DIR"/*.{png,PNG,jpg,jpeg,JPG} "$BK"/ 2>/dev/null
+echo "Originals copied to $BK"
 total_before=0; total_after=0
 
 for f in "$DIR"/*.png "$DIR"/*.PNG; do
@@ -112,3 +136,16 @@ fi
 - For web: always target < 200KB for hero/cover images, < 50KB for thumbnails.
 - pngquant outputs same filename when `--output` equals input — use `--force` flag.
 - On macOS, `stat -f%z` gives file size in bytes (Linux uses `stat -c%s`).
+
+## Boundaries
+
+**Always**
+- Keep the originals — backup or git — unless already in git, before any lossy pass
+- Report before/after size per file and the total reduction
+
+**Ask first**
+- Nothing beyond the invocation itself — compressing and overwriting the target images is this skill's stated purpose
+
+**Never**
+- Run pngquant/jpegtran over files that aren't backed up and aren't already in git
+- Delete the backup directory yourself — let the user remove it once they've checked results
