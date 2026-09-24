@@ -20,6 +20,15 @@ to content sites and implementing them is pure gold-plating.
 The scanner is Cloudflare's; its checks map to real emerging standards. The authoritative
 engine is its JSON API: `POST https://isitagentready.com/api/scan` `{"url":"..."}`.
 
+## When to Use (and When NOT to)
+
+| Use this skill for | Use a simpler approach for |
+|---|---|
+| A full scan → triage → implement → verify pass on a public site | A single already-decided fix (e.g. "just add llms.txt") — make the change directly, no need for the scan/triage cycle |
+| Deciding which of many failing checks are worth fixing for this site type | You already know exactly what to add — skip straight to Phase 4 |
+| Confirming a previous round of fixes actually landed | Checking if a URL is simply up — use a plain curl/browser check |
+| Understanding what "agent-ready" means for a project before committing effort | A quick definitional question — read Cloudflare's isitagentready.com docs directly |
+
 ## Phase 0 — Determine the target URL (the PUBLIC/production site)
 
 The scan must hit the deployed public site, not `localhost`. Find the candidate, in order:
@@ -110,12 +119,21 @@ the level where remaining requirements are CONDITIONAL/SKIP for this site.
 Report: what was implemented, what was deliberately skipped and why, the level change, and
 any prod deploy/cache-purge step still owed.
 
-## Guardrails
-- Selective by default. Implementing every check is the failure mode, not the goal.
-- `neutral` ≠ fix it. It means not applicable.
-- Never fabricate an agent/API/commerce surface just to pass a check.
-- The scan hits production — confirm the URL is the public site first.
-- AI-crawler blocking *lowers* the agent-ready score by design; for many content sites it's
-  still the right call. Present it as a decision, not a defect.
-- The scan submits the target URL to Cloudflare's third-party API. Fine for a public site;
-  flag it first before scanning a client's pre-launch/private or not-yet-announced domain.
+## Boundaries
+
+**Always**
+- Confirm the target URL is the public/production site before scanning (Phase 0).
+- Treat `neutral` as not applicable, not a fix target; stay selective by default.
+- Re-scan after implementing to verify the targeted checks actually flipped to `pass`.
+
+**Ask first**
+- AI-crawler allow/block policy and whether the project has/wants an agent API surface
+  (Phase 3) — business decisions, not automatic. AI-crawler blocking *lowers* the score by
+  design; present it as a decision, not a defect.
+- Scanning a client's pre-launch/private or not-yet-announced domain — it goes to
+  Cloudflare's third-party API.
+- Pushing prod-facing changes if the repo's own deploy rules require approval.
+
+**Never**
+- Implement every failing check blindly — that's the failure mode, not the goal.
+- Fabricate an agent/API/commerce surface just to pass a check.

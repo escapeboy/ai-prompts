@@ -12,14 +12,15 @@ description: "This skill should be used when performing legal and regulatory com
 Perform comprehensive legal and regulatory compliance audits on software projects.
 Generate actionable reports, apply automatic code fixes, and produce required legal documentation.
 
-## When to Use
+## When to Use (and When NOT to)
 
-- User requests a compliance audit, GDPR check, or privacy review
-- User asks to generate Privacy Policy, Cookie Policy, DPA, or DPIA
-- User wants to verify data handling practices in code
-- Before launching a product or feature that handles personal data
-- When preparing for a compliance certification (SOC 2, PCI DSS, HIPAA)
-- When adding consent management, cookie banners, or data deletion features
+| Use this skill for | Use a simpler approach for |
+|---|---|
+| A full audit across GDPR/CCPA/ePrivacy/HIPAA/PCI DSS/SOC 2/WCAG with report + fixes + legal docs | A single regulation's checklist — read `references/<regulation>.md` directly |
+| Before launching a product/feature that handles personal data | A one-off question about a specific requirement — just answer it |
+| Generating Privacy Policy / Cookie Policy / DPA / DPIA from scratch | Updating one existing legal document — edit it directly |
+| Verifying data-handling practices in code before a compliance certification | Spot-checking one file/endpoint — read the code and answer, no full report needed |
+| Adding consent management, cookie banners, or data deletion features | A single already-decided compliance fix — make the change directly |
 
 ## Supported Regulations
 
@@ -201,3 +202,17 @@ docs/legal/dpia.md            — Data Protection Impact Assessment (if high-ris
 - Compliance is ongoing — recommend periodic re-audits
 - Different jurisdictions may have additional requirements
 - When unsure about applicability, flag it and ask the user
+
+## Boundaries
+
+**Always**
+- Apply auto-fixes and generate legal document templates as part of the requested audit —
+  that's what this skill is for. List every applied fix in the report.
+- Recommend qualified legal review for generated documents.
+
+**Ask first**
+- Each auto-fix before it is applied (Phase 5) — fixes touch data handling and user-facing legal behaviour; report generation and legal-doc drafting need no extra confirmation.
+
+**Never**
+- Present generated legal text (Privacy Policy, DPA, etc.) as legal advice.
+- Skip listing an applied fix in the report.

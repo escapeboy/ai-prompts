@@ -4,6 +4,15 @@ All notable changes to this library are documented here.
 
 ---
 
+## [1.26.1] — 2026-09-24
+
+### Changed
+
+- `agent-ready`: leading *When to Use (and When NOT to)* table; closing *Boundaries* (Always / Ask first / Never) that absorbs the former Phase-3 checkpoint and Guardrails.
+- `init-project`: description gains a "Use when …" trigger clause (skill selection reads only the description).
+- `03-custom-skills/examples/` — `compliance-audit`, `fix-bug`, `git-sync-branches`, `image-optimize`, `onepassword-integrate` now carry the When-to-Use table and Boundaries the guide teaches. Skills whose purpose is the action itself (branch cleanup, image compression) say so under *Ask first* instead of adding a confirmation gate; `compliance-audit` keeps its per-fix approval.
+- `image-optimize` example: new "Keep the originals first" step — pngquant is lossy and the loops overwrite in place, so originals are copied to a dated folder before a batch run.
+
 ## [1.26.0] — 2026-09-24
 
 ### Changed

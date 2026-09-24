@@ -594,12 +594,15 @@ These prompts are project-agnostic and can be freely adapted for your team's nee
 
 **Created**: 2026-01-04
 **Last Updated**: 2026-09-24
-**Version**: 1.26.0
+**Version**: 1.26.1
 **Compatibility**: Claude Code v2.1.32+, Claude API (Fable 5: `claude-fable-5`, Opus 4.8: `claude-opus-4-8`, Opus 4.7: `claude-opus-4-7`, Sonnet 5: `claude-sonnet-5`, Haiku 4.5: `claude-haiku-4-5`)
 
 ---
 
 ## 📝 Version History
+
+### v1.26.1 (2026-09-24)
+**Changed**: authoring-convention pass surfaced by a Tier-3 re-judge of the library. `agent-ready` gains a *When to Use (and When NOT to)* table and a *Boundaries* section (its Phase-3 checkpoint and guardrails folded in); `init-project`'s description gains a "Use when" trigger clause. The five `03-custom-skills/examples/` skills (`compliance-audit`, `fix-bug`, `git-sync-branches`, `image-optimize`, `onepassword-integrate`) now model the conventions they teach: When-to-Use table + Always / Ask first / Never. `image-optimize` also copies the originals before its lossy in-place loops. No workflow steps changed.
 
 ### v1.26.0 (2026-09-24)
 **Changed**: the `/context` skill is renamed **`/ctx`** (`skills/context/` → `skills/ctx/`) — Claude Code ships a built-in `/context` (context-window usage) that the skill shadowed. All `/context load|save|…` references now read `/ctx`; re-install by removing `~/.claude/skills/context` and copying `skills/ctx`. **Fixed**: `skill-lint.py` no longer fails on `~/.claude/skills/synced/` (skills Claude Code downloads from claude.ai); "See also" links that left the skill folder are now absolute GitHub URLs, so they resolve from the installed copy too (three were broken even in the repo).
