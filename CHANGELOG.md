@@ -4,6 +4,17 @@ All notable changes to this library are documented here.
 
 ---
 
+## [1.26.0] — 2026-09-24
+
+### Changed
+
+- **`/context` skill renamed to `/ctx`** (`skills/context/` → `skills/ctx/`). Claude Code ships a built-in `/context` (context-window usage); the skill of the same name shadowed it. Every `/context load|save|refresh|list|inspect|clear|create` reference across the guides, checklists and sibling skills now reads `/ctx`. The description gains a trigger clause and names the built-in it is not. Re-install: remove `~/.claude/skills/context`, copy `skills/ctx`.
+
+### Fixed
+
+- `skill-lint.py` skips `synced/` — Claude Code (v2.1.273+) downloads the claude.ai account's skills into `~/.claude/skills/synced/`; the linter read it as a skill without `SKILL.md` and failed every run on an installed library.
+- "See also" links in `ctx`, `init-project`, `optimize`, `update-docs` and `cache-inspector` that pointed outside the skill folder (`../../../0X-…`) resolved only inside the repo, not from `~/.claude/skills/`. They are now absolute GitHub URLs. Three were broken in the repo too: `optimize` had one `../` too few, `init-project` linked a non-existent `09-laravel-mcp-integration/guide.md` (now `README.md`), `cache-inspector` linked a non-existent `settings/prompt-caching.json` (now the global guide section that sets it up).
+
 ## [1.25.0] — 2026-09-23
 
 ### Added

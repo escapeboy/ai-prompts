@@ -1,6 +1,6 @@
 # Memory templates
 
-The recommended structure `/context save` and `/context create` write, plus the catalog of
+The recommended structure `/ctx save` and `/ctx create` write, plus the catalog of
 per-topic memory templates. Read this when creating or refreshing a memory so the output
 follows the house shape. The action process steps live in [actions.md](actions.md).
 

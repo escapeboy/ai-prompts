@@ -202,7 +202,7 @@ After making changes:
 1. **Basic functionality**:
    ```
    /optimize "test"
-   /context list
+   /ctx list
    /cache-inspector status
    ```
 

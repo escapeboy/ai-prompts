@@ -75,7 +75,7 @@ If you don't have Serena MCP, many optimizations still work, but you'll get 40-5
 **Global configuration** in `~/.claude/`:
 - **1 central orchestrator** (PM agent)
 - **4 global settings files** (prompt caching, beta features, model strategy, token optimization)
-- **8 global skills** (slash commands: /optimize, /context, /cache-inspector, /update-docs, /init-project, /agent-ready, /continuity, /self-improve — all multi-file directories with `references/` and some with `scripts/`, so copy the whole directory)
+- **8 global skills** (slash commands: /optimize, /ctx, /cache-inspector, /update-docs, /init-project, /agent-ready, /continuity, /self-improve — all multi-file directories with `references/` and some with `scripts/`, so copy the whole directory)
 - **2 system prompts** (global optimization, symbol-first protocol)
 - **3 documentation files** (README, INSTALLATION-COMPLETE, QUICK-REFERENCE)
 
@@ -782,11 +782,11 @@ Create 6 slash command skills. Due to length, I'll show the structure for each:
 - Selects the cheapest model that produces acceptable quality
 - Reports token savings at the end of each session
 
-### 4.2 `/context` Skill
+### 4.2 `/ctx` Skill
 
-**File**: `~/.claude/skills/context/SKILL.md`
+**File**: `~/.claude/skills/ctx/SKILL.md`
 
-**Source**: Copy from [`skills/context/SKILL.md`](skills/context/SKILL.md) in this directory.
+**Source**: Copy from [`skills/ctx/SKILL.md`](skills/ctx/SKILL.md) in this directory.
 
 **Actions**:
 - `load` — Load all relevant memories for the current project
@@ -938,7 +938,7 @@ Create a quick reference card:
 Maximum token efficiency mode
 Example: `/optimize "Add email verification feature"`
 
-### `/context [action]`
+### `/ctx [action]`
 Memory management
 - load - Load all memories
 - save [name] - Create memory
@@ -988,18 +988,18 @@ Initialize new project
 ## Quick Checks
 
 **Cache status**: `/cache-inspector status`
-**Memory list**: `/context list`
+**Memory list**: `/ctx list`
 **Verify optimization**: Check session summary
 
 ## Common Workflows
 
 **New project**:
 1. `/init-project --full` (10 min)
-2. `/context load`
+2. `/ctx load`
 3. `/optimize "first task"`
 
 **Existing project**:
-1. `/context load`
+1. `/ctx load`
 2. `/optimize "your task"`
 
 **Update docs**:
@@ -1011,11 +1011,11 @@ Initialize new project
 
 **Low savings?**
 - Check `/cache-inspector analyze`
-- Verify memories exist: `/context list`
-- Ensure Serena activated: `/context load`
+- Verify memories exist: `/ctx list`
+- Ensure Serena activated: `/ctx load`
 
 **Serena not working?**
-- `/context load` (auto-activates)
+- `/ctx load` (auto-activates)
 - Check MCP availability
 - Fallback to Read tool (still get 40-50% savings)
 
@@ -1074,7 +1074,7 @@ In Claude Code conversation:
 /optimize "test"
 # Should recognize command and explain optimization mode
 
-/context list
+/ctx list
 # Should list available memories (may be empty if no project activated)
 
 /cache-inspector status

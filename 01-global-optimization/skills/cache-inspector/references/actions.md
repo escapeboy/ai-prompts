@@ -69,7 +69,7 @@ Savings: $3.24 (85%)
    → Recommend expanding to >1024 tokens or combining with codebase-conventions.md
 
 ⚠️ 3 file reads bypassed caching (used Read tool directly)
-   → Use /context load at session start to ensure memories are pre-cached
+   → Use /ctx load at session start to ensure memories are pre-cached
 ```
 
 ---
@@ -88,7 +88,7 @@ Analyzes current usage and provides specific recommendations to improve cache hi
 
 ### Priority 1: Pre-warm Cache at Session Start
 Current: Cache warms gradually (first 3-4 messages cost full tokens)
-Fix: Always run /context load before starting work
+Fix: Always run /ctx load before starting work
 
 Expected improvement: +15% hit rate, -30K tokens per session
 
@@ -100,7 +100,7 @@ Expected improvement: +8% hit rate on test-related tasks
 
 ### Priority 3: Cache Constitution File
 .claude/settings/constitution.json is read 6 times without caching
-Fix: Move architectural rules to a memory file via /context save constitution
+Fix: Move architectural rules to a memory file via /ctx save constitution
 
 Expected improvement: +5% hit rate on all tasks
 

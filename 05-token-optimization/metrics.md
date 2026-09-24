@@ -386,7 +386,7 @@ Add to session start routine:
 ## Session Start
 1. Note start time
 2. Note initial token count (if available)
-3. Load context: `/context load`
+3. Load context: `/ctx load`
 4. Check cache: `/cache-inspector status`
 ```
 
@@ -427,7 +427,7 @@ After each session, briefly note:
 /optimize "task"
 
 # Load context efficiently
-/context load
+/ctx load
 ```
 
 ### Key Targets

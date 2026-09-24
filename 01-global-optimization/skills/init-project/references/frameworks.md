@@ -38,6 +38,6 @@ Fetches current best practices, conventions, and patterns for the detected or sp
 ## Per-Framework CLAUDE.md Templates
 
 See framework-specific guides for project-type CLAUDE.md templates:
-- [Laravel](../../../../09-laravel-mcp-integration/guide.md)
-- [iOS](../../../../11-mobile-development/ios/ios-guide.md)
-- [macOS / Tauri / Electron](../../../../12-desktop-development/)
+- [Laravel](https://github.com/escapeboy/ai-prompts/blob/master/09-laravel-mcp-integration/README.md)
+- [iOS](https://github.com/escapeboy/ai-prompts/blob/master/11-mobile-development/ios/ios-guide.md)
+- [macOS / Tauri / Electron](https://github.com/escapeboy/ai-prompts/tree/master/12-desktop-development)

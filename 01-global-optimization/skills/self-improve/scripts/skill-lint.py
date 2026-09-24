@@ -122,7 +122,8 @@ def lint_skill(skill_dir: Path):
 def lint_library(skills_dir: Path):
     skills = sorted(
         d for d in skills_dir.iterdir()
-        if d.is_dir() and not d.name.startswith(".") and ".backup" not in d.name
+        # synced/ = skills Claude Code downloads from the claude.ai account, not authored here
+        if d.is_dir() and not d.name.startswith(".") and ".backup" not in d.name and d.name != "synced"
     )
     all_errors, all_warnings, metas = [], [], []
     for d in skills:

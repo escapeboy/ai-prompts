@@ -1136,7 +1136,7 @@ After successful activation:
 When architecture changes:
 ```bash
 # Refresh memories
-/context refresh
+/ctx refresh
 
 # Or manually update specific memory
 # Edit .serena/memories/architecture.md

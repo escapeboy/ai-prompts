@@ -16,7 +16,7 @@ This library contains reusable prompts for implementing global Claude Code optim
 - **[checklist.md](01-global-optimization/checklist.md)** - Verification checklist
 - **[skills/](01-global-optimization/skills/)** - Complete SKILL.md files for all 8 global skills (installed to `~/.claude/skills/`)
   - [`optimize/`](01-global-optimization/skills/optimize/SKILL.md) - `/optimize` — max token efficiency mode (multi-file: thin core + `references/`)
-  - [`context/`](01-global-optimization/skills/context/SKILL.md) - `/context` — memory management (multi-file: thin core + `references/`)
+  - [`context/`](01-global-optimization/skills/ctx/SKILL.md) - `/ctx` — memory management (multi-file: thin core + `references/`)
   - [`cache-inspector/`](01-global-optimization/skills/cache-inspector/SKILL.md) - `/cache-inspector` — cache monitoring (multi-file: thin core + `references/`)
   - [`update-docs/`](01-global-optimization/skills/update-docs/SKILL.md) - `/update-docs` — documentation refresh (multi-file: thin core + `references/`)
   - [`init-project/`](01-global-optimization/skills/init-project/SKILL.md) - `/init-project` — new project setup (multi-file: thin core + `references/`)
@@ -348,7 +348,7 @@ cd ~/projects/your-project
 
 **Skills** (slash commands):
 - `skills/optimize/SKILL.md` - `/optimize` command
-- `skills/context/SKILL.md` - `/context` command
+- `skills/ctx/SKILL.md` - `/ctx` command
 - `skills/cache-inspector/SKILL.md` - `/cache-inspector` command
 - `skills/update-docs/SKILL.md` - `/update-docs` command
 - `skills/init-project/SKILL.md` - `/init-project` command
@@ -593,13 +593,16 @@ These prompts are project-agnostic and can be freely adapted for your team's nee
 ---
 
 **Created**: 2026-01-04
-**Last Updated**: 2026-07-18
-**Version**: 1.25.0
+**Last Updated**: 2026-09-24
+**Version**: 1.26.0
 **Compatibility**: Claude Code v2.1.32+, Claude API (Fable 5: `claude-fable-5`, Opus 4.8: `claude-opus-4-8`, Opus 4.7: `claude-opus-4-7`, Sonnet 5: `claude-sonnet-5`, Haiku 4.5: `claude-haiku-4-5`)
 
 ---
 
 ## 📝 Version History
+
+### v1.26.0 (2026-09-24)
+**Changed**: the `/context` skill is renamed **`/ctx`** (`skills/context/` → `skills/ctx/`) — Claude Code ships a built-in `/context` (context-window usage) that the skill shadowed. All `/context load|save|…` references now read `/ctx`; re-install by removing `~/.claude/skills/context` and copying `skills/ctx`. **Fixed**: `skill-lint.py` no longer fails on `~/.claude/skills/synced/` (skills Claude Code downloads from claude.ai); "See also" links that left the skill folder are now absolute GitHub URLs, so they resolve from the installed copy too (three were broken even in the repo).
 
 ### v1.25.0 (2026-09-23)
 **Added**: `self-improve` **Tier 4 — behavioral eval**. Tiers 1–3 judge the SKILL.md text; Tier 4 checks that an agent *with* the skill does the task better than one *without* it, using Claude Code's built-in `claude plugin eval` (with/without-skill ablation on a clean baseline). New `scripts/behavior-stats.py` adds what the runner does not report — **normalized gain** `(p_with − p_without)/(1 − p_without)`, unbiased **pass^k** for `critical` cases, and a **discrimination check** (a case both arms pass proves nothing) — and fails the cycle on any regression; mean gain ≈ 0 flags the skill as dead weight. New `references/behavior-eval.md` (case layout, grader types, grader validation, cost, verified runner behavior on Claude Code 2.1.280). `skill-lint.py` now skips `evals/`. Ideas borrowed from [mgechev/skillgrade](https://github.com/mgechev/skillgrade), evaluated and not adopted as a tool for a Claude-only library.
@@ -753,7 +756,7 @@ These prompts are project-agnostic and can be freely adapted for your team's nee
 
 **Added**: Complete SKILL.md files for all 5 global skills (previously placeholder text):
 - `/optimize` — task complexity analysis, planning strategy selection, model routing, metrics reporting
-- `/context` — full memory management (load, save, refresh, list, inspect, clear) with token savings docs
+- `/ctx` — full memory management (load, save, refresh, list, inspect, clear) with token savings docs
 - `/cache-inspector` — cache hit rate analysis, cost breakdown, optimization recommendations
 - `/update-docs` — web research + doc comparison + targeted update workflow
 - `/init-project` — full stack detection, constitution generation, memory creation, per-framework support

@@ -1,6 +1,6 @@
-# /context — Full action reference
+# /ctx — Full action reference
 
-Complete process steps, parameters, and output formats for every `/context` action.
+Complete process steps, parameters, and output formats for every `/ctx` action.
 The thin decision core lives in [../SKILL.md](../SKILL.md) — read this file when you
 need the exact process or the output shape for a specific action.
 
@@ -25,7 +25,7 @@ before any code work.
 **Token savings**: 60-70% vs reading individual files each time
 
 ```
-/context load
+/ctx load
 ```
 
 ---
@@ -35,7 +35,7 @@ before any code work.
 Lists all Serena memories for the current project with metadata.
 
 ```
-/context list
+/ctx list
 ```
 
 **Output format**:
@@ -66,7 +66,7 @@ Creates a new Serena memory capturing current knowledge about the project.
 
 **Usage**:
 ```
-/context save [memory-name]
+/ctx save [memory-name]
 ```
 
 **Parameters**:
@@ -80,10 +80,10 @@ Creates a new Serena memory capturing current knowledge about the project.
 
 **Examples**:
 ```
-/context save architecture         # Document project structure
-/context save api-design           # Document API conventions
-/context save deployment-config    # Document deploy workflow
-/context save testing-strategy     # Document test patterns
+/ctx save architecture         # Document project structure
+/ctx save api-design           # Document API conventions
+/ctx save deployment-config    # Document deploy workflow
+/ctx save testing-strategy     # Document test patterns
 ```
 
 **Recommended memory structure** (Claude writes this automatically) and the full template
@@ -97,8 +97,8 @@ Re-reads the codebase and overwrites an existing memory with current state. Use 
 project has changed significantly.
 
 ```
-/context refresh architecture
-/context refresh codebase-conventions
+/ctx refresh architecture
+/ctx refresh codebase-conventions
 ```
 
 **Process**:
@@ -121,7 +121,7 @@ project has changed significantly.
 Shows a summary of what's currently in context and the prompt cache status.
 
 ```
-/context inspect
+/ctx inspect
 ```
 
 **Output format**:
@@ -155,11 +155,11 @@ Clears loaded memories from the current context. Useful when switching between p
 when context is stale.
 
 ```
-/context clear
+/ctx clear
 ```
 
 This does **not** delete the memory files — it only unloads them from the current
-conversation. Run `/context load` to reload.
+conversation. Run `/ctx load` to reload.
 
 ---
 
@@ -168,8 +168,8 @@ conversation. Run `/context load` to reload.
 Walks through creating a memory interactively, asking what to document.
 
 ```
-/context create
-/context create docker-workflow
+/ctx create
+/ctx create docker-workflow
 ```
 
 Claude will ask:

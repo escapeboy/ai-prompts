@@ -8,14 +8,14 @@ version: 1.0.0
 
 Sets up Claude Code optimization for a new project in 10-15 minutes. Detects the tech stack, fetches best practices, creates Serena memories, generates a project constitution, and configures optimization settings.
 
-Run once per project. After init, use `/optimize` and `/context load` for all subsequent work.
+Run once per project. After init, use `/optimize` and `/ctx load` for all subsequent work.
 
 ## When to Use This Skill (and When NOT to)
 
 | Use this skill for | Use a simpler approach for |
 |--------------------|----------------------------|
 | A project you'll work in repeatedly and want optimized from the start | A repo you'll touch once — just read what you need and go |
-| First-time setup of Serena memories + constitution + optimization config | Re-running work on an already-initialized project — use `/context load` + `/optimize` instead |
+| First-time setup of Serena memories + constitution + optimization config | Re-running work on an already-initialized project — use `/ctx load` + `/optimize` instead |
 | A codebase whose conventions/architecture Claude should learn once and reuse | Adding a single memory or tweaking one setting — edit the file directly |
 | Standing up the `.claude/` + `.serena/` scaffold in a fresh clone | A throwaway spike or scratch directory |
 
@@ -132,7 +132,7 @@ Once init is complete, start working:
 
 ```bash
 # Load context at the start of every session
-/context load
+/ctx load
 
 # Start work with full optimization
 /optimize "your task description"
@@ -159,7 +159,7 @@ Troubleshooting for failed detection, missing Serena, and constitution conflicts
 **Always**
 - Run `detect` before generating a constitution or memories — the output is tailored to the detected stack.
 - Reflect the codebase's actual conventions in `codebase-conventions.md`, not just framework defaults.
-- Treat init as a one-time setup; on an already-initialized project use `/context load` + `/optimize` instead of re-running.
+- Treat init as a one-time setup; on an already-initialized project use `/ctx load` + `/optimize` instead of re-running.
 
 **Ask first**
 - Overwriting an existing `CLAUDE.md`, `constitution.json`, or `token-optimization.json` — these may hold hand-tuned rules. Confirm before replacing; prefer merging.
@@ -173,8 +173,8 @@ Troubleshooting for failed detection, missing Serena, and constitution conflicts
 
 ## See Also
 
-- [`/context`](../context/SKILL.md) — Load memories after init
+- [`/ctx`](../ctx/SKILL.md) — Load memories after init
 - [`/optimize`](../optimize/SKILL.md) — Start optimized work sessions
-- [Project Activation Guide](../../../02-project-activation/guide.md)
-- [Custom Skills Guide](../../../03-custom-skills/guide.md)
+- [Project Activation Guide](https://github.com/escapeboy/ai-prompts/blob/master/02-project-activation/guide.md)
+- [Custom Skills Guide](https://github.com/escapeboy/ai-prompts/blob/master/03-custom-skills/guide.md)
 - References: [detection](references/detection.md) · [frameworks](references/frameworks.md) · [constitution](references/constitution.md) · [memories](references/memories.md) · [troubleshooting](references/troubleshooting.md)
