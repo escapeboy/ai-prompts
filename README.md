@@ -22,7 +22,7 @@ This library contains reusable prompts for implementing global Claude Code optim
   - [`init-project/`](01-global-optimization/skills/init-project/SKILL.md) - `/init-project` — new project setup (multi-file: thin core + `references/`)
   - [`agent-ready/`](01-global-optimization/skills/agent-ready/SKILL.md) - `/agent-ready` — AI-agent-readiness audit + selective remediation (multi-file: scanner script + ROI/implementation references)
   - [`continuity/`](01-global-optimization/skills/continuity/SKILL.md) - `/continuity` — repo-local resume→work→finalize lifecycle + evidence-weighted `.continuity/STATE.md` (multi-file: lint/scaffold script + format reference)
-  - [`self-improve/`](01-global-optimization/skills/self-improve/SKILL.md) - `/self-improve` — closing-the-loop for the skill library: mine recurring feedback → bounded edit → three-tier eval gate (deterministic `skill-lint.py` + trigger accuracy + LLM judge) → converge (multi-file: linter script + rubric/integration references)
+  - [`self-improve/`](01-global-optimization/skills/self-improve/SKILL.md) - `/self-improve` — closing-the-loop for the skill library: mine recurring feedback → bounded edit → tiered eval gate (deterministic `skill-lint.py` + trigger accuracy + LLM judge + with/without-skill behavioral eval via `claude plugin eval`) → converge (multi-file: linter + `behavior-stats.py` scripts, rubric/behavior-eval/integration references)
 - **[system-prompts/](01-global-optimization/system-prompts/)** - Global system prompt files
   - [`global-optimization.md`](01-global-optimization/system-prompts/global-optimization.md) - Core optimization rules
   - [`symbol-first-protocol.md`](01-global-optimization/system-prompts/symbol-first-protocol.md) - Symbol-first exploration protocol
@@ -594,12 +594,15 @@ These prompts are project-agnostic and can be freely adapted for your team's nee
 
 **Created**: 2026-01-04
 **Last Updated**: 2026-07-18
-**Version**: 1.24.2
+**Version**: 1.25.0
 **Compatibility**: Claude Code v2.1.32+, Claude API (Fable 5: `claude-fable-5`, Opus 4.8: `claude-opus-4-8`, Opus 4.7: `claude-opus-4-7`, Sonnet 5: `claude-sonnet-5`, Haiku 4.5: `claude-haiku-4-5`)
 
 ---
 
 ## 📝 Version History
+
+### v1.25.0 (2026-09-23)
+**Added**: `self-improve` **Tier 4 — behavioral eval**. Tiers 1–3 judge the SKILL.md text; Tier 4 checks that an agent *with* the skill does the task better than one *without* it, using Claude Code's built-in `claude plugin eval` (with/without-skill ablation on a clean baseline). New `scripts/behavior-stats.py` adds what the runner does not report — **normalized gain** `(p_with − p_without)/(1 − p_without)`, unbiased **pass^k** for `critical` cases, and a **discrimination check** (a case both arms pass proves nothing) — and fails the cycle on any regression; mean gain ≈ 0 flags the skill as dead weight. New `references/behavior-eval.md` (case layout, grader types, grader validation, cost, verified runner behavior on Claude Code 2.1.280). `skill-lint.py` now skips `evals/`. Ideas borrowed from [mgechev/skillgrade](https://github.com/mgechev/skillgrade), evaluated and not adopted as a tool for a Claude-only library.
 
 ### v1.24.2 (2026-08-06)
 **Docs**: model-lineup refresh for the Claude Opus 5 release (`claude-opus-5`, $5/$25, current Opus). Added Opus 5 to the live lineup surfaces — `04-research-integration/sources.md` (Models Overview line + pricing table), `CLAUDE.md` compatibility line. Corrected the Fast mode facts in `01-global-optimization/system-prompts/global-optimization.md` and `05-token-optimization/guide.md`: `speed:"fast"` is **Opus 5 / Opus 4.8 only** at **$10/$50** (was wrongly "Opus 4.6 only, $30/$150"; 4.7 fast mode removed; first-party Claude API only). Historical version-history/CHANGELOG entries left frozen.

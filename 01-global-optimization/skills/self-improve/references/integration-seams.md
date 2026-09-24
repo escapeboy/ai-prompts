@@ -4,7 +4,7 @@ The loop is useful on its own (script + subagents). These seams let it compose w
 you may already run. All are **optional** — the loop degrades gracefully without them.
 
 ## Deterministic-execution / evidence platform
-The three-tier gate is a DAG: `mine → apply(bounded) → [Tier1 ∥ Tier2 ∥ Tier3] → gate → deliver`.
+The tiered gate is a DAG: `mine → apply(bounded) → [Tier1 ∥ Tier2 ∥ Tier3 ∥ Tier4] → gate → deliver`.
 Running it on a deterministic-execution platform (DAG validation, topological ordering,
 hash-chained audit, replay) buys **provenance**, not just the check: who ran it, over what
 inputs, with what result, replayable.
@@ -39,6 +39,7 @@ the blast radius from inflating into noise.
 | Tier-2 deterministic validation (`validate-skills.ts`) | `skill-lint.py`, optionally sealed | ✅ script alone |
 | Tier-1 trigger accuracy | subagent over real skill env | ✅ |
 | Tier-3 rubric LLM-judge | subagent | ✅ |
+| (not in Salesforce) behavioral with/without eval | `claude plugin eval` + `behavior-stats.py` | ✅ |
 | Recurring feedback → requirement | decision-memory `remember` + freq threshold | ✅ manual |
 | Bounded edit + regression-abort | loop caps + Tier-2 gate | ✅ |
 | Consequential apply / draft PR | governance gate + human | ✅ manual gate |

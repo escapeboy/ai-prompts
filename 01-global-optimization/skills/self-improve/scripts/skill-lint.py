@@ -26,7 +26,7 @@ from pathlib import Path
 NAME_RE = re.compile(r"^[a-z0-9]+(?:-[a-z0-9]+)*$")   # kebab-case
 DESC_MIN, DESC_MAX = 40, 1400                          # description length bounds (chars)
 SIM_THRESHOLD = 0.80                                   # description Jaccard → trigger-collision warn
-SKIP_DIRS = {"scripts", "__pycache__", "node_modules", ".git"}
+SKIP_DIRS = {"scripts", "evals", "__pycache__", "node_modules", ".git"}  # evals/ = Tier-4 fixtures, never loaded by the agent
 
 
 def _split_frontmatter(text):
