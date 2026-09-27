@@ -10,15 +10,31 @@ Security-focused hooks (destructive-command blocker, staged-secrets scanner) liv
 |------|-------|--------------|
 | [check-package-latest.sh](check-package-latest.sh) | `PreToolUse` (Bash) | When Claude runs `composer require` / `npm install` / `pip install` / `cargo add` / `go get`, queries the package registry (3s cap) and injects the actual latest stable version into context — so Claude pins current versions instead of stale training-data ones |
 | [session-start-memory-load.sh](session-start-memory-load.sh) | `SessionStart` | Maps the current working directory to relevant memory files and injects them into context on turn one — deterministic memory loading with zero tool calls |
+| [shell-habits.py](shell-habits.py) | `PreToolUse` (Bash) | Refuses `cd X && cmd` (use absolute paths, `git -C`, `make -C`, or a separate `cd` call — the working directory persists) and standalone `grep`/`rg` (use the Grep tool; grep inside a pipeline is allowed). Each refusal names the fix. Replaces two prose rules that a log audit showed were not followed. Tested in [`13-security-hardening/hooks/tests/test_guards.py`](../../13-security-hardening/hooks/tests/test_guards.py) |
 
 ## Installation
 
 ```bash
 mkdir -p ~/.claude/hooks
-cp check-package-latest.sh session-start-memory-load.sh ~/.claude/hooks/
-chmod +x ~/.claude/hooks/*.sh
+cp check-package-latest.sh session-start-memory-load.sh shell-habits.py ~/.claude/hooks/
+chmod +x ~/.claude/hooks/*.sh ~/.claude/hooks/*.py
 # Edit the case blocks in session-start-memory-load.sh to map YOUR project paths
 ```
+
+Register `shell-habits.py` like the others: `{ "type": "command", "command": "$HOME/.claude/hooks/shell-habits.py", "timeout": 5 }` under a `"matcher": "Bash"` entry.
+
+### Shell aliases leak into the Bash tool
+
+Claude Code's Bash tool sources your `~/.zshrc`, so "better defaults" aliases apply to the agent too: `du -sh` runs `dust`, `curl -s` runs `xh`, `cd` runs zoxide — and standard flags fail. Claude Code sets `CLAUDECODE=1` in that shell, so drop them there only:
+
+```bash
+# ~/.zshrc, after the aliases
+if [[ -n "$CLAUDECODE" ]]; then
+  unalias cd ls cat grep find diff du df top curl 2>/dev/null
+fi
+```
+
+Your interactive terminal keeps the aliases. Check with `CLAUDECODE=1 zsh -ic 'type du'` → `/usr/bin/du`.
 
 Register in `~/.claude/settings.json`:
 
