@@ -4,6 +4,25 @@ All notable changes to this library are documented here.
 
 ---
 
+## [1.27.0] — 2026-09-27
+
+### Changed
+
+- **Guard hooks rewritten in Python** (`13-security-hardening/hooks/`). `dangerous-actions-blocker.py` and `pre-commit-secrets.py` replace the `.sh` versions — **update the paths in `settings.json`**. The shell versions matched substrings and failed both ways: the blocker caught one spelling of the recursive root delete while letting `rm -r -f /`, `rm -fr /` and `rm --recursive --force /` through, and refused the harmless `rm -rf /tmp/scratch`; the secrets scanner never matched a private key (`grep -E` read the leading `-----` as options) and skipped every file whose *path* contained `md`, `txt`, `sample` or `example`, so a key in `cmd/server.go` passed. The Python versions tokenize with `shlex`, split on `;` `&&` `||` `|`, step over `sudo`/`env` prefixes and judge the real command.
+- `dangerous-actions-blocker.py` also refuses over-broad process kills: `pkill`/`pgrep` options written after the pattern (BSD reads them as extra patterns), `-f` patterns shorter than 5 characters or matching the hook's own shell, patterns that hit a GUI `.app` or more than 3 processes, `killall -m`, `killall` without a name, `kill -1`. Incident: `pkill -f "cat" -U <uid> -x` terminated ~30 macOS apps.
+- `dangerous-actions-blocker.py` and `block-interactive-sudo.py` skip heredoc bodies fed to a non-shell (`python3 - <<'EOF'`, `cat <<EOF > file`) — a changelog that *described* `rm -r -f /` or `sudo b` was refused as if it ran them. Bodies fed to `bash`/`sh`/`ssh`/`sudo` are still checked.
+- Denials use the structured `permissionDecision: "deny"` JSON, and every reason names the fix.
+- `13-security-hardening/guide.md` §8 no longer inlines the old bash hooks; it points at `hooks/` and states the two rules that carry over (match the shape, test both directions).
+
+### Added
+
+- `13-security-hardening/hooks/block-interactive-sudo.py` — the Bash tool has no TTY, so sudo without `-n`/`-S`/`-A` hangs until timeout; each simple command is judged on its own.
+- `01-global-optimization/hooks/shell-habits.py` — refuses `cd X && cmd` and standalone `grep`/`rg`, with the fix in the message. Replaces two prose rules a log audit showed were not followed.
+- **Two-sided test matrices**: `hooks/tests/test_guards.py` (76 cases, 41 must-block / 35 must-pass, including the secrets scanner against a throwaway git repo) and `hooks/tests/test_kill_rules.py` (22). A block-only matrix lets a guard drift toward refusing everything unnoticed.
+- `13-security-hardening/hooks/WHY.md` — one line per hook: the failure it answers and when it can be removed.
+- `01-global-optimization/hooks/README.md` — shell aliases (`du`→dust, `curl`→xh, `cd`→zoxide) leak into the Bash tool; `unalias` them when `$CLAUDECODE` is set.
+- Idea source: [marmelab — The State Of AI Harness Engineering 2026](https://marmelab.com/blog/2026/09/24/the-state-of-ai-harness-engineering-2026.html) (test guards both ways, replace prose rules with executable checks, record why each control exists).
+
 ## [1.26.1] — 2026-09-24
 
 ### Changed

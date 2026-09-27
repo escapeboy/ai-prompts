@@ -215,10 +215,12 @@ This library contains reusable prompts for implementing global Claude Code optim
   - `permissions.deny` hardening templates (global + project-level)
   - Agent Skills supply chain risks and scanning
 - **[hooks/](13-security-hardening/hooks/)** - Production hook library (actual scripts, copy-paste ready)
-  - `dangerous-actions-blocker.sh` — blocks rm -rf /-class commands, force-push to main, DROP TABLE, edits to key files
-  - `pre-commit-secrets.sh` — scans staged content for API keys / private keys / DB URLs before every `git commit`
+  - `dangerous-actions-blocker.py` — blocks rm -rf /-class commands in any spelling, force-push to main, DROP TABLE, over-broad pkill/killall, edits to key files
+  - `pre-commit-secrets.py` — scans staged content for API keys / private keys / DB URLs before every `git commit`
+  - `block-interactive-sudo.py` — refuses sudo that would hang on a password prompt
+  - `tests/` — two-sided matrices (must-block AND must-pass) · `WHY.md` — the failure behind each hook
   - README with `settings.json` wiring and the PreToolUse hook contract
-  - Productivity hooks (package-version checker, session-start memory loader) live in [01-global-optimization/hooks/](01-global-optimization/hooks/)
+  - Productivity hooks (package-version checker, session-start memory loader, shell-habits) live in [01-global-optimization/hooks/](01-global-optimization/hooks/)
 
 **Use when**: Team environments, production codebases, regulated industries, before adding new MCP servers
 **Benefit**: Prevent data exfiltration, block destructive operations, audit MCP supply chain
@@ -336,8 +338,9 @@ cd ~/projects/your-project
 - `agents/loop-monitor.md` - Autonomous session watchdog (Haiku)
 
 **Hooks** (automation):
-- `hooks/dangerous-actions-blocker.sh` - Blocks destructive commands and protected files
-- `hooks/pre-commit-secrets.sh` - Scans staged files for API keys before commit
+- `hooks/dangerous-actions-blocker.py` - Blocks destructive commands and protected files
+- `hooks/pre-commit-secrets.py` - Scans staged files for API keys before commit
+- `hooks/block-interactive-sudo.py` - Refuses sudo that would wait for a password
 - `hooks/smart-suggest.sh` - Suggests the right tool/agent per prompt intent
 
 **Settings** (configuration):
@@ -593,13 +596,16 @@ These prompts are project-agnostic and can be freely adapted for your team's nee
 ---
 
 **Created**: 2026-01-04
-**Last Updated**: 2026-09-24
-**Version**: 1.26.1
+**Last Updated**: 2026-09-27
+**Version**: 1.27.0
 **Compatibility**: Claude Code v2.1.32+, Claude API (Fable 5: `claude-fable-5`, Opus 4.8: `claude-opus-4-8`, Opus 4.7: `claude-opus-4-7`, Sonnet 5: `claude-sonnet-5`, Haiku 4.5: `claude-haiku-4-5`)
 
 ---
 
 ## 📝 Version History
+
+### v1.27.0 (2026-09-27)
+**Changed**: the guard hooks in `13-security-hardening/hooks/` are now Python — `dangerous-actions-blocker.py` and `pre-commit-secrets.py` replace the `.sh` versions, which matched substrings and were wrong both ways (only one spelling of `rm -rf /` blocked, `rm -rf /tmp/scratch` refused, private keys never matched, `cmd/` and `admin/` never scanned). **Update the `settings.json` paths.** The blocker also refuses over-broad `pkill -f` / `killall -m` / `kill -1` (after a `pkill -f "cat" -U … -x` terminated ~30 macOS apps), and ignores heredoc bodies that are data rather than shell input. **Added**: `block-interactive-sudo.py`; `01-global-optimization/hooks/shell-habits.py` (refuses `cd X &&` and standalone grep, naming the fix); **two-sided test matrices** — `tests/test_guards.py` (76 cases: 41 must-block, 35 must-pass) and `tests/test_kill_rules.py` (22); `hooks/WHY.md`, one line per hook with the failure behind it and when it can go; a note on shell aliases leaking into the Bash tool (`unalias` under `$CLAUDECODE`). Ideas from [marmelab — The State Of AI Harness Engineering 2026](https://marmelab.com/blog/2026/09/24/the-state-of-ai-harness-engineering-2026.html).
 
 ### v1.26.1 (2026-09-24)
 **Changed**: authoring-convention pass surfaced by a Tier-3 re-judge of the library. `agent-ready` gains a *When to Use (and When NOT to)* table and a *Boundaries* section (its Phase-3 checkpoint and guardrails folded in); `init-project`'s description gains a "Use when" trigger clause. The five `03-custom-skills/examples/` skills (`compliance-audit`, `fix-bug`, `git-sync-branches`, `image-optimize`, `onepassword-integrate`) now model the conventions they teach: When-to-Use table + Always / Ask first / Never. `image-optimize` also copies the originals before its lossy in-place loops. No workflow steps changed.

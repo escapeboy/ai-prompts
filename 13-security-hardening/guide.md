@@ -437,16 +437,19 @@ git diff --name-only HEAD~5 | grep -E "(\.env|config|secret|credential)"
 
 ## 8. Production Hook Library
 
-A complete, production-tested hook setup for Laravel/PHP projects. All hooks live in `~/.claude/hooks/` as separate bash files and are registered via `settings.json`.
+A complete, production-tested hook setup for Laravel/PHP projects. All hooks live in `~/.claude/hooks/` as separate files and are registered via `settings.json`. The guard scripts themselves, with two-sided tests, are in [`hooks/`](hooks/).
 
 ### Directory structure
 
 ```
 ~/.claude/
 ├── hooks/
-│   ├── dangerous-actions-blocker.sh   # PreToolUse (all tools): blocks destructive commands
-│   ├── pre-commit-secrets.sh          # PreToolUse (Bash): scans staged files before git commit
-│   └── smart-suggest.sh               # UserPromptSubmit: suggests right command/agent
+│   ├── dangerous-actions-blocker.py   # PreToolUse (all tools): blocks destructive commands
+│   ├── pre-commit-secrets.py          # PreToolUse (Bash): scans staged files before git commit
+│   ├── block-interactive-sudo.py      # PreToolUse (Bash): refuses sudo that would wait for a password
+│   ├── smart-suggest.sh               # UserPromptSubmit: suggests right command/agent
+│   ├── WHY.md                         # one line per hook: the failure behind it, when it can go
+│   └── tests/                         # two-sided matrices: must-block AND must-pass cases
 └── settings.json                      # Registers all hooks with matchers
 ```
 
@@ -465,11 +468,11 @@ The new multi-hook format uses `matcher` (regex matching the tool name) and supp
     "PreToolUse": [
       {
         "matcher": ".*",
-        "hooks": [{ "type": "command", "command": "bash ~/.claude/hooks/dangerous-actions-blocker.sh", "timeout": 5, "statusMessage": "Safety check..." }]
+        "hooks": [{ "type": "command", "command": "$HOME/.claude/hooks/dangerous-actions-blocker.py", "timeout": 5, "statusMessage": "Safety check..." }]
       },
       {
         "matcher": "Bash",
-        "hooks": [{ "type": "command", "command": "bash ~/.claude/hooks/pre-commit-secrets.sh", "timeout": 15, "statusMessage": "Scanning for secrets..." }]
+        "hooks": [{ "type": "command", "command": "$HOME/.claude/hooks/pre-commit-secrets.py", "timeout": 15, "statusMessage": "Scanning for secrets..." }]
       }
     ],
     "PostToolUse": [
@@ -493,76 +496,18 @@ The new multi-hook format uses `matcher` (regex matching the tool name) and supp
 - `"matcher": ".*"` — fires for ALL tool calls
 - `"matcher": "Bash"` — fires only for Bash tool calls
 - No matcher on `UserPromptSubmit`/`Stop` — always fires
-- `exit 2` in hook = block the action + show stderr to Claude
+- `exit 2` in hook = block the action + show stderr to Claude (or exit 0 with a `permissionDecision: "deny"` JSON — shows as a clean denial)
 - `exit 0` = allow (default)
 - `async: true` on Stop = fire-and-forget, doesn't block
 
-### Hook: dangerous-actions-blocker.sh
+### Guard hooks: dangerous-actions-blocker, pre-commit-secrets, block-interactive-sudo
 
-Blocks before execution (PreToolUse, all tools):
+The scripts are in [`hooks/`](hooks/) with installation, the hook contract and design notes in [`hooks/README.md`](hooks/README.md). They are not inlined here because the earlier inline bash versions matched substrings and were wrong in both directions: they blocked only one spelling of `rm -rf /` while refusing `rm -rf /tmp/scratch`, never matched a private key (`grep -E` read the leading `-----` as options), and skipped any file whose path contained `md` or `example`.
 
-```bash
-#!/bin/bash
-INPUT=$(cat)
-TOOL_NAME=$(echo "$INPUT" | jq -r '.tool_name // empty')
-TOOL_INPUT=$(echo "$INPUT" | jq -r '.tool_input // empty')
+Two rules carry over to any hook you write:
 
-if [[ "$TOOL_NAME" == "Bash" ]]; then
-    COMMAND=$(echo "$TOOL_INPUT" | jq -r '.command // empty')
-    DANGEROUS=("rm -rf /" "rm -rf ~" "dd if=" "mkfs" "DROP DATABASE" "DROP TABLE" "--no-preserve-root")
-    for p in "${DANGEROUS[@]}"; do
-        [[ "$COMMAND" == *"$p"* ]] && { echo "BLOCKED: '$p' detected" >&2; exit 2; }
-    done
-    echo "$COMMAND" | grep -qE "git push.*(-f|--force).*(main|master)" && { echo "BLOCKED: force push to main forbidden" >&2; exit 2; }
-fi
-
-if [[ "$TOOL_NAME" == "Edit" || "$TOOL_NAME" == "Write" ]]; then
-    FILE=$(echo "$TOOL_INPUT" | jq -r '.file_path // empty')
-    for p in credentials.json serviceAccountKey.json id_rsa id_ed25519; do
-        [[ "$(basename "$FILE")" == "$p" ]] && { echo "BLOCKED: sensitive file '$p'" >&2; exit 2; }
-    done
-fi
-exit 0
-```
-
-### Hook: pre-commit-secrets.sh
-
-Intercepts `git commit` and scans staged files (PreToolUse, Bash):
-
-```bash
-#!/bin/bash
-INPUT=$(cat)
-COMMAND=$(echo "$INPUT" | jq -r '.tool_input.command // empty' 2>/dev/null || true)
-echo "$COMMAND" | grep -qE 'git commit' || exit 0
-
-declare -A PATTERNS=(
-    ["OpenAI"]="sk-[A-Za-z0-9]{48}"
-    ["GitHub"]="gh[pous]_[A-Za-z0-9]{36}"
-    ["AWS"]="AKIA[A-Z0-9]{16}"
-    ["Anthropic"]="sk-ant-[A-Za-z0-9-]{50,}"
-    ["Private Key"]="-----BEGIN (RSA |EC |OPENSSH )?PRIVATE KEY-----"
-    ["DB URL"]="(postgres|mysql|mongodb)://[^:]+:[^@]+@"
-)
-WHITELIST=("your_token_here" "example.com" "placeholder" "sk-ant-example" "\${env:")
-
-found=0
-while IFS= read -r file; do
-    [[ "${file##*.}" =~ ^(md|txt|sample)$ ]] && continue
-    content=$(git show ":$file" 2>/dev/null || true)
-    for name in "${!PATTERNS[@]}"; do
-        matches=$(echo "$content" | grep -noE "${PATTERNS[$name]}" || true)
-        [[ -z "$matches" ]] && continue
-        while IFS= read -r match; do
-            text="${match#*:}"
-            for w in "${WHITELIST[@]}"; do [[ "$text" == *"$w"* ]] && continue 2; done
-            found=1; echo "  $file — $name" >&2
-        done <<< "$matches"
-    done
-done <<< "$(git diff --cached --name-only --diff-filter=ACM 2>/dev/null)"
-
-[[ $found -eq 1 ]] && { echo "BLOCKED: secrets in staged files" >&2; exit 2; }
-exit 0
-```
+- **Match the shape of the command, not a substring** — tokenize, split on `;` `&&` `||` `|`, step over `sudo`/`env` prefixes, then judge the real command and its flags.
+- **Test both directions** — every rule needs cases it must block and cases it must let through (`tests/test_guards.py`: 41 must-block, 35 must-pass). A block-only matrix lets a guard drift toward refusing ordinary work unnoticed.
 
 ### Hook: smart-suggest.sh
 
