@@ -4,6 +4,21 @@ All notable changes to this library are documented here.
 
 ---
 
+## [1.28.0] — 2026-10-02
+
+### Added
+
+- **`video-digest` skill** (`01-global-optimization/skills/video-digest/`) — a video link or local recording becomes a short digest in the user's language, linked to related notes, with fact-checked takeaways; saved to a knowledge store only after asking where.
+  - `scripts/fetch_text.py`: existing subtitles first (manual, then the spoken-language auto track; YouTube's `<lang>-orig`), local transcription otherwise — Parakeet TDT v3 for its 25 European languages, Whisper large-v3-turbo for the rest (both via MLX on Apple Silicon). Measured on an M4 Pro: subtitles ~5 s, Parakeet 85 min of speech in 72 s. Keeps the description (correct spelling of names) and chapters (inserted as `## [mm:ss]` headings). Every yt-dlp call passes `--no-playlist`, so a `&list=` URL does not pull the whole playlist.
+  - **Separate fact-check subagent**: memory candidates are checked against a source the subagent actually opened — a verdict from a search snippet alone is at most "unverifiable". On the first real run it marked one of two candidates disputed, and an earlier draft of the prompt had let it judge from snippets only.
+  - Related-notes step: searches the store and links only notes that are actually related; says so when the video contradicts an existing decision.
+  - Facts enter Svod as `provisional` (human review before agents see them), never as policy; the raw transcript never enters the store; transcript and description are treated as untrusted input.
+
+### Updated
+
+- Skill counts 8 → 9 across README, `01-global-optimization/{guide,setup-agent,checklist}.md` and `03-custom-skills/guide.md`; new §4.7 in `01-global-optimization/guide.md`.
+- `13-security-hardening/guide.md` §3 links to the skill as a transcript-as-untrusted-input example (reciprocal to the skill's See also).
+
 ## [1.27.0] — 2026-09-27
 
 ### Changed
