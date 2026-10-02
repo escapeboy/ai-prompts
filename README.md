@@ -14,7 +14,7 @@ This library contains reusable prompts for implementing global Claude Code optim
 - **[guide.md](01-global-optimization/guide.md)** - Step-by-step installation guide
 - **[setup-agent.md](01-global-optimization/setup-agent.md)** - Executable agent for automated setup
 - **[checklist.md](01-global-optimization/checklist.md)** - Verification checklist
-- **[skills/](01-global-optimization/skills/)** - Complete SKILL.md files for all 8 global skills (installed to `~/.claude/skills/`)
+- **[skills/](01-global-optimization/skills/)** - Complete SKILL.md files for all 9 global skills (installed to `~/.claude/skills/`)
   - [`optimize/`](01-global-optimization/skills/optimize/SKILL.md) - `/optimize` — max token efficiency mode (multi-file: thin core + `references/`)
   - [`context/`](01-global-optimization/skills/ctx/SKILL.md) - `/ctx` — memory management (multi-file: thin core + `references/`)
   - [`cache-inspector/`](01-global-optimization/skills/cache-inspector/SKILL.md) - `/cache-inspector` — cache monitoring (multi-file: thin core + `references/`)
@@ -597,12 +597,15 @@ These prompts are project-agnostic and can be freely adapted for your team's nee
 
 **Created**: 2026-01-04
 **Last Updated**: 2026-09-27
-**Version**: 1.27.0
+**Version**: 1.28.0
 **Compatibility**: Claude Code v2.1.32+, Claude API (Fable 5: `claude-fable-5`, Opus 4.8: `claude-opus-4-8`, Opus 4.7: `claude-opus-4-7`, Sonnet 5: `claude-sonnet-5`, Haiku 4.5: `claude-haiku-4-5`)
 
 ---
 
 ## 📝 Version History
+
+### v1.28.0 (2026-10-02)
+**Added**: the **`video-digest`** skill — a video link or local recording becomes a short digest in your language, so you know what it says without watching. Subtitles first, local Parakeet/Whisper (MLX, Apple Silicon) otherwise; keeps description and chapters; links related notes; a **separate subagent fact-checks** each memory candidate against a page it opened; saves only after asking where. Facts enter Svod as `provisional`, the raw transcript stays local, and the transcript is treated as untrusted input. Skill count 8 → 9.
 
 ### v1.27.0 (2026-09-27)
 **Changed**: the guard hooks in `13-security-hardening/hooks/` are now Python — `dangerous-actions-blocker.py` and `pre-commit-secrets.py` replace the `.sh` versions, which matched substrings and were wrong both ways (only one spelling of `rm -rf /` blocked, `rm -rf /tmp/scratch` refused, private keys never matched, `cmd/` and `admin/` never scanned). **Update the `settings.json` paths.** The blocker also refuses over-broad `pkill -f` / `killall -m` / `kill -1` (after a `pkill -f "cat" -U … -x` terminated ~30 macOS apps), and ignores heredoc bodies that are data rather than shell input. **Added**: `block-interactive-sudo.py`; `01-global-optimization/hooks/shell-habits.py` (refuses `cd X &&` and standalone grep, naming the fix); **two-sided test matrices** — `tests/test_guards.py` (76 cases: 41 must-block, 35 must-pass) and `tests/test_kill_rules.py` (22); `hooks/WHY.md`, one line per hook with the failure behind it and when it can go; a note on shell aliases leaking into the Bash tool (`unalias` under `$CLAUDECODE`). Ideas from [marmelab — The State Of AI Harness Engineering 2026](https://marmelab.com/blog/2026/09/24/the-state-of-ai-harness-engineering-2026.html).

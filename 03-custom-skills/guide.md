@@ -858,12 +858,13 @@ See `examples/pwa.md` for a real-world skill that analyzes a project and adds Pr
 
 ### Example 4: Global Optimization Skills
 
-The 8 global skills in `../01-global-optimization/skills/` are production-ready examples (all multi-file — thin `SKILL.md` core + `references/`, some with `scripts/`):
+The 9 global skills in `../01-global-optimization/skills/` are production-ready examples (all multi-file — thin `SKILL.md` core + `references/`, some with `scripts/`):
 - [`/optimize`](../01-global-optimization/skills/optimize/SKILL.md) — multi-action skill with strategy selection
 - [`/ctx`](../01-global-optimization/skills/ctx/SKILL.md) — stateful memory management
 - [`/cache-inspector`](../01-global-optimization/skills/cache-inspector/SKILL.md) — reporting and analysis skill
 - [`/update-docs`](../01-global-optimization/skills/update-docs/SKILL.md) — web research + file update workflow
 - [`/init-project`](../01-global-optimization/skills/init-project/SKILL.md) — multi-step project initialization
+- [`/video-digest`](../01-global-optimization/skills/video-digest/SKILL.md) — deterministic script (`scripts/`) + model judgement, with a separate fact-check subagent so the writer never grades its own output
 
 ### Example 5: Output Style Skills
 

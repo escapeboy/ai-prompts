@@ -75,7 +75,7 @@ If you don't have Serena MCP, many optimizations still work, but you'll get 40-5
 **Global configuration** in `~/.claude/`:
 - **1 central orchestrator** (PM agent)
 - **4 global settings files** (prompt caching, beta features, model strategy, token optimization)
-- **8 global skills** (slash commands: /optimize, /ctx, /cache-inspector, /update-docs, /init-project, /agent-ready, /continuity, /self-improve — all multi-file directories with `references/` and some with `scripts/`, so copy the whole directory)
+- **9 global skills** (slash commands: /optimize, /ctx, /cache-inspector, /update-docs, /init-project, /agent-ready, /continuity, /self-improve, /video-digest — all multi-file directories with `references/` and some with `scripts/`, so copy the whole directory)
 - **2 system prompts** (global optimization, symbol-first protocol)
 - **3 documentation files** (README, INSTALLATION-COMPLETE, QUICK-REFERENCE)
 
@@ -852,6 +852,23 @@ Create 6 slash command skills. Due to length, I'll show the structure for each:
 - `Phase 4` — Implement in the project's stack (`references/implementations.md`); never fake an endpoint
 - `Phase 5` — Re-scan, report the level delta and what was deliberately skipped
 
+### 4.7 `/video-digest` Skill
+
+**File**: `~/.claude/skills/video-digest/SKILL.md` (multi-file — copy the whole directory, including `scripts/` and `references/`)
+
+**Source**: Copy from [`skills/video-digest/`](skills/video-digest/SKILL.md) in this directory.
+
+**What it does**: Turns a video link or a local recording into a short digest in the user's language, so you know what it says without watching it — and, on request, saves it to a knowledge store so agents can learn from it.
+
+**Flow**:
+- `Text` — `scripts/fetch_text.py`: existing subtitles first (seconds), local Parakeet/Whisper on Apple Silicon otherwise (~70× real time measured on an M4 Pro); keeps the video's description and chapters
+- `Digest` — key points with timestamps, ordered by chapter; the transcript is treated as untrusted input
+- `Related notes` — searches the knowledge store and links only notes that are actually related
+- `Fact check` — a **separate** subagent checks each memory candidate against a source it opened; disputed facts are dropped
+- `Save` — only after asking where; raw transcript stays local; facts enter Svod as `provisional` and wait for human approval
+
+**Requires**: `yt-dlp` + `deno` + `ffmpeg`; `parakeet-mlx` and `mlx-whisper` for transcription.
+
 ---
 
 ## Step 5: Create System Prompts
@@ -1187,7 +1204,7 @@ Track your installation success:
 
 **Setup completion**:
 - [ ] 15+ files created
-- [ ] All 8 skills working
+- [ ] All 9 skills working
 - [ ] PM Orchestrator file valid
 - [ ] All 4 settings JSON valid
 - [ ] Documentation readable

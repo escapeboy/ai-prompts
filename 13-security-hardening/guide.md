@@ -134,6 +134,8 @@ def process_payment(amount):
 
 Claude reads this comment as part of file analysis and may follow the embedded instruction.
 
+Transcripts are the same kind of input: the [`video-digest`](../01-global-optimization/skills/video-digest/SKILL.md) skill treats a video's transcript and description as untrusted, and anything it promotes into agent memory goes through a separate fact check and a human review gate.
+
 ### Output Scanner Hook
 
 Install this hook to catch data exfiltration attempts:
