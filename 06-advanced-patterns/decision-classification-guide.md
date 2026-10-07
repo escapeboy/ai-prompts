@@ -194,3 +194,7 @@ Decision classification is most valuable at phase transitions (see [Sprint Orche
 | Build → Review | "This approach contradicts the design doc" |
 | Review → Test | "These fixes changed the scope — re-review needed" |
 | Test → Ship | "Test coverage is below threshold" |
+
+---
+
+**Skill**: [`decision-classify`](../01-global-optimization/skills/decision-classify/SKILL.md) packages this framework as an invocable skill. Used by [`sprint-orchestrate`](../01-global-optimization/skills/sprint-orchestrate/SKILL.md) at every phase transition.

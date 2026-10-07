@@ -344,6 +344,8 @@ After launching a team, use these controls:
 ---
 
 **See also**:
+- [`agent-team` skill](../01-global-optimization/skills/agent-team/SKILL.md) — ready-to-use presets (`pr-review`, `debug`, `feature`) for this pattern
+- [`code-research` skill](../01-global-optimization/skills/code-research/SKILL.md) — read-only counterpart: parallel agents that audit a codebase without talking to each other
 - [Parallel Agents Guide](./parallel-agents-guide.md) — Task tool-based parallelism (no flag required)
 - [Checkpoint System Guide](./checkpoint-system-guide.md) — Save/resume long workflows
 - [Security Hardening Guide](../13-security-hardening/guide.md) — Secure multi-agent setups

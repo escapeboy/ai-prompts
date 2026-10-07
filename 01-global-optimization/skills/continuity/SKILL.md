@@ -76,7 +76,7 @@ python3 ~/.claude/skills/continuity/scripts/continuity.py lint <repo>   # valida
 - **Serena** — stable architecture/conventions of a project. Continuity ≠ this; it's the *live thread*.
 - **Svod** — durable, versioned, cross-session policies/facts with provenance. Promote a continuity
   fact that outlives the task INTO Svod; leave transient operational state in `.continuity/`.
-- **codebase-memory-mcp** — structural repo map (use it to fill Entry points).
+- **codebase-memory-mcp** — structural repo map (use it to fill Entry points). Usage: [`codebase-memory`](../codebase-memory/SKILL.md).
 - **auto-memory / MEMORY.md** — ephemeral session facts. Continuity is the *bounded, evidence-weighted*
   operational subset, co-located with the code and diffable.
 

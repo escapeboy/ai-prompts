@@ -17,6 +17,9 @@ Step-by-step workflow for implementing dashboards with real API data, including 
 ### [browser-testing-guide.md](browser-testing-guide.md)
 Systematic browser testing patterns using Chrome DevTools via Claude in Chrome MCP.
 
+### [`ui-ux-review` skill](../01-global-optimization/skills/ui-ux-review/SKILL.md)
+Audit existing UI code for design consistency, accessibility and adherence to the project's patterns.
+
 ---
 
 ### [web-performance-audit.md](web-performance-audit.md)

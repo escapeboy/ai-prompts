@@ -4,6 +4,29 @@ All notable changes to this library are documented here.
 
 ---
 
+## [1.29.0] — 2026-10-07
+
+### Added
+
+Eight skills that were in daily local use but missing from the library, now in `01-global-optimization/skills/`:
+
+- **`code-research`** — parallel background agents audit a local or cloned codebase in non-overlapping slices; a second, independent pass re-checks every claim at `path:line`; results land in a cross-linked knowledge base with one index entry point. Thin core + per-phase `references/` (setup, decomposition, agent prompts, verification, synthesis, competitor gap).
+- **`agent-team`** — Agent Teams presets (`pr-review`, `debug`, `feature`, `custom`) with a cost warning before spawning. Already listed in the README file inventory; the skill itself was missing.
+- **`codebase-memory`** — query reference for the codebase-memory-mcp graph (callers, call chains, dead code, fan-in/out, Cypher, gotchas). `continuity` and `self-improve` already pointed at it.
+- **`confidence-check`** — readiness score before implementation; proceed at ≥90%, present alternatives at 70–89%, stop below 70%. Includes `confidence.ts`. The "100% precision and recall in production" claim is reworded to what was measured: 8/8 internal test cases.
+- **`decision-classify`** — Mechanical / Taste / User Challenge classification; the skill form of `06-advanced-patterns/decision-classification-guide.md`.
+- **`sprint-orchestrate`** — Think → Plan → Build → Review → Test → Ship → Reflect with decision gates. The Ship step no longer depends on a private pre-triage script or a local-only agent: it requires an independent verifier subagent (e.g. `10-subagents/examples/output-evaluator.md`) that did not write the code.
+- **`sync-features`** — syncs a project's feature inventory into Serena memories and auto-memory.
+- **`ui-ux-review`** — audits existing UI code for design consistency and accessibility (+ examples and a sample report).
+
+### Updated
+
+- `agent-team`, `codebase-memory` and `confidence-check` gain the *When to Use (and When NOT to)* table and/or *Boundaries* section the other skills use; all eight gain relative links to their sibling skills and guides.
+- Reciprocal links back to the skills from `06-advanced-patterns/{agent-teams,sprint-orchestration,decision-classification}-guide.md`, `08-ui-ux-development/README.md`, `continuity` and `self-improve`.
+- Skill counts 9 → 17 across README, `01-global-optimization/{guide,setup-agent,checklist}.md` and `03-custom-skills/guide.md`; new §4.8 table in `01-global-optimization/guide.md`. The README skills list now also includes `video-digest`.
+- `03-custom-skills/skill-template.md` *See Also*: the related-skill links use the `[placeholder]` convention, and the guide link is absolute — the relative `../guide.md` pointed nowhere once the template is copied to `~/.claude/skills/<name>/`. A code-fence-aware link check over all 160 Markdown files now finds 0 broken relative links.
+- `skill-lint.py`: 17 skills, 0 errors, 0 warnings.
+
 ## [1.28.0] — 2026-10-02
 
 ### Added

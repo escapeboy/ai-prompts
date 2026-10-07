@@ -75,7 +75,7 @@ If you don't have Serena MCP, many optimizations still work, but you'll get 40-5
 **Global configuration** in `~/.claude/`:
 - **1 central orchestrator** (PM agent)
 - **4 global settings files** (prompt caching, beta features, model strategy, token optimization)
-- **9 global skills** (slash commands: /optimize, /ctx, /cache-inspector, /update-docs, /init-project, /agent-ready, /continuity, /self-improve, /video-digest — all multi-file directories with `references/` and some with `scripts/`, so copy the whole directory)
+- **17 global skills** (slash commands: /optimize, /ctx, /cache-inspector, /update-docs, /init-project, /agent-ready, /continuity, /self-improve, /video-digest, /code-research, /agent-team, /codebase-memory, /confidence-check, /decision-classify, /sprint-orchestrate, /sync-features, /ui-ux-review — most are multi-file directories with `references/` and some with `scripts/`, so copy the whole directory)
 - **2 system prompts** (global optimization, symbol-first protocol)
 - **3 documentation files** (README, INSTALLATION-COMPLETE, QUICK-REFERENCE)
 
@@ -869,6 +869,21 @@ Create 6 slash command skills. Due to length, I'll show the structure for each:
 
 **Requires**: `yt-dlp` + `deno` + `ffmpeg`; `parakeet-mlx` and `mlx-whisper` for transcription.
 
+### 4.8 Workflow & Research Skills
+
+Copy each directory from [`skills/`](skills/) into `~/.claude/skills/`. Each `SKILL.md` opens with a *When to Use (and When NOT to)* table and closes with *Boundaries*.
+
+| Skill | What it does | Pairs with |
+|---|---|---|
+| [`/code-research`](skills/code-research/SKILL.md) | Parallel background agents audit a local or cloned codebase in non-overlapping slices, a second pass verifies at `path:line`, results land in a cross-linked knowledge base | `codebase-memory`, `agent-team` |
+| [`/agent-team`](skills/agent-team/SKILL.md) | Agent Teams presets — `pr-review` (security / logic / coverage), `debug` (competing hypotheses), `feature`, `custom` | [Agent Teams guide](../06-advanced-patterns/agent-teams-guide.md) |
+| [`codebase-memory`](skills/codebase-memory/SKILL.md) | Query reference for the codebase-memory-mcp graph: callers, call chains, dead code, fan-in/out, Cypher | `continuity`, `self-improve`, `code-research` |
+| [`/confidence-check`](skills/confidence-check/SKILL.md) | Scores readiness before implementation (duplicates, architecture, official docs, OSS reference, root cause); proceed at ≥90% | `sprint-orchestrate` |
+| [`/decision-classify`](skills/decision-classify/SKILL.md) | Sorts intermediate decisions into Mechanical / Taste / User Challenge so only the last kind interrupts | [Decision classification guide](../06-advanced-patterns/decision-classification-guide.md) |
+| [`/sprint-orchestrate`](skills/sprint-orchestrate/SKILL.md) | Think → Plan → Build → Review → Test → Ship → Reflect, with a gate between phases and an independent verifier before the PR | [Sprint orchestration guide](../06-advanced-patterns/sprint-orchestration-guide.md) |
+| [`/sync-features`](skills/sync-features/SKILL.md) | Scans the codebase and syncs the feature inventory into Serena memories and auto-memory | `init-project`, `ctx` |
+| [`/ui-ux-review`](skills/ui-ux-review/SKILL.md) | Audits existing UI code for design consistency and accessibility | [08-ui-ux-development](../08-ui-ux-development/README.md) |
+
 ---
 
 ## Step 5: Create System Prompts
@@ -1204,7 +1219,7 @@ Track your installation success:
 
 **Setup completion**:
 - [ ] 15+ files created
-- [ ] All 9 skills working
+- [ ] All 17 skills working
 - [ ] PM Orchestrator file valid
 - [ ] All 4 settings JSON valid
 - [ ] Documentation readable

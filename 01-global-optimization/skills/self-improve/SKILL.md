@@ -95,7 +95,7 @@ The loop composes with whatever platforms you run — it does not require them. 
   rules and cycle decisions land here as durable policy, provisional→active.
 - **Governance gate** (e.g. [Lattice](https://github.com/escapeboy/lattice)) — consequential
   steps (auto-edit, push PR) route through an approval gate; read-only eval steps pass freely.
-- **Code-intelligence engine** (e.g. `codebase-memory-mcp`) — blast-radius ∩ test-coverage of a
+- **Code-intelligence engine** (e.g. `codebase-memory-mcp`, see [`codebase-memory`](../codebase-memory/SKILL.md)) — blast-radius ∩ test-coverage of a
   *code* edit: if it touches untested symbols, escalate to a human.
 - **MCP aggregator** (e.g. [Harbormaster](https://github.com/FleetQ/harbormaster)) — surfaces
   all of the above as one MCP surface.
