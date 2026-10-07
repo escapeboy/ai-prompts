@@ -277,7 +277,7 @@ ls -la ~/.claude/INSTALLATION-COMPLETE.md
 #### QUICK-REFERENCE.md
 
 - [ ] `~/.claude/QUICK-REFERENCE.md` exists
-- [ ] Contains all 9 global skills with examples
+- [ ] Contains all 17 global skills with examples
 - [ ] Contains token savings table
 - [ ] Contains quick check commands
 - [ ] Contains common workflows

@@ -14,7 +14,7 @@ This library contains reusable prompts for implementing global Claude Code optim
 - **[guide.md](01-global-optimization/guide.md)** - Step-by-step installation guide
 - **[setup-agent.md](01-global-optimization/setup-agent.md)** - Executable agent for automated setup
 - **[checklist.md](01-global-optimization/checklist.md)** - Verification checklist
-- **[skills/](01-global-optimization/skills/)** - Complete SKILL.md files for all 9 global skills (installed to `~/.claude/skills/`)
+- **[skills/](01-global-optimization/skills/)** - Complete SKILL.md files for all 17 global skills (installed to `~/.claude/skills/`)
   - [`optimize/`](01-global-optimization/skills/optimize/SKILL.md) - `/optimize` — max token efficiency mode (multi-file: thin core + `references/`)
   - [`context/`](01-global-optimization/skills/ctx/SKILL.md) - `/ctx` — memory management (multi-file: thin core + `references/`)
   - [`cache-inspector/`](01-global-optimization/skills/cache-inspector/SKILL.md) - `/cache-inspector` — cache monitoring (multi-file: thin core + `references/`)
@@ -23,6 +23,15 @@ This library contains reusable prompts for implementing global Claude Code optim
   - [`agent-ready/`](01-global-optimization/skills/agent-ready/SKILL.md) - `/agent-ready` — AI-agent-readiness audit + selective remediation (multi-file: scanner script + ROI/implementation references)
   - [`continuity/`](01-global-optimization/skills/continuity/SKILL.md) - `/continuity` — repo-local resume→work→finalize lifecycle + evidence-weighted `.continuity/STATE.md` (multi-file: lint/scaffold script + format reference)
   - [`self-improve/`](01-global-optimization/skills/self-improve/SKILL.md) - `/self-improve` — closing-the-loop for the skill library: mine recurring feedback → bounded edit → tiered eval gate (deterministic `skill-lint.py` + trigger accuracy + LLM judge + with/without-skill behavioral eval via `claude plugin eval`) → converge (multi-file: linter + `behavior-stats.py` scripts, rubric/behavior-eval/integration references)
+  - [`video-digest/`](01-global-optimization/skills/video-digest/SKILL.md) - `/video-digest` — video or recording → short digest, related notes, fact-checked memory candidates
+  - [`code-research/`](01-global-optimization/skills/code-research/SKILL.md) - `/code-research` — multi-agent grounded audit of a local or git codebase into a cross-linked knowledge base (multi-file: per-phase `references/`)
+  - [`agent-team/`](01-global-optimization/skills/agent-team/SKILL.md) - `/agent-team` — Agent Teams presets: `pr-review`, `debug`, `feature`, `custom`
+  - [`codebase-memory/`](01-global-optimization/skills/codebase-memory/SKILL.md) - codebase-memory-mcp knowledge-graph queries: callers, call chains, dead code, Cypher
+  - [`confidence-check/`](01-global-optimization/skills/confidence-check/SKILL.md) - `/confidence-check` — ≥90% readiness gate before implementation (+ `confidence.ts` reference implementation)
+  - [`decision-classify/`](01-global-optimization/skills/decision-classify/SKILL.md) - `/decision-classify` — Mechanical / Taste / User Challenge classification to cut interruptions
+  - [`sprint-orchestrate/`](01-global-optimization/skills/sprint-orchestrate/SKILL.md) - `/sprint-orchestrate` — Think → Plan → Build → Review → Test → Ship → Reflect with decision gates
+  - [`sync-features/`](01-global-optimization/skills/sync-features/SKILL.md) - `/sync-features` — sync a project's feature inventory into Serena memories and auto-memory
+  - [`ui-ux-review/`](01-global-optimization/skills/ui-ux-review/SKILL.md) - `/ui-ux-review` — audit UI code for design consistency and accessibility (multi-file: examples + sample report)
 - **[system-prompts/](01-global-optimization/system-prompts/)** - Global system prompt files
   - [`global-optimization.md`](01-global-optimization/system-prompts/global-optimization.md) - Core optimization rules
   - [`symbol-first-protocol.md`](01-global-optimization/system-prompts/symbol-first-protocol.md) - Symbol-first exploration protocol
@@ -359,6 +368,14 @@ cd ~/projects/your-project
 - `skills/continuity/SKILL.md` - `/continuity` command (+ `scripts/` + `references/`)
 - `skills/self-improve/SKILL.md` - `/self-improve` command (+ `scripts/` + `references/`)
 - `skills/agent-team/SKILL.md` - `/agent-team` command (pr-review, debug, feature, custom)
+- `skills/video-digest/SKILL.md` - `/video-digest` command (+ `scripts/` + `references/`)
+- `skills/code-research/SKILL.md` - `/code-research` command (+ `references/`)
+- `skills/codebase-memory/SKILL.md` - knowledge-graph query reference (auto-triggered)
+- `skills/confidence-check/SKILL.md` - `/confidence-check` command (+ `confidence.ts`)
+- `skills/decision-classify/SKILL.md` - `/decision-classify` command
+- `skills/sprint-orchestrate/SKILL.md` - `/sprint-orchestrate` command
+- `skills/sync-features/SKILL.md` - `/sync-features` command
+- `skills/ui-ux-review/SKILL.md` - `/ui-ux-review` command (+ `references/`)
 
 **System Prompts** (behavior):
 - `system-prompts/global-optimization.md` - Applies to all projects/agents
@@ -597,12 +614,15 @@ These prompts are project-agnostic and can be freely adapted for your team's nee
 
 **Created**: 2026-01-04
 **Last Updated**: 2026-09-27
-**Version**: 1.28.0
+**Version**: 1.29.0
 **Compatibility**: Claude Code v2.1.32+, Claude API (Fable 5: `claude-fable-5`, Opus 4.8: `claude-opus-4-8`, Opus 4.7: `claude-opus-4-7`, Sonnet 5: `claude-sonnet-5`, Haiku 4.5: `claude-haiku-4-5`)
 
 ---
 
 ## 📝 Version History
+
+### v1.29.0 (2026-10-07)
+**Added**: eight skills from daily local use — **`code-research`** (multi-agent grounded codebase audit into a cross-linked knowledge base), **`agent-team`** (Agent Teams presets), **`codebase-memory`** (knowledge-graph query reference), **`confidence-check`** (≥90% readiness gate), **`decision-classify`** (Mechanical / Taste / User Challenge), **`sprint-orchestrate`** (Think → … → Reflect with gates and an independent verifier before the PR), **`sync-features`** and **`ui-ux-review`**. Each has When-to-Use and Boundaries sections and links to its sibling skills and guides, with links back from `06-advanced-patterns` and `08-ui-ux-development`. Skill count 9 → 17.
 
 ### v1.28.0 (2026-10-02)
 **Added**: the **`video-digest`** skill — a video link or local recording becomes a short digest in your language, so you know what it says without watching. Subtitles first, local Parakeet/Whisper (MLX, Apple Silicon) otherwise; keeps description and chapters; links related notes; a **separate subagent fact-checks** each memory candidate against a page it opened; saves only after asking where. Facts enter Svod as `provisional`, the raw transcript stays local, and the transcript is treated as untrusted input. Skill count 8 → 9.

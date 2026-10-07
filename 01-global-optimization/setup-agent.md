@@ -19,7 +19,7 @@ version: 1.0.0
 Create complete `~/.claude/` global configuration including:
 - 1 PM Orchestrator agent
 - 4 settings files (JSON)
-- 9 skills (slash commands; all are multi-file directories with `references/` and some with `scripts/` — copy the whole directory, not just SKILL.md)
+- 17 skills (slash commands; most are multi-file directories with `references/` and some with `scripts/` — copy the whole directory, not just SKILL.md)
 - 2 system prompts
 - 3 documentation files
 
@@ -165,7 +165,7 @@ All commands should be recognized.
 - [ ] Directory structure complete
 - [ ] PM Orchestrator file created and valid YAML
 - [ ] All 4 JSON settings files created and valid JSON
-- [ ] All 9 skills created in subdirectories (each includes its `references/` files; some also `scripts/`)
+- [ ] All 17 skills created in subdirectories (each includes its `references/` files; some also `scripts/`)
 - [ ] Both system prompts created
 - [ ] All 3 documentation files created
 - [ ] Total file count ≥ 16
@@ -214,7 +214,7 @@ Provide a completion report:
 File count: [X] files ✅
 JSON validation: All valid ✅
 YAML validation: All valid ✅
-Commands available: All 9 skills recognized ✅
+Commands available: All 17 skills recognized ✅
 
 ### Expected Outcomes:
 

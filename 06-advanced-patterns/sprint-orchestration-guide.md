@@ -222,3 +222,7 @@ The pipeline above assumes a human triggers each phase. For recurring workflows 
 Options:
 - **[CLI Agent Orchestrator](https://github.com/awslabs/cli-agent-orchestrator)** — tmux-based, self-hosted, supports scheduled flows and supervisor/worker delegation across multiple CLI agents
 - **[agent-fleet-o](https://github.com/escapeboy/agent-fleet-o)** / **[FleetQ Cloud](https://fleetq.net)** — managed agent workflows with triggers, scheduling, and cross-project coordination via MCP
+
+---
+
+**Skills**: [`sprint-orchestrate`](../01-global-optimization/skills/sprint-orchestrate/SKILL.md) runs this lifecycle; [`confidence-check`](../01-global-optimization/skills/confidence-check/SKILL.md) is the Plan → Build readiness gate; [`decision-classify`](../01-global-optimization/skills/decision-classify/SKILL.md) decides which choices reach the user; [`ui-ux-review`](../01-global-optimization/skills/ui-ux-review/SKILL.md) covers the Review phase for UI work.

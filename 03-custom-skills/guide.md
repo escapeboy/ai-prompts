@@ -858,13 +858,15 @@ See `examples/pwa.md` for a real-world skill that analyzes a project and adds Pr
 
 ### Example 4: Global Optimization Skills
 
-The 9 global skills in `../01-global-optimization/skills/` are production-ready examples (all multi-file — thin `SKILL.md` core + `references/`, some with `scripts/`):
+The 17 global skills in `../01-global-optimization/skills/` are production-ready examples (most are multi-file — thin `SKILL.md` core + `references/`, some with `scripts/`):
 - [`/optimize`](../01-global-optimization/skills/optimize/SKILL.md) — multi-action skill with strategy selection
 - [`/ctx`](../01-global-optimization/skills/ctx/SKILL.md) — stateful memory management
 - [`/cache-inspector`](../01-global-optimization/skills/cache-inspector/SKILL.md) — reporting and analysis skill
 - [`/update-docs`](../01-global-optimization/skills/update-docs/SKILL.md) — web research + file update workflow
 - [`/init-project`](../01-global-optimization/skills/init-project/SKILL.md) — multi-step project initialization
 - [`/video-digest`](../01-global-optimization/skills/video-digest/SKILL.md) — deterministic script (`scripts/`) + model judgement, with a separate fact-check subagent so the writer never grades its own output
+- [`/code-research`](../01-global-optimization/skills/code-research/SKILL.md) — thin core + per-phase `references/` and a variant dispatch table (Pattern 5 in practice)
+- [`/sprint-orchestrate`](../01-global-optimization/skills/sprint-orchestrate/SKILL.md) — chains other skills, with decision gates between phases
 
 ### Example 5: Output Style Skills
 
