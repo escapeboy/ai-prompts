@@ -4,6 +4,17 @@ All notable changes to this library are documented here.
 
 ---
 
+## [1.31.1] — 2026-10-07
+
+### Added
+
+- `deepeval_tier3.py` grades a whole skills directory: point it at e.g. `~/.claude/skills/` and it grades every subdirectory with a `SKILL.md`, `TIER3_CONCURRENCY` skills at a time (default 3), one line per skill; `--json` returns `{skills:[…], verdict}`. A judge call that errors is reported for that skill instead of aborting the batch. Previously a directory without its own `SKILL.md` was a setup error. Measured: 32 skills in ~4 minutes with the Opus judge.
+
+### Fixed
+
+- `GPTModel` deprecation warning on DeepEval 4.2: the script imports `OpenAIModel` (same class), falling back to `GPTModel` on 4.1.
+- Scanning a directory with an unreadable subdirectory no longer crashes.
+
 ## [1.31.0] — 2026-10-07
 
 ### Added

@@ -23,9 +23,13 @@ python3.12 -m venv ~/.claude/tools/deepeval-venv        # 3.12: DeepEval deps la
 
 ## Run
 ```bash
-~/.claude/tools/deepeval-venv/bin/python scripts/deepeval_tier3.py <skill-dir> [--json]
+~/.claude/tools/deepeval-venv/bin/python scripts/deepeval_tier3.py <skill-dir | skills-dir> [--json]
 ```
-Exit 0 = all dimensions ≥ 0.5; 1 = a dimension failed; 2 = setup error. `--json` emits a
+Point it at one skill, or at a skills directory (e.g. `~/.claude/skills/`) to grade every
+subdirectory that has a `SKILL.md` — `TIER3_CONCURRENCY` skills at a time (default 3), each with
+its 5 dimensions concurrent. The batch prints one line per skill; `--json` returns
+`{skills:[…records], verdict}`. A judge call that errors is reported for that skill and fails the batch.
+Exit 0 = all dimensions ≥ 0.5; 1 = a dimension failed (or a judge call errored); 2 = setup error. `--json` emits a
 `{tier:3, results:[{dimension,score,pass,reason}], verdict}` record (pairs with the Tier-2 evidence
 record when a cycle is sealed — see `integration-seams.md`).
 
@@ -51,8 +55,8 @@ contested verdicts.
 ## Notes
 - The `claude-cli` judge has no logprobs, so G-Eval uses the stated score without probability
   weighting; the rubric bands keep that score anchored.
-- Imports `GPTModel` from `deepeval.models.llms.openai_model` (internal path; verified on 4.1.1 and 4.2.8 —
-  re-check on upgrade). `SingleTurnParams` is the current test-case param enum (`LLMTestCaseParams`
+- Imports `OpenAIModel` from `deepeval.models` (4.2+; `GPTModel` is its deprecated alias and the
+  fallback for 4.1). `SingleTurnParams` is the current test-case param enum (`LLMTestCaseParams`
   is deprecated; the script falls back to it for older DeepEval).
 - DeepEval's `deepeval set-local-model` CLI also works but its flags churn between versions
-  (`--model`, `--prompt-api-key`); the env-var + `GPTModel(...)` path in the script is more stable.
+  (`--model`, `--prompt-api-key`); the env-var + `OpenAIModel(...)` path in the script is more stable.
