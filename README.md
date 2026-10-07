@@ -614,12 +614,15 @@ These prompts are project-agnostic and can be freely adapted for your team's nee
 
 **Created**: 2026-01-04
 **Last Updated**: 2026-09-27
-**Version**: 1.30.0
+**Version**: 1.31.0
 **Compatibility**: Claude Code v2.1.32+, Claude API (Fable 5: `claude-fable-5`, Opus 4.8: `claude-opus-4-8`, Opus 4.7: `claude-opus-4-7`, Sonnet 5: `claude-sonnet-5`, Haiku 4.5: `claude-haiku-4-5`)
 
 ---
 
 ## 📝 Version History
+
+### v1.31.0 (2026-10-07)
+**Added**: `TIER3_JUDGE=claude-cli` — the DeepEval Tier-3 judge runs through `claude -p` with your Claude Code login (no API key), stripped of tools, MCP, hooks and `CLAUDE.md`. **Changed**: fixed evaluation steps + a 1–5 rubric per dimension make scores stable (two Opus runs over 17 skills: mean Δ 0.02, verdicts 17/17 identical; a 7B local judge agreed on 10/17); threshold 0.5 = 3/5. **Fixed**: `confidence-check` gains its missing *when NOT to* table — the first real catch of the scripted judge.
 
 ### v1.30.0 (2026-10-07)
 **Added**: `self-improve/scripts/deepeval_tier3.py` — the Tier-3 rubric as DeepEval G-Eval metrics with a swappable OpenAI-compatible judge (LM Studio, Ollama, OpenAI, OpenRouter), plus `references/deepeval-setup.md` with install steps and the judge-quality caveat: small local judges are smoke-only.
