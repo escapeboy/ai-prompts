@@ -4,6 +4,12 @@ All notable changes to this library are documented here.
 
 ---
 
+## [1.31.3] — 2026-10-07
+
+### Fixed
+
+- **`git-sync-branches` could delete unmerged work.** Step 9 force-deleted *every* `feat/` branch (`git branch -D`) and Step 11 every `origin/feat/` branch — including a *Rebase first* branch left to its author and any branch whose merge failed — while the *Always* rule said to verify each branch was merged first. Steps 9 and 11 now delete only branches merged into `develop` (local `-d`, which refuses unmerged) plus those triaged **Close** in Step 4b, which are deleted unmerged by design. Anything else is kept and listed in the Step 12 report. *Always* / *Never* and the description say the same. Found by the Tier-3 judge; boundary clarity 0.4 → 0.6.
+
 ## [1.31.2] — 2026-10-07
 
 ### Fixed
