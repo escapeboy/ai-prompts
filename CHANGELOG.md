@@ -4,6 +4,22 @@ All notable changes to this library are documented here.
 
 ---
 
+## [1.31.0] — 2026-10-07
+
+### Added
+
+- **Claude Code CLI as the Tier-3 judge** — `TIER3_JUDGE=claude-cli` (model via `TIER3_CLAUDE_MODEL`, default `opus`) in `self-improve/scripts/deepeval_tier3.py`. A `DeepEvalBaseLLM` wrapper calls `claude -p --json-schema …` with your Claude Code login, no API key. Each call is stripped to the prompt alone: no tools, MCP, skills, settings, hooks or `CLAUDE.md` (`--setting-sources ""`), from an empty temp dir.
+
+### Changed
+
+- **Stable scores**: each dimension now has fixed `evaluation_steps` and a 1–5 `Rubric` mapped onto G-Eval's 0–10 scale. With only `criteria`, G-Eval regenerated its own steps every run and the same skill moved by up to ±0.3. Threshold 0.6 → **0.5** (= 3/5, the rubric's pass line). One judge call per dimension instead of two, and the five dimensions run concurrently.
+- The judge now gets the list of files bundled with the skill, so progressive disclosure is scored against what exists.
+- Measured on all 17 skills: two Opus runs differ by mean 0.02 (max 0.1) with identical verdicts 17/17; `qwen2.5:7b-instruct` agrees with Opus on 10/17. Numbers and the same-family-bias caveat are in `references/deepeval-setup.md`.
+
+### Fixed
+
+- **`confidence-check`** had no *when NOT to* cases and its description fired on any implementation — the Opus judge scored scope precision 0.1. It now has a *When to Use (and When NOT to)* table naming the simpler path for trivial edits, known root causes, single API lookups and research-only work; re-judged 0.8.
+
 ## [1.30.0] — 2026-10-07
 
 ### Added

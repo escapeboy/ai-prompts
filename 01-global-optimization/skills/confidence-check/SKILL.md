@@ -1,6 +1,6 @@
 ---
 name: confidence-check
-description: Pre-implementation confidence assessment (≥90% required). Use before starting any implementation to verify readiness with duplicate check, architecture compliance, official docs verification, OSS references, and root cause identification.
+description: Pre-implementation confidence assessment (≥90% required). Use before starting a non-trivial implementation — a new feature, an unfamiliar area or a bug whose cause is unclear — to verify readiness with duplicate check, architecture compliance, official docs verification, OSS references, and root cause identification. Skip it for trivial edits.
 ---
 
 # Confidence Check Skill
@@ -16,9 +16,17 @@ Prevents wrong-direction execution by assessing confidence **BEFORE** starting i
 - Recall: 1.000 (no false negatives)
 - 8/8 test cases passed
 
-## When to Use
+## When to Use (and When NOT to)
 
-Use this skill BEFORE implementing any task to ensure:
+| Use it | Skip it — a simpler path wins |
+|---|---|
+| A new feature or module, before the first line of code | A typo, rename, copy change or one-line config tweak — just make the edit |
+| Work in an area of the codebase you have not explored yet | A change in code you just read — the checks would repeat what you know |
+| A bug fix whose root cause is not yet proven | The root cause is already reproduced — go to [`fix-bug`](../../../03-custom-skills/examples/fix-bug/SKILL.md) or fix it directly |
+| Adopting a library or API you have not used in this project | Looking up one API detail — query the docs (Context7) directly |
+| The Plan → Build gate of a sprint | Pure research or review with no implementation planned — use [`code-research`](../code-research/SKILL.md) |
+
+Before a non-trivial implementation, it checks that:
 - No duplicate implementations exist
 - Architecture compliance verified
 - Official documentation reviewed

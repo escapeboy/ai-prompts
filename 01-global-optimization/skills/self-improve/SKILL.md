@@ -73,7 +73,8 @@ needs context. Neither replaces the other — they answer different questions.
 - **Tier 3 — Rubric LLM-as-judge** (semantic, subagent). Grade the artifact on the dimensions
   in `references/rubric.md` (scope precision, progressive disclosure, boundary clarity,
   convention adherence, signal fidelity). For a scripted, CI-runnable judge with a
-  swappable model, run `scripts/deepeval_tier3.py` (DeepEval G-Eval, one metric per dimension):
+  swappable model, run `scripts/deepeval_tier3.py` (DeepEval G-Eval, one metric per dimension;
+  `TIER3_JUDGE=claude-cli` judges with your Claude Code login, no API key):
   setup and the judge-quality caveat in `references/deepeval-setup.md`.
 - **Tier 4 — Behavioral eval** (runtime, `claude plugin eval`). Tiers 1–3 read the text; this
   checks that an agent WITH the skill does the task better than one WITHOUT it (built-in
