@@ -4,6 +4,15 @@ All notable changes to this library are documented here.
 
 ---
 
+## [1.31.4] — 2026-10-07
+
+### Fixed
+
+- **`git-sync-branches` no longer rebases.** The *Rebase first* verdict ran `git rebase develop <branch>`, which rewrites a branch that is usually already pushed — fixing that needs a force-push, which the skill forbids. It is now **Hold**: useful but unfinished or with a conflict that cannot be resolved with confidence; not merged, not deleted, reported for its author. Drift alone is not a reason to hold, since a `--no-ff` merge handles it.
+- **No more `git add .` while resolving conflicts** — it could commit unrelated files. The skill lists the conflicted files (`git diff --name-only --diff-filter=U`), stages them by name, and on a conflict it cannot resolve runs `git merge --abort` and marks the branch Hold. Both rules are in *Never*.
+- Smaller mismatches between the steps and the rules: Step 6 merges only branches marked **Merge**; Step 3 runs the whole workflow (1–12) inside each submodule, as its example already did; the example no longer says "delete all `feat/*` branches".
+- Tier-3 judge after the fix: boundary clarity 0.6 → 0.7, signal fidelity 0.5 → 0.7, pass.
+
 ## [1.31.3] — 2026-10-07
 
 ### Fixed

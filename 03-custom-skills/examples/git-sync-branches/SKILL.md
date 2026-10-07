@@ -1,6 +1,6 @@
 ---
 name: git-sync-branches
-description: Merges all feature branches into develop, syncs master/main with develop, commits any uncommitted changes, and deletes the merged feature branches plus those triaged as Close (local and remote); unmerged work it did not close is kept and reported. Handles git submodules automatically. Use when you want to clean up branches and leave only develop and master/main in sync.
+description: Merges finished feature branches into develop, syncs master/main with develop, commits any uncommitted changes, and deletes the merged feature branches plus those triaged as Close (local and remote); unmerged work it did not close is kept and reported. Handles git submodules automatically. Use when you want to clean up branches and leave only develop and master/main in sync.
 ---
 
 # git-sync-branches
@@ -50,7 +50,7 @@ git submodule status
 
 For each submodule that has feature branches:
 1. `cd <submodule-path>`
-2. Run Steps 1–6 of this workflow inside the submodule
+2. Run Steps 1–12 of this workflow inside the submodule (its own `develop` → `main`, deletions and push)
 3. `cd ..` back to parent
 
 ### Step 4: Find all feature branches ahead of develop
@@ -67,7 +67,7 @@ git log --oneline develop..<branch> | wc -l
 
 Only merge branches that are actually ahead (non-zero).
 
-#### Step 4b: Triage each branch — keep, rebase, or close (don't blanket-merge)
+#### Step 4b: Triage each branch — merge, hold, or close (don't blanket-merge)
 
 Before merging, classify every feature branch and state the recommendation with a reason. Blanket "merge everything ahead" buries dead experiments and stale spikes into `develop`.
 
@@ -81,10 +81,10 @@ git log -1 --format='%cr' <branch>           # how stale (last commit age)
 
 Recommend one of:
 - **Merge** — real, finished, in-scope work. Proceed to Step 6.
-- **Rebase first** — useful work but far behind develop (drift) or conflicting; `git rebase develop <branch>` (or recommend the author do it) before merging.
+- **Hold** — useful but not ready: unfinished, or it conflicts in a way you cannot resolve with confidence. Do not merge and do not delete it; report it so its author can finish it. Drift behind develop alone is not a reason to hold — a `--no-ff` merge handles it. Never rebase a branch here: rewriting a pushed branch would need a force-push.
 - **Close** — stale spike, superseded, or abandoned (old last-commit + no unique value vs develop). Recommend deleting WITHOUT merging; in Step 9/11 delete it but do NOT fold its commits into develop.
 
-Print the verdict list (one line per branch: `branch — verdict — reason`) and proceed. Only branches marked **Merge**/**Rebase** flow into Steps 5–7; **Close** branches skip straight to deletion.
+Print the verdict list (one line per branch: `branch — verdict — reason`) and proceed. Only **Merge** branches flow into Steps 5–7; **Close** branches skip straight to deletion; **Hold** branches are left as they are.
 
 ### Step 5: Switch to develop and pull
 
@@ -95,7 +95,7 @@ git pull origin develop
 
 ### Step 6: Merge each feature branch
 
-For each branch that has commits ahead of develop:
+For each branch marked **Merge** in Step 4b:
 
 ```bash
 git merge <branch> --no-ff -m "feat: merge <branch> into develop"
@@ -106,7 +106,13 @@ git merge <branch> --no-ff -m "feat: merge <branch> into develop"
 2. First commit the current submodule pointer: `git add <submodule> && git commit -m "chore: update submodule pointer"`
 3. Retry the merge
 
-**Other conflicts**: Resolve manually, then `git add . && git commit`.
+**Other conflicts**: list the conflicted files and resolve each one:
+
+```bash
+git diff --name-only --diff-filter=U
+```
+
+Stage only those files by name (`git add <file> ...`) and `git commit` — never `git add .`, which would also sweep in unrelated files. If a conflict cannot be resolved with confidence, `git merge --abort` and re-mark the branch **Hold**.
 
 ### Step 7: Update submodule pointer (if submodules exist)
 
@@ -134,7 +140,7 @@ git branch --merged develop | grep "feat/" | while read branch; do git branch -d
 git branch -D <close-branch> [<close-branch> ...]
 ```
 
-Any `feat/` branch still left is unmerged and was not marked Close — a Rebase-first branch left to its author, or a merge that failed. Keep it and list it in the Step 12 report.
+Any `feat/` branch still left is unmerged and was not marked Close — a **Hold** branch, or a merge that was aborted. Keep it and list it in the Step 12 report.
 
 ### Step 10: Push develop and master/main
 
@@ -184,6 +190,8 @@ Report any `feat/` branch that is still there (local or remote) with the reason 
 
 **Never**
 - Delete an unmerged branch that was not marked Close
+- Rebase or otherwise rewrite a feature branch
+- `git add .` while resolving conflicts — stage the resolved files by name
 - Force-push
 - Delete `develop`, `main`, or `master`
 
@@ -197,4 +205,4 @@ Order of operations:
 2. Return to parent: commit updated `base` pointer
 3. Merge parent feature branches → `develop`
 4. Merge `develop` → `master`
-5. Delete all `feat/*` branches in both repos
+5. Delete merged and Close `feat/*` branches in both repos; report any Hold branch
