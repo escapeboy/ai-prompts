@@ -614,12 +614,15 @@ These prompts are project-agnostic and can be freely adapted for your team's nee
 
 **Created**: 2026-01-04
 **Last Updated**: 2026-09-27
-**Version**: 1.31.2
+**Version**: 1.31.3
 **Compatibility**: Claude Code v2.1.32+, Claude API (Fable 5: `claude-fable-5`, Opus 4.8: `claude-opus-4-8`, Opus 4.7: `claude-opus-4-7`, Sonnet 5: `claude-sonnet-5`, Haiku 4.5: `claude-haiku-4-5`)
 
 ---
 
 ## 📝 Version History
+
+### v1.31.3 (2026-10-07)
+**Fixed**: `git-sync-branches` deleted every `feat/` branch with `-D`, including unmerged ones it had not closed. It now deletes only merged branches and those triaged Close; other unmerged branches are kept and reported.
 
 ### v1.31.2 (2026-10-07)
 **Fixed**: the Tier-3 judge no longer marks a skill down for doing what it is invoked for (e.g. `git-sync-branches` deleting merged branches). Rubric and `03-custom-skills/guide.md` now state the convention: an explicitly invoked skill authorizes its own purpose; gate only what goes beyond it.

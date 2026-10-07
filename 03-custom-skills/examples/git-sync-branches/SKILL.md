@@ -1,11 +1,11 @@
 ---
 name: git-sync-branches
-description: Merges all feature branches into develop, syncs master/main with develop, commits any uncommitted changes, and deletes all feature branches (local and remote). Handles git submodules automatically. Use when you want to clean up branches and leave only develop and master/main in sync.
+description: Merges all feature branches into develop, syncs master/main with develop, commits any uncommitted changes, and deletes the merged feature branches plus those triaged as Close (local and remote); unmerged work it did not close is kept and reported. Handles git submodules automatically. Use when you want to clean up branches and leave only develop and master/main in sync.
 ---
 
 # git-sync-branches
 
-Commit everything, merge all feature branches into develop, sync master/main, delete feature branches. Handles submodules.
+Commit everything, merge finished feature branches into develop, sync master/main, delete merged and Close branches. Handles submodules.
 
 ## When to Use (and When NOT to)
 
@@ -124,11 +124,17 @@ git checkout master   # or: git checkout main
 git merge develop --ff-only 2>/dev/null || git merge develop --no-ff -m "chore: merge develop into master — branch sync"
 ```
 
-### Step 9: Delete all local feature branches
+### Step 9: Delete local feature branches — merged ones and Close verdicts
 
 ```bash
-git branch | grep "feat/" | while read branch; do git branch -D "$branch"; done
+# Merged into develop: safe delete (-d refuses anything unmerged)
+git branch --merged develop | grep "feat/" | while read branch; do git branch -d "$branch"; done
+
+# Close verdicts from Step 4b: deleted WITHOUT merging, by design
+git branch -D <close-branch> [<close-branch> ...]
 ```
+
+Any `feat/` branch still left is unmerged and was not marked Close — a Rebase-first branch left to its author, or a merge that failed. Keep it and list it in the Step 12 report.
 
 ### Step 10: Push develop and master/main
 
@@ -139,9 +145,13 @@ git push origin develop master   # or: git push origin develop main
 ### Step 11: Delete remote feature branches
 
 ```bash
-git branch -r | grep "origin/feat/" | sed 's|origin/||' | while read branch; do
+# Merged into develop (develop was pushed in Step 10)
+git branch -r --merged develop | grep "origin/feat/" | sed 's|^ *origin/||' | while read branch; do
   git push origin --delete "$branch" 2>&1 || true
 done
+
+# Close verdicts from Step 4b
+git push origin --delete <close-branch> [<close-branch> ...]
 ```
 
 If you get "remote ref does not exist" errors, the branches are already gone — prune stale refs:
@@ -160,17 +170,20 @@ git log --oneline -3 develop
 
 Both `master`/`main` and `develop` should point to the same commit (or master should be ≥ develop).
 
+Report any `feat/` branch that is still there (local or remote) with the reason it was kept.
+
 ## Boundaries
 
 **Always**
 - Merge feature branches into `develop` first, never directly into `master`/`main`
 - Sync submodules before updating the parent's pointer
-- Verify each branch is fully merged before deleting — `git branch -D` force-deletes, so check `git log develop..<branch>` first
+- Delete only branches that are merged into `develop` or marked **Close** in Step 4b. Close branches are deleted unmerged by design; every other unmerged branch is kept and reported
 
 **Ask first**
 - Nothing beyond the invocation itself — branch deletion, remote deletion, and pushes are exactly this skill's stated purpose
 
 **Never**
+- Delete an unmerged branch that was not marked Close
 - Force-push
 - Delete `develop`, `main`, or `master`
 
