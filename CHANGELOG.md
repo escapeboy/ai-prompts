@@ -4,6 +4,17 @@ All notable changes to this library are documented here.
 
 ---
 
+## [1.30.0] — 2026-10-07
+
+### Added
+
+- **`self-improve/scripts/deepeval_tier3.py`** — runs the Tier-3 rubric as five DeepEval G-Eval metrics (scope precision, progressive disclosure, boundary clarity, convention adherence, signal fidelity), threshold 0.6 = the rubric's 3/5. A scripted, CI-runnable alternative to the subagent judge. The judge is any OpenAI-compatible endpoint set by `TIER3_BASE_URL` / `TIER3_MODEL` / `TIER3_API_KEY` (LM Studio by default; Ollama, OpenAI, OpenRouter). Exit 0 pass, 1 a dimension failed, 2 setup error; `--json` emits a Tier-3 evidence record.
+- **`self-improve/references/deepeval-setup.md`** — install, judge options, and the caveat that small local judges miscalibrate (correct reasoning, wrong number), so their scores are smoke-only.
+
+### Updated
+
+- `self-improve` `SKILL.md`, `references/rubric.md` and `references/integration-seams.md` point to the script as the scripted Tier-3 option.
+
 ## [1.29.0] — 2026-10-07
 
 ### Added

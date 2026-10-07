@@ -36,7 +36,7 @@ Grade the SKILL.md on each dimension (score 1–5; a `≤2` on any is a blocking
 | **Signal fidelity** | encodes the *actual* recurring requirement | gold-plates beyond the signal |
 
 Reuse the `output-evaluator` agent where its APPROVE/NEEDS_REVIEW/REJECT verdict fits; add the
-dimensions above. Deterministic facts stay in Tier 2 — the judge only rules on what needs context.
+dimensions above. To run the same dimensions as a script, see `deepeval-setup.md`. Deterministic facts stay in Tier 2 — the judge only rules on what needs context.
 
 ## Bounded-edit discipline
 Per cycle: **≤5 improvements, ≤100 changed lines.** Larger scope → split across cycles. This

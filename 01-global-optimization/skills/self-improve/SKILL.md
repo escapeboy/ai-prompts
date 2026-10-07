@@ -72,7 +72,9 @@ needs context. Neither replaces the other — they answer different questions.
   a failing CI check that blocks the PR. Ship it as a pre-commit hook.
 - **Tier 3 — Rubric LLM-as-judge** (semantic, subagent). Grade the artifact on the dimensions
   in `references/rubric.md` (scope precision, progressive disclosure, boundary clarity,
-  convention adherence, signal fidelity).
+  convention adherence, signal fidelity). For a scripted, CI-runnable judge with a
+  swappable model, run `scripts/deepeval_tier3.py` (DeepEval G-Eval, one metric per dimension):
+  setup and the judge-quality caveat in `references/deepeval-setup.md`.
 - **Tier 4 — Behavioral eval** (runtime, `claude plugin eval`). Tiers 1–3 read the text; this
   checks that an agent WITH the skill does the task better than one WITHOUT it (built-in
   with/without ablation on a clean baseline). Run it for a new skill or a procedure change, not
