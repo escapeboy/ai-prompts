@@ -24,6 +24,7 @@ Eight skills that were in daily local use but missing from the library, now in `
 - `agent-team`, `codebase-memory` and `confidence-check` gain the *When to Use (and When NOT to)* table and/or *Boundaries* section the other skills use; all eight gain relative links to their sibling skills and guides.
 - Reciprocal links back to the skills from `06-advanced-patterns/{agent-teams,sprint-orchestration,decision-classification}-guide.md`, `08-ui-ux-development/README.md`, `continuity` and `self-improve`.
 - Skill counts 9 → 17 across README, `01-global-optimization/{guide,setup-agent,checklist}.md` and `03-custom-skills/guide.md`; new §4.8 table in `01-global-optimization/guide.md`. The README skills list now also includes `video-digest`.
+- `03-custom-skills/skill-template.md` *See Also*: the related-skill links use the `[placeholder]` convention, and the guide link is absolute — the relative `../guide.md` pointed nowhere once the template is copied to `~/.claude/skills/<name>/`. A code-fence-aware link check over all 160 Markdown files now finds 0 broken relative links.
 - `skill-lint.py`: 17 skills, 0 errors, 0 warnings.
 
 ## [1.28.0] — 2026-10-02

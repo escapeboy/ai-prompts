@@ -419,6 +419,6 @@ Error: /skill-name not recognized
 
 > Cross-link sibling skills explicitly with relative paths — turn the collection into a network, not a list. When this skill depends on, hands off to, or is a lighter/heavier alternative of another, name it here **and** add a reciprocal link from that skill back to this one.
 
-- [Related Skill 1](../related-skill-1/SKILL.md) - [How they relate: depends-on / hands-off-to / lighter-alternative]
-- [Related Skill 2](../related-skill-2/SKILL.md) - [How they relate]
-- [Documentation](../guide.md) - How to create skills
+- [Related Skill 1](../[related-skill-1]/SKILL.md) - [How they relate: depends-on / hands-off-to / lighter-alternative]
+- [Related Skill 2](../[related-skill-2]/SKILL.md) - [How they relate]
+- [Skill authoring guide](https://github.com/escapeboy/ai-prompts/blob/master/03-custom-skills/guide.md) - How to create skills
