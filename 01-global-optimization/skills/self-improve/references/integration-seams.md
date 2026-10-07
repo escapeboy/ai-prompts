@@ -38,7 +38,7 @@ the blast radius from inflating into noise.
 |---|---|---|
 | Tier-2 deterministic validation (`validate-skills.ts`) | `skill-lint.py`, optionally sealed | ✅ script alone |
 | Tier-1 trigger accuracy | subagent over real skill env | ✅ |
-| Tier-3 rubric LLM-judge | subagent | ✅ |
+| Tier-3 rubric LLM-judge | subagent, or `deepeval_tier3.py` (DeepEval G-Eval, any OpenAI-compatible judge) | ✅ |
 | (not in Salesforce) behavioral with/without eval | `claude plugin eval` + `behavior-stats.py` | ✅ |
 | Recurring feedback → requirement | decision-memory `remember` + freq threshold | ✅ manual |
 | Bounded edit + regression-abort | loop caps + Tier-2 gate | ✅ |
