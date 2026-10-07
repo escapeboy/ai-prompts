@@ -4,6 +4,13 @@ All notable changes to this library are documented here.
 
 ---
 
+## [1.31.2] — 2026-10-07
+
+### Fixed
+
+- **Tier-3 boundary-clarity no longer penalizes a skill for doing its job.** The judge marked `git-sync-branches` down (0.4, fail) for deleting branches without a confirmation, though deleting merged branches is exactly what the user invokes it for. The rubric now follows the library's convention: an explicitly invoked skill authorizes its own stated purpose; only operations *beyond* that purpose must be gated, and boundaries must not contradict the procedure. Same skill re-judged: 0.5, pass — the judge states the deletions are authorized and keeps only the real deduction (an *Always* rule the steps break).
+- `03-custom-skills/guide.md` now states that convention under *Boundaries*; it previously said every destructive step must hand control back, which contradicted it. `self-improve/references/rubric.md` links to it.
+
 ## [1.31.1] — 2026-10-07
 
 ### Added

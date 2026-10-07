@@ -149,6 +149,7 @@ Two sections carry disproportionate weight and belong in every non-trivial skill
 
 - **When to Use (and When NOT to)** — a two-column table that names the cases where a *simpler* approach wins. This is the operational form of the *don't gold-plate* discipline; it stops the skill from firing where it adds only overhead.
 - **Boundaries (Always / Ask First / Never)** — a consistent rubric that encodes invariants and, crucially, the points where the skill must hand control back to the user (destructive, hard-to-reverse, or shared-state operations).
+  - **An explicitly invoked skill authorizes its own stated purpose.** When the user runs `/git-sync-branches`, deleting merged branches *is* the request; a deploy skill deploys. Do not add a confirmation gate for what the skill exists to do — put under *Ask First* only what goes **beyond** that purpose (e.g. rotating a key when the skill only fixes its permissions). A model-triggered (not user-invoked) run still asks before shared-state actions.
 
 ### YAML Frontmatter
 
