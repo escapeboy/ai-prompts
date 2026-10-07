@@ -7,8 +7,10 @@ Each dimension is a 0-1 G-Eval score; the rubric's "<=2/5 on any dimension = blo
 fail" maps to threshold 0.5 (3/5 = 5-6 on the 0-10 scale). Judge: the local Claude Code login
 (TIER3_JUDGE=claude-cli) or any OpenAI-compatible endpoint (TIER3_BASE_URL/MODEL/API_KEY).
 
-Usage: deepeval_tier3.py <skill-dir> [--json]
-Exit 0 = all dimensions pass; 1 = a dimension failed; 2 = usage/setup error.
+Usage: deepeval_tier3.py <skill-dir | skills-dir> [--json]
+A skills-dir (no SKILL.md of its own) grades every subdirectory that has one;
+TIER3_CONCURRENCY skills at a time (default 3; each runs its 5 dimensions concurrently).
+Exit 0 = all dimensions pass; 1 = a dimension failed or a judge call errored; 2 = usage/setup error.
 """
 import sys
 import json
@@ -29,7 +31,10 @@ try:
     except ImportError:
         from deepeval.test_case import LLMTestCaseParams as Params
     from deepeval.models.base_model import DeepEvalBaseLLM
-    from deepeval.models.llms.openai_model import GPTModel
+    try:
+        from deepeval.models import OpenAIModel
+    except ImportError:  # DeepEval < 4.2 only has the old name
+        from deepeval.models.llms.openai_model import GPTModel as OpenAIModel
 except ImportError as e:
     print(f"setup error: {e} — run inside the deepeval venv", file=sys.stderr)
     sys.exit(2)
@@ -94,7 +99,7 @@ class ClaudeCLIModel(DeepEvalBaseLLM):
 if os.environ.get("TIER3_JUDGE") == "claude-cli":
     JUDGE = ClaudeCLIModel(os.environ.get("TIER3_CLAUDE_MODEL", "opus"))
 else:
-    JUDGE = GPTModel(
+    JUDGE = OpenAIModel(
         model=os.environ.get("TIER3_MODEL", "google/gemma-4-e4b"),
         base_url=os.environ.get("TIER3_BASE_URL", "http://localhost:1234/v1/"),
         api_key=os.environ.get("TIER3_API_KEY", "lm-studio"),
@@ -172,19 +177,9 @@ def build_metrics(model=JUDGE):
     ]
 
 
-def main(argv):
-    args = [a for a in argv[1:] if not a.startswith("--")]
-    as_json = "--json" in argv[1:]
-    if not args:
-        print("usage: deepeval_tier3.py <skill-dir> [--json]", file=sys.stderr)
-        return 2
-    skill_dir = Path(args[0])
-    skill_md = skill_dir / "SKILL.md"
-    if not skill_md.exists():
-        print(f"setup error: no {skill_md}", file=sys.stderr)
-        return 2
-
-    content = skill_md.read_text(encoding="utf-8", errors="replace")
+async def grade(skill_dir):
+    """Grade one skill directory; returns its Tier-3 record."""
+    content = (skill_dir / "SKILL.md").read_text(encoding="utf-8", errors="replace")
     # The judge cannot see the directory, so list the bundled files — otherwise it cannot
     # tell a thin core with live references from a monolith (progressive-disclosure).
     bundled = sorted(str(p.relative_to(skill_dir)) for p in skill_dir.rglob("*")
@@ -195,36 +190,83 @@ def main(argv):
         input=f"Evaluate the skill '{skill_dir.name}' SKILL.md against the self-improve authoring rubric.",
         actual_output=f"{content}\n\n---\nFiles bundled with this skill besides SKILL.md:\n{listing}",
     )
-
+    record = {"skill": skill_dir.name}
     metrics = build_metrics()
-
-    async def measure_all():
+    try:
+        # the 5 dimensions run concurrently
         await asyncio.gather(*(m.a_measure(tc, _show_indicator=False) for m in metrics))
+    except Exception as e:  # one broken judge call must not sink a whole batch
+        return {**record, "results": [], "verdict": "error", "error": str(e)[:300]}
+    results = [{"dimension": m.name, "score": round(m.score or 0, 3),
+                "pass": (m.score or 0) >= THRESHOLD, "reason": (m.reason or "").strip()}
+               for m in metrics]
+    verdict = "pass" if all(r["pass"] for r in results) else "fail"
+    return {**record, "results": results, "verdict": verdict}
 
-    asyncio.run(measure_all())  # the 5 dimensions run concurrently
 
-    results, failed = [], False
-    for metric in metrics:
-        passed = (metric.score or 0) >= THRESHOLD
-        failed = failed or not passed
-        results.append({
-            "dimension": metric.name,
-            "score": round(metric.score or 0, 3),
-            "pass": passed,
-            "reason": (metric.reason or "").strip(),
-        })
+async def grade_all(skill_dirs, limit):
+    sem = asyncio.Semaphore(limit)
 
-    verdict = "fail" if failed else "pass"
+    async def one(d):
+        async with sem:
+            return await grade(d)
+
+    return await asyncio.gather(*(one(d) for d in skill_dirs))
+
+
+def print_record(rec):
+    print(f"deepeval Tier-3 judge — {rec['skill']}")
+    if rec["verdict"] == "error":
+        print(f"  ERROR: {rec['error']}")
+        return
+    for r in rec["results"]:
+        mark = "PASS" if r["pass"] else "FAIL"
+        print(f"  [{mark}] {r['dimension']}: {r['score']}")
+        print(f"         {r['reason'][:200]}")
+    print(f"  VERDICT: {rec['verdict'].upper()} (threshold {THRESHOLD})")
+
+
+def main(argv):
+    args = [a for a in argv[1:] if not a.startswith("--")]
+    as_json = "--json" in argv[1:]
+    if not args:
+        print("usage: deepeval_tier3.py <skill-dir | skills-dir> [--json]", file=sys.stderr)
+        return 2
+    target = Path(args[0]).expanduser()
+
+    if (target / "SKILL.md").exists():
+        rec = asyncio.run(grade(target))
+        if as_json:
+            print(json.dumps({"tool": "deepeval-tier3", "tier": 3, "threshold": THRESHOLD,
+                              **rec}, indent=2))
+        else:
+            print_record(rec)
+        return 0 if rec["verdict"] == "pass" else 1
+
+    def has_skill(d):
+        try:
+            return (d / "SKILL.md").is_file()
+        except OSError:  # unreadable subdirectory
+            return False
+
+    skill_dirs = sorted(d for d in target.iterdir() if has_skill(d)) if target.is_dir() else []
+    if not skill_dirs:
+        print(f"setup error: {target} has no SKILL.md and no skill subdirectories", file=sys.stderr)
+        return 2
+    limit = max(1, int(os.environ.get("TIER3_CONCURRENCY", "3")))
+    records = asyncio.run(grade_all(skill_dirs, limit))
+    failed = [r["skill"] for r in records if r["verdict"] != "pass"]
     if as_json:
-        print(json.dumps({"tool": "deepeval-tier3", "tier": 3, "skill": skill_dir.name,
-                          "threshold": THRESHOLD, "results": results, "verdict": verdict}, indent=2))
+        print(json.dumps({"tool": "deepeval-tier3", "tier": 3, "threshold": THRESHOLD,
+                          "skills": records, "verdict": "fail" if failed else "pass"}, indent=2))
     else:
-        print(f"deepeval Tier-3 judge — {skill_dir.name}")
-        for r in results:
-            mark = "PASS" if r["pass"] else "FAIL"
-            print(f"  [{mark}] {r['dimension']}: {r['score']}")
-            print(f"         {r['reason'][:200]}")
-        print(f"  VERDICT: {verdict.upper()} (threshold {THRESHOLD})")
+        width = max(len(r["skill"]) for r in records)
+        print(f"deepeval Tier-3 judge — {len(records)} skills in {target}")
+        for r in records:
+            scores = " ".join(f"{x['score']:.1f}" for x in r["results"]) or r.get("error", "")[:60]
+            print(f"  {r['verdict'].upper():5} {r['skill']:<{width}}  {scores}")
+        print("  (scores: scope, disclosure, boundaries, conventions, fidelity)")
+        print(f"  VERDICT: {'FAIL — ' + ', '.join(failed) if failed else 'PASS'} (threshold {THRESHOLD})")
     return 1 if failed else 0
 
 
