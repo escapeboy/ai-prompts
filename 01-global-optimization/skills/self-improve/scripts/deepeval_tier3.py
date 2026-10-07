@@ -131,14 +131,19 @@ DIMENSIONS = [
       "Thin decision core; all depth in live references loaded on demand."]),
     ("boundary-clarity",
      ["Find explicit Always / Ask first / Never boundaries.",
-      "Check that destructive, hard-to-reverse or shared-state operations the skill can "
-      "perform are gated under Ask first or Never.",
-      "Check that the boundaries do not contradict the procedure."],
+      "Identify the skill's stated purpose. When the user invokes the skill, that purpose is "
+      "authorized: a cleanup skill that deletes branches, or a deploy skill that deploys, needs "
+      "no extra confirmation for doing what it exists to do. Do NOT penalize that.",
+      "Check that consequential operations BEYOND the stated purpose (destructive, "
+      "hard-to-reverse or shared-state) are gated under Ask first or Never.",
+      "Check that the boundaries do not contradict the procedure (e.g. an Always rule the "
+      "steps break)."],
      ["No boundaries.",
-      "Boundaries implied or partial; destructive operations ungated.",
-      "All three tiers present; some consequential operations or contradictions not handled.",
-      "All three tiers; consequential operations gated; minor gaps.",
-      "All three tiers; every consequential operation gated; consistent with the procedure."]),
+      "Boundaries implied or partial; operations beyond the purpose ungated.",
+      "All three tiers present; some operations beyond the purpose ungated, or the "
+      "boundaries contradict the procedure.",
+      "All three tiers; operations beyond the purpose gated; minor gaps.",
+      "All three tiers; everything beyond the purpose gated; consistent with the procedure."]),
     ("convention-adherence",
      ["Check the name is kebab-case and the description says what the skill does and when to use it.",
       "Check for a 'When to Use (and When NOT to)' table near the top.",

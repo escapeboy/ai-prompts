@@ -31,9 +31,13 @@ Grade the SKILL.md on each dimension (score 1–5; a `≤2` on any is a blocking
 |---|---|---|
 | **Scope precision** | "when NOT to" names the simpler alternative | fires on everything / vague |
 | **Progressive disclosure** | thin core; depth in `references/`, loaded on demand | one monolith, or dead refs |
-| **Boundary clarity** | Always / Ask-first / Never, consequential ops gated | no boundaries, or destructive ops ungated |
+| **Boundary clarity** | Always / Ask-first / Never; ops *beyond* the stated purpose gated; consistent with the procedure | no boundaries, or ops beyond the purpose ungated |
 | **Convention adherence** | matches the library's authoring conventions | reinvents structure/naming |
 | **Signal fidelity** | encodes the *actual* recurring requirement | gold-plates beyond the signal |
+
+An explicitly invoked skill authorizes its own stated purpose (a cleanup skill deletes, a deploy
+skill deploys) — do not mark that down for lacking a confirmation; gate only what goes beyond it.
+See `03-custom-skills/guide.md` → *Two sections carry disproportionate weight*.
 
 Reuse the `output-evaluator` agent where its APPROVE/NEEDS_REVIEW/REJECT verdict fits; add the
 dimensions above. To run the same dimensions as a script, see `deepeval-setup.md`. Deterministic facts stay in Tier 2 — the judge only rules on what needs context.
