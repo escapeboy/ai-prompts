@@ -52,7 +52,7 @@ Map what you found to bundles and offer them in one question (recommend one; the
 | **Starter** | Any Claude Code user without these yet | skills `optimize`, `ctx`, `init-project`, `continuity`, `confidence-check`; hooks `shell-habits.py` + the three security hooks; global rules merged into `CLAUDE.md` |
 | **Code intelligence** | Serena and/or codebase-memory-mcp connected, or the user wants them | skills `codebase-memory`, `code-research`, `sync-features`, `agent-ready`; [02-project-activation](02-project-activation/guide.md) per project |
 | **Delivery** | Feature work with PRs | skills `sprint-orchestrate`, `decision-classify`, `confidence-check`, `ui-ux-review`; commands from [07-custom-commands](07-custom-commands/); subagents `output-evaluator`, `plan-challenger`, `self-review` |
-| **Multi-agent** | Large tasks, several areas, audits | skills `company`, `agent-team` + everything `company` depends on (see below); mod `company-hq` |
+| **Multi-agent** | Large tasks, several areas, audits | skills `company`, `agent-team` + everything `company` depends on (see below); mod `company-hq` (optional live dashboard needs `python3` >= 3.9; off by default, local-only unless a FleetQ URL is configured, see [17-mods/guide.md](17-mods/guide.md)) |
 | **Mods** | Claude Code >= 2.1.287 | pick from the table in [17-mods/guide.md](17-mods/guide.md); a good default is `context-meter`, `cache-guard`, `secret-redactor`, `subagent-models`, `ci-watch` |
 | **Security** | Always worth offering | [13-security-hardening](13-security-hardening/guide.md) hooks + `permissions.deny` template; mods `secret-redactor`, `ssh-guard` |
 | **Unattended** | Cron / CI / servers | [16-autonomous-agents](16-autonomous-agents/guide.md) heartbeat template + Stop hook; subagent `loop-monitor`; mod `ci-watch` |
@@ -75,8 +75,8 @@ Install the dependencies a skill names in its *Related* section as `depends-on`,
 
 | Skill | Also install |
 |---|---|
-| `company` | `sprint-orchestrate`, `agent-team`, `code-research`, `decision-classify`, `confidence-check`, `continuity`; mod `company-hq` |
-| `sprint-orchestrate` | `confidence-check`, `decision-classify` (`ui-ux-review` if the project has UI) |
+| `company` | `sprint-orchestrate`, `agent-team`, `code-research`, `decision-classify`, `confidence-check`, `continuity`; mod `company-hq` (dashboard, questions and `## Tasks` list work only with it) |
+| `sprint-orchestrate` | `confidence-check`, `decision-classify` (`ui-ux-review` if the project has UI); keeps a `## Tasks` checklist (`references/tasks.md`, ships with the skill) that the `company-hq` dashboard reads |
 | `confidence-check` | `decision-classify` |
 | `optimize`, `ctx`, `init-project` | each other (they cross-reference) |
 | `codebase-memory`, `code-research` | codebase-memory-mcp connected (otherwise skip and say why) |

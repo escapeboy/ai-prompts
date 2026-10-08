@@ -70,7 +70,7 @@
     {
       "name": "company-hq",
       "source": "./mods/company-hq",
-      "description": "Back office for the /company skill: hires project specialists as agent types, enforces the project budget cap on every spawn, shows the org and spend in a pane."
+      "description": "Back office for the /company skill: every /company run is its own company (state file per company, several open at once), hires project specialists as agent types, enforces each company's budget cap on every spawn, shows the org and spend in a pane."
     }
   ]
 }

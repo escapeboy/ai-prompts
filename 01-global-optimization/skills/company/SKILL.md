@@ -25,15 +25,22 @@ Track the phase with `mcp__company-hq__set_phase` (load the `mcp__company-hq__*`
 
 | # | Phase | What happens | Detail |
 |---|---|---|---|
-| 0 | Intake | Classify (code / new project / audit / ops). Recall similar past projects from your memory store. Read `.continuity/STATE.md` if present. `open_project` with the default cap. | [references/memory.md](references/memory.md) |
-| 1 | **Stop 1 — clarify** | Ask only what changes the result: ≤4 questions per round, options with a recommendation (`AskUserQuestion`). Look up anything the code, memory or docs can answer instead of asking. Rounds may repeat after research raises a real question. Use `decision-classify` to keep Mechanical/Taste choices away from the user. | [references/org-design.md](references/org-design.md#clarify) |
+| 0 | Intake | Classify (code / new project / audit / ops). Recall similar past projects from your memory store. Read `.continuity/STATE.md` if present. `open_project` with the default cap, `task`, `kind` and `dashboard` (see Dashboard). Every `/company` call is a new company; `resume: <id>` takes over an open one. | [references/memory.md](references/memory.md) |
+| 1 | **Stop 1 — clarify** | Ask only what changes the result: ≤4 questions per round, options with a recommendation (`AskUserQuestion`). Without `--dashboard` and without a `dashboard` in `~/.claude/company-hq/config.json`, the first round also asks "Dashboard? off (recommended) / local / fleetq / local+fleetq". Look up anything the code, memory or docs can answer instead of asking. Rounds may repeat after research raises a real question. Use `decision-classify` to keep Mechanical/Taste choices away from the user. | [references/org-design.md](references/org-design.md#clarify) |
 | 2 | Research | Read-only parallel subagents (cbm/Serena for code, Context7 for libraries, web). Output `research.md` with sources. | [references/workflows.md](references/workflows.md#research) |
 | 3 | **Stop 2 — plan, org, budget** | Split into parts with disjoint files; write `docs/design-<part>.md` per part; staff teams from the roster, hire specialists only where no existing agent fits; pick models; estimate cost; present one page; wait for yes / change / cancel. | [references/org-design.md](references/org-design.md), [references/roster.md](references/roster.md) |
 | 4 | Execute | Code: one worktree per part, each runs `/sprint-orchestrate plan → build → review → test --from-design docs/design-<part>.md`, parts in parallel via Workflow. Audit/ops: the matching skills. `confidence-check` before Build. | [references/workflows.md](references/workflows.md) |
 | 5 | Integrate & review | Merge parts into an integration branch, run the full test suite, then `/sprint-orchestrate ship --no-merge` once (independent verifier PASS → PR → CI green). FAIL goes back to the owning team; after 2 rounds, stop and ask. | [references/workflows.md](references/workflows.md#integrate) |
 | 6 | Deliver & remember | Report (PR URL / audit report / ops change list with rollback). `/retro`. `close_project`, write the project note to your memory store, update `.continuity/STATE.md`, offer to keep specialists that earned it. | [references/memory.md](references/memory.md) |
 
-Between stop 2 and delivery, work without check-ins unless a gate fails twice, the cap is hit, or a destructive/outward action comes up.
+Between stop 2 and delivery, work without check-ins unless a gate fails twice, the cap is hit, or a destructive/outward action comes up. A question that comes up is routed, never guessed: User-class → `ask_user` + `PushNotification`, only its part waits; Mechanical/Taste → decided by your recommendation and logged with `record_decision` (an external scorer can be plugged in; it never decides User-class questions). Details: [references/questions.md](references/questions.md).
+
+## Dashboard (optional)
+
+Off unless asked: `/company --dashboard[=local|fleetq|local+fleetq]`, or `dashboard` in `~/.claude/company-hq/config.json`, or the stop-1 question. Pass the choice to `open_project`; its result carries the URL — tell it to the user once.
+- `local` (default when on): a page on `127.0.0.1` served by the company-hq mod; nothing leaves the machine; no tokens are spent on it.
+- `fleetq`: the mod also sends the snapshot and plan documents (redacted) to FleetQ; needs `fleetq.url` in the config and `COMPANY_HQ_FLEETQ_TOKEN`.
+- What it shows comes from files: the company state, `docs/design-<part>.md`, the `## Tasks` list in `docs/architecture-<part>.md`, `Result:` in `docs/test-plan-<part>.md`. So label every part agent `<part>: …` ([references/workflows.md](references/workflows.md#parts-code)).
 
 ## Defaults (edit these to your own)
 
@@ -43,6 +50,7 @@ Between stop 2 and delivery, work without check-ins unless a gate fails twice, t
 - **Ops hosts:** the hosts you list here, read-only by default. Any write, restart or other host is a separate yes.
 - **Specialists:** hired per project (`company-hq:<name>`); at the end offer to save the ones that worked as permanent agents in `~/.claude/agents/`.
 - **Language:** the user's language with the user; English in agent briefs.
+- **Dashboard:** off.
 
 ## Borrowed rules (from agent-team, code-research, sprint-orchestrate)
 
@@ -60,6 +68,7 @@ Between stop 2 and delivery, work without check-ins unless a gate fails twice, t
 - Open the project in `company-hq` with a cap before spawning; close it at the end, and also when the user cancels at a stop.
 - Route code delivery through `sprint-orchestrate` (`--from-design`, `ship --no-merge`); do not re-implement its phases.
 - Read command output for every "passes/works" claim; report failures as failures.
+- Label every part agent `<part>: …`; route every question through decision-classify and record it (`ask_user` / `record_decision`).
 
 **Ask first**
 - Merge, deploy, push to a shared branch, any write on a server, deleting anything.
@@ -69,6 +78,7 @@ Between stop 2 and delivery, work without check-ins unless a gate fails twice, t
 **Never**
 - Let two agents edit the same file.
 - Let a hired specialist or a mod approve a dangerous action.
+- Guess the answer to a User-class question, or let an automatic scorer decide one.
 - Present an estimate or a guess as a measured result.
 
 ## Related
@@ -76,7 +86,7 @@ Between stop 2 and delivery, work without check-ins unless a gate fails twice, t
 - [`agent-team`](../agent-team/SKILL.md) — used for the parts where teammates must talk (debug, cross-review); lighter alternative when the whole task is one such review.
 - [`code-research`](../code-research/SKILL.md) — the audit/research engine for phase 2 and for audit projects.
 - [`decision-classify`](../decision-classify/SKILL.md), [`confidence-check`](../confidence-check/SKILL.md), [`continuity`](../continuity/SKILL.md), `ship` (if you have one) — used at the points named above.
-- Mod: [`company-hq`](../../../17-mods/marketplace/mods/company-hq/) — see [`17-mods/guide.md`](../../../17-mods/guide.md) (tools `open_project`, `hire`, `set_phase`, `close_project`; `/company-status`).
+- Mod: [`company-hq`](../../../17-mods/marketplace/mods/company-hq/) — see [`17-mods/guide.md`](../../../17-mods/guide.md) (tools `open_project`, `hire`, `set_phase`, `close_project`, `ask_user`, `answer_question`, `record_decision`; `/company-status`; the local dashboard server in `server/`).
 
 ---
 

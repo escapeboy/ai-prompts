@@ -77,7 +77,9 @@ claude plugin install secret-redactor@ai-prompts-mods
 | aside | `/aside` opens a pane; a tool-less fork answers from the prompt cache; nothing enters the conversation. | `/aside [question]` |
 | fleet-status | Status line `fleet: P1 n · P2 n` from a triage report (`## P1` sections with `- [` items). | `/fleet [full]`, `/ports`; `state_file` |
 | lang-guard | Example language guard: after each main answer flags Russian words in Bulgarian text and plain-language slips (em-dash asides, 40+ word sentences, aphorisms); shows a line and adds a hidden reminder. Adapt the word lists. | — |
-| company-hq | Back office for the [`company`](../01-global-optimization/skills/company/SKILL.md) skill: tools `open_project` / `hire` / `set_phase` / `close_project`, hired specialists as agent types (`company-hq:<name>`), a budget cap enforced on every spawn inside the project folder. Hired agents are re-registered only inside that folder. | `/company-status` |
+| company-hq | Back office for the [`company`](../01-global-optimization/skills/company/SKILL.md) skill: every `/company` run is its own company (state file per company, several open at once); tools `open_project` / `hire` / `set_phase` / `close_project` / `ask_user` / `answer_question` / `record_decision`, hired specialists as agent types (`company-hq:<name>`), a budget cap enforced on every spawn inside the project folder. Hired agents are re-registered only inside that folder. Optional live dashboard (see below). | `/company-status`; `~/.claude/company-hq/config.json`: `dashboard`, `port`, `machine`, `fleetq.url`; env `COMPANY_HQ_FLEETQ_TOKEN` |
+
+**company-hq dashboard (optional, off by default).** Turn it on with `/company --dashboard[=local|fleetq|local+fleetq]`, the `dashboard` key in `config.json`, or the question `/company` asks at stop 1. `local` runs a read-only Python standard-library server on `127.0.0.1` (default port 7420, `port` in `config.json`) from the mod's `server/` folder; it needs `python3` 3.9 or newer. It reads the company state files and the plan documents (`docs/design-<part>.md`, the `## Tasks` list in `docs/architecture-<part>.md`, the `Result:` line in `docs/test-plan-<part>.md`), shows open questions and logged decisions, and in local mode nothing leaves the machine. `fleetq` also sends the snapshot and the plan documents (secrets redacted) to a FleetQ instance: set `fleetq.url` in `config.json` and the token in `COMPANY_HQ_FLEETQ_TOKEN`; the request and response format is in [`server/INGEST-CONTRACT.md`](marketplace/mods/company-hq/server/INGEST-CONTRACT.md). `machine` names this computer in the snapshot. The task list the dashboard shows is kept by [`sprint-orchestrate`](../01-global-optimization/skills/sprint-orchestrate/SKILL.md).
 
 Turn one off: `/plugin` → Installed → disable. All mods off for one session: `claude --safe-mode`.
 
@@ -99,7 +101,8 @@ Nothing in this marketplace approves a tool call. Keep your safety gates in sett
 
 ## Related
 
-- [`company` skill](../01-global-optimization/skills/company/SKILL.md) — depends on `company-hq`.
+- [`company` skill](../01-global-optimization/skills/company/SKILL.md) — depends on `company-hq`; its Dashboard section and `references/questions.md` describe the tools and dashboard above.
+- [`sprint-orchestrate` skill](../01-global-optimization/skills/sprint-orchestrate/SKILL.md) — writes the `## Tasks` list and `Result:` line that the company-hq dashboard shows ([`references/tasks.md`](../01-global-optimization/skills/sprint-orchestrate/references/tasks.md)).
 - [10-subagents](../10-subagents/) — `subagent-models` enforces the frontmatter `model:` policy described there.
 - [05-token-optimization](../05-token-optimization/) — `context-meter`, `cache-guard`, `spend-ledger` measure and protect the prompt cache.
 - [13-security-hardening](../13-security-hardening/guide.md) — settings hooks vs mods.

@@ -1,7 +1,7 @@
 {
   "name": "company-hq",
-  "version": "0.2.0",
-  "description": "Back office for the /company skill: hires project specialists as agent types, enforces the project budget cap on every spawn, shows the org and spend in a pane.",
+  "version": "0.4.0",
+  "description": "Back office for the /company skill: every /company run is its own company (state file per company, several open at once), hires project specialists as agent types, enforces each company's budget cap on every spawn, shows the org and spend in a pane.",
   "author": {
     "name": "escapeboy"
   },
