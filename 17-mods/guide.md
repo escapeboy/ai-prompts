@@ -1,6 +1,6 @@
 # 17 — Claude Code Mods
 
-Mods (Claude Code ≥ 2.1.287) are plugins whose hooks are TypeScript functions that run inside the Claude Code engine. Unlike settings hooks (shell commands that see one event and return JSON), a mod can rewrite a tool call or its result, set the model of a subagent, register tools, agents and slash commands, keep state across sessions, and draw UI above the prompt or in a pane.
+Mods (Claude Code ≥ 2.1.287; running the tests needs ≥ 2.1.294, the first build whose test kit has `mock.session`) are plugins whose hooks are TypeScript functions that run inside the Claude Code engine. Unlike settings hooks (shell commands that see one event and return JSON), a mod can rewrite a tool call or its result, set the model of a subagent, register tools, agents and slash commands, keep state across sessions, and draw UI above the prompt or in a pane.
 
 This section is a working example marketplace of 13 mods, each with tests, plus the patterns that came out of writing them.
 
@@ -91,7 +91,7 @@ mkdir -p .types && cp mods/<name>/.claude-plugin/types/claude-code/index.d.ts .t
 npx -y -p typescript@5.6.3 tsc -p tsconfig.json
 ```
 
-The type files come from your installed Claude Code build and are not committed.
+The type files come from your installed Claude Code build and are not committed. On a build older than 2.1.294 the `aside` and `lang-guard` tests fail with `mock.session is not a function` — update Claude Code (`claude update`), the mods are fine.
 
 ## Security
 

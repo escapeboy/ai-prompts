@@ -4,6 +4,18 @@ All notable changes to this library are documented here.
 
 ---
 
+## [1.33.0] — 2026-10-08
+
+### Added
+
+- **`INSTALL.md` — an install runbook for AI agents.** Point a coding agent at it ("read INSTALL.md and install what fits my setup") and it inspects the environment, proposes bundles (starter, code intelligence, delivery, multi-agent, mods, security, unattended, stack-specific, maintenance), installs from the latest release tag after the user's yes, never overwrites existing files without a diff, merges into `CLAUDE.md` / `settings.json` instead of replacing them, and verifies with real commands. It includes the skill dependency table (e.g. `company` needs `sprint-orchestrate`, `agent-team`, `code-research`, `decision-classify`, `confidence-check`, `continuity` and the `company-hq` mod) and an update procedure.
+- **`llms.txt`** — index of the library for agents, pointing at `INSTALL.md` and every installable component.
+
+### Updated
+
+- **17-mods:** the guide states that running the mod tests needs Claude Code ≥ 2.1.294 (the 2.1.291 test kit has no `mock.session`, so the `aside` and `lang-guard` tests fail there; the mods themselves need ≥ 2.1.287).
+- README gains an *Install with an agent* section; `CLAUDE.md` asks contributors to keep `INSTALL.md` and `llms.txt` in sync when components change.
+
 ## [1.32.0] — 2026-10-08
 
 ### Added
