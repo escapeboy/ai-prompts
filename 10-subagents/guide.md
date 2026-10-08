@@ -600,3 +600,5 @@ The patterns above work well for a handful of agents on a single machine. When y
 
 - **[CLI Agent Orchestrator](https://github.com/awslabs/cli-agent-orchestrator)** — lightweight tmux-based orchestration with supervisor/worker hierarchy, session isolation, and scheduled flows
 - **[agent-fleet-o](https://github.com/escapeboy/agent-fleet-o)** / **[FleetQ Cloud](https://fleetq.net)** — fleet management with persistent agent state, triggers, workflow graphs, and cross-project coordination via MCP
+
+**Enforcing the policy:** the [`subagent-models` mod](../17-mods/guide.md) pins subagent models to a routing table on every spawn, so a plugin update that rewrites an agent's frontmatter cannot change which model it runs on.

@@ -1,7 +1,7 @@
 ---
 name: sprint-orchestrate
 description: "Run a full sprint lifecycle — chain skills into Think → Plan → Build → Review → Test → Ship → Reflect"
-version: 1.0.0
+version: 1.1.0
 ---
 
 # /sprint-orchestrate - Sprint Lifecycle Orchestrator
@@ -19,8 +19,13 @@ Chain skills into a complete development lifecycle where each phase feeds the ne
 ## Usage
 
 ```
-/sprint-orchestrate [phase] [feature-name]
+/sprint-orchestrate [phase] [feature-name] [--from-design <path>] [--no-merge]
 ```
+
+| Flag | Effect |
+|------|--------|
+| `--from-design <path>` | Skip Think. The given design doc (already agreed with the user, e.g. by `/company`) is copied to `docs/design-[feature].md` if it lives elsewhere, and the Think → Plan gate counts as passed. |
+| `--no-merge` | Ship stops at a green PR: report the PR URL and the verifier verdict, never merge. The caller merges after the user's yes. |
 
 ### Phases
 
@@ -39,7 +44,7 @@ Chain skills into a complete development lifecycle where each phase feeds the ne
 
 ### Full Pipeline (`/sprint-orchestrate full [feature]`)
 
-1. **Think**: Ask the user six forcing questions:
+1. **Think** (skipped with `--from-design`): Ask the user six forcing questions:
    - Who needs this? What are they doing today?
    - What's the narrowest MVP someone would pay for?
    - What would make someone say "whoa"?
@@ -70,6 +75,7 @@ Chain skills into a complete development lifecycle where each phase feeds the ne
    - **FAIL → do not create the PR.** Fix the blocking issues, re-run the gate, loop until PASS.
    - **PASS →** run `/commit` with a descriptive message and create the PR, building its description from the verifier's report. No unverified causal claims.
    - **Wait for CI** with `gh pr checks <N> --watch --fail-fast` in a background Bash call (`run_in_background: true`); it exits when CI finishes and the harness notifies you. Do not delegate a plain CI wait to a subagent.
+   - **With `--no-merge`:** stop here once CI is green and report the PR URL; do not merge.
 
 7. **Reflect**: Run `/retro 7d` for sprint metrics.
 
@@ -137,3 +143,4 @@ At each transition, check before proceeding:
 - [`confidence-check`](../confidence-check/SKILL.md) — run before Build (depends-on: readiness gate between Plan and Build).
 - [`decision-classify`](../decision-classify/SKILL.md) — decides which intermediate choices in each phase need the user.
 - [`ui-ux-review`](../ui-ux-review/SKILL.md) — Review-phase companion when the sprint touches UI.
+- [`company`](../company/SKILL.md) — runs above this skill (depended-on-by): clarifies the task, splits it into parts and teams, then runs `--from-design` per part and one `ship --no-merge` on the integration branch.

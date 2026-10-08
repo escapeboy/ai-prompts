@@ -4,6 +4,20 @@ All notable changes to this library are documented here.
 
 ---
 
+## [1.32.0] — 2026-10-08
+
+### Added
+
+- **`/company` skill** (`01-global-optimization/skills/company/`). Runs a task the way a small IT company would: intake → **stop 1** (clarifying questions, ≤4 per round) → read-only research → **stop 2** (parts with disjoint files, teams from the roster, hired specialists only where no agent fits, models, cost estimate and cap) → execution → integration → delivery and a project note in memory. It manages and does not orchestrate code itself: each code part runs `/sprint-orchestrate … --from-design docs/design-<part>.md` in its own worktree, and the integration branch goes through one `ship --no-merge`. A task that turns out small gets the simpler path proposed, and that proposal is stop 2, so both stops always happen. References: `org-design.md`, `roster.md`, `briefs.md`, `workflows.md`, `memory.md`.
+- **Section 17-mods.** `guide.md` covers what mods can do that settings hooks cannot, the event and engine API, and the patterns that held up (`.catch` guards, result remapping that also cleans the transcript, `userConfig`, `claude plugin update` after a version bump, bottom hooks in tests). `marketplace/` is an installable example marketplace `ai-prompts-mods` with 13 mods and 34 tests: `context-meter`, `cache-guard`, `spend-ledger`, `subagent-models`, `secret-redactor`, `ssh-guard`, `deploy-verify`, `ci-watch`, `cleanup-tracker`, `aside`, `fleet-status`, `lang-guard`, `company-hq`.
+- **Security hardening before release** (from a commit security review): `deploy-verify` runs a project's config only after `/deploy-verify trust` approved that exact content and refuses an ssh host starting with `-`; `company-hq` re-registers hired agents only inside the open project's folder; `secret-redactor` restores real values only into local tools, not web or MCP calls.
+- **`company-hq` mod** — back office for `/company`: tools `open_project`, `hire` (registers a specialist as agent type `company-hq:<name>`), `set_phase`, `close_project`; a budget cap enforced on every subagent spawn inside the project folder; `/company-status` pane.
+
+### Updated
+
+- **`sprint-orchestrate`** 1.1.0: `--from-design <path>` skips Think and treats an already agreed design as the Think → Plan gate; `--no-merge` stops Ship at a green PR so the caller merges after the user's yes.
+- **`agent-team`** links to `company` (depended-on-by) and back.
+
 ## [1.31.4] — 2026-10-07
 
 ### Fixed

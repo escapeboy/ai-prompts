@@ -133,3 +133,4 @@ For recurrence *within* a working session (deploy watching, CI polling), prefer 
 - [`06-advanced-patterns/`](../06-advanced-patterns/) — multi-agent coordination, headless review fan-out
 - [`10-subagents/`](../10-subagents/) — loop-monitor and other watchdog agent definitions
 - [`01-global-optimization/hooks/`](../01-global-optimization/hooks/) — SessionStart/PreToolUse hook library
+- [`17-mods/`](../17-mods/guide.md) — `ci-watch` polls CI in the status line without tokens, instead of a sleep loop

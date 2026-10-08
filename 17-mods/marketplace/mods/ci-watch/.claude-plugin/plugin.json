@@ -1,0 +1,8 @@
+{
+  "name": "ci-watch",
+  "version": "0.1.0",
+  "description": "/ci-watch <pr>: polls gh pr checks every minute in the status line, no tokens.",
+  "author": {
+    "name": "escapeboy"
+  }
+}

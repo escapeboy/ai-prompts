@@ -1,0 +1,8 @@
+{
+  "name": "deploy-verify",
+  "version": "0.2.0",
+  "description": "After a deploy command, runs 5 post-deploy checks from the project's .claude/deploy-verify.json and tells Claude the result.",
+  "author": {
+    "name": "escapeboy"
+  }
+}

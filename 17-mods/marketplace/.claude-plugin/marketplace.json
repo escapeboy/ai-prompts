@@ -1,0 +1,76 @@
+{
+  "name": "ai-prompts-mods",
+  "owner": {
+    "name": "escapeboy"
+  },
+  "metadata": {
+    "description": "Example Claude Code mods from the ai-prompts library"
+  },
+  "plugins": [
+    {
+      "name": "context-meter",
+      "source": "./mods/context-meter",
+      "description": "Band above the prompt: context fill, cache read, cost, plan limits; warns at 50%/70%; Handoff button and /handoff past 70%."
+    },
+    {
+      "name": "lang-guard",
+      "source": "./mods/lang-guard",
+      "description": "Example language guard: flags Russian words and plain-language slips in Bulgarian answers and reminds Claude. Adapt the word lists to your language."
+    },
+    {
+      "name": "ci-watch",
+      "source": "./mods/ci-watch",
+      "description": "/ci-watch <pr>: polls gh pr checks every minute in the status line, no tokens."
+    },
+    {
+      "name": "cleanup-tracker",
+      "source": "./mods/cleanup-tracker",
+      "description": "Records downloads, installs and started containers; /cleanup-list shows them."
+    },
+    {
+      "name": "subagent-models",
+      "source": "./mods/subagent-models",
+      "description": "Pins subagent models to a model-routing policy (Opus for judgement, Haiku for mechanical work, Sonnet otherwise) and logs every spawn."
+    },
+    {
+      "name": "fleet-status",
+      "source": "./mods/fleet-status",
+      "description": "P1/P2 counts from a triage report file (option state_file) in the status line; /fleet and /ports commands."
+    },
+    {
+      "name": "secret-redactor",
+      "source": "./mods/secret-redactor",
+      "description": "Hides tokens, keys and passwords in tool output as ‹secret:N›, restores them in later tool calls, blocks reading key files."
+    },
+    {
+      "name": "ssh-guard",
+      "source": "./mods/ssh-guard",
+      "description": "Refuses ssh/scp/rsync to hosts listed in a retired-hosts file (option hosts_file); \"# decommissioned-ok\" overrides."
+    },
+    {
+      "name": "cache-guard",
+      "source": "./mods/cache-guard",
+      "description": "Keeps the prompt cache warm while idle and holds the first prompt after the cache went cold, with its cost."
+    },
+    {
+      "name": "spend-ledger",
+      "source": "./mods/spend-ledger",
+      "description": "Per-project token and cost ledger per machine; /spend; optional monthly note in a Svod-compatible notes MCP, other machines pulled over ssh."
+    },
+    {
+      "name": "aside",
+      "source": "./mods/aside",
+      "description": "/aside <question>: asks a tool-less fork of the session in a pane; nothing enters the main conversation."
+    },
+    {
+      "name": "deploy-verify",
+      "source": "./mods/deploy-verify",
+      "description": "After a deploy command, runs 5 post-deploy checks from the project's .claude/deploy-verify.json and tells Claude the result."
+    },
+    {
+      "name": "company-hq",
+      "source": "./mods/company-hq",
+      "description": "Back office for the /company skill: hires project specialists as agent types, enforces the project budget cap on every spawn, shows the org and spend in a pane."
+    }
+  ]
+}

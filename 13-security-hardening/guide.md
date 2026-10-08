@@ -571,3 +571,5 @@ exit 0
 ---
 
 **Sources**: [Cymulate EscapeRoute](https://cymulate.com/blog), [Snyk ToxicSkills](https://snyk.io), [Flatt Security](https://flatt.tech/research/posts/pwning-claude-code-in-8-different-ways/), Claude Code CHANGELOG, community CVE reports.
+
+**See also:** [17-mods](../17-mods/guide.md) — `secret-redactor` keeps secrets out of tool output and transcripts; `ssh-guard` refuses retired hosts. Mods add refusals; keep approval gates in settings hooks.

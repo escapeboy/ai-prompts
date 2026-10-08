@@ -1,0 +1,8 @@
+{
+  "name": "lang-guard",
+  "version": "0.2.0",
+  "description": "Flags Russian words and plain-language slips (em-dash asides, 40+ word sentences, aphorisms) in Bulgarian answers; reminds Claude.",
+  "author": {
+    "name": "escapeboy"
+  }
+}

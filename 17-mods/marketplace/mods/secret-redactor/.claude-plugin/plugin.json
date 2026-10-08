@@ -1,0 +1,8 @@
+{
+  "name": "secret-redactor",
+  "version": "0.2.0",
+  "description": "Hides tokens, keys and passwords in tool output as ‹secret:N›, restores them in later tool calls, blocks reading key files.",
+  "author": {
+    "name": "escapeboy"
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "name": "aside",
+  "version": "0.1.0",
+  "description": "/aside <question>: asks a tool-less fork of the session in a pane; nothing enters the main conversation.",
+  "author": {
+    "name": "escapeboy"
+  },
+  "types": "./types/index.d.ts"
+}

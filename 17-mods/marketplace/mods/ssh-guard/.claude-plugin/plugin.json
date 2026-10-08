@@ -1,0 +1,16 @@
+{
+  "name": "ssh-guard",
+  "version": "0.1.0",
+  "description": "Refuses ssh/scp/rsync to hosts listed in memory decommissioned_hosts.md; \"# decommissioned-ok\" overrides.",
+  "author": {
+    "name": "escapeboy"
+  },
+  "userConfig": {
+    "hosts_file": {
+      "type": "string",
+      "title": "Retired hosts file",
+      "description": "Markdown file whose \"## <name> — <ip> (<aliases>)\" headers list decommissioned hosts. ~ is your home.",
+      "default": "~/.claude/decommissioned_hosts.md"
+    }
+  }
+}
