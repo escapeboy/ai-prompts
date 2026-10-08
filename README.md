@@ -639,12 +639,15 @@ These prompts are project-agnostic and can be freely adapted for your team's nee
 
 **Created**: 2026-01-04
 **Last Updated**: 2026-09-27
-**Version**: 1.34.0
+**Version**: 1.34.1
 **Compatibility**: Claude Code v2.1.32+, Claude API (Fable 5: `claude-fable-5`, Opus 4.8: `claude-opus-4-8`, Opus 4.7: `claude-opus-4-7`, Sonnet 5: `claude-sonnet-5`, Haiku 4.5: `claude-haiku-4-5`)
 
 ---
 
 ## 📝 Version History
+
+### v1.34.1 (2026-10-08)
+**Fixed**: removed a stale `.pyc` file that was committed by accident and copied into every self-improve install; `.gitignore` now ignores `__pycache__/` and `*.pyc`.
 
 ### v1.34.0 (2026-10-08)
 **Changed**: repository renamed from `ai-prompts` to `claude-code-kit`; links, clone path and merge markers updated. Old URLs redirect; the mods marketplace keeps the name `ai-prompts-mods`.

@@ -4,6 +4,12 @@ All notable changes to this library are documented here.
 
 ---
 
+## [1.34.1] — 2026-10-08
+
+### Fixed
+
+- **Removed a stray compiled file** `self-improve/scripts/__pycache__/deepeval_tier3.cpython-312.pyc`, committed by accident in v1.30.0. It was stale (the script changed three times since), nothing referenced it, and Python regenerates it anyway — but agents following `INSTALL.md` copied it into every `~/.claude/skills/self-improve/`. `.gitignore` now ignores `__pycache__/` and `*.pyc`.
+
 ## [1.34.0] — 2026-10-08
 
 ### Changed
