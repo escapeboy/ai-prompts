@@ -1,0 +1,9 @@
+{
+  "name": "company-hq",
+  "version": "0.1.0",
+  "description": "Back office for the /company skill: hires project specialists as agent types, enforces the project budget cap on every spawn, shows the org and spend in a pane.",
+  "author": {
+    "name": "escapeboy"
+  },
+  "types": "./types/index.d.ts"
+}

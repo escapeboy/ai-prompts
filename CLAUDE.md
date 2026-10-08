@@ -26,6 +26,7 @@ The library follows a sequential learning path (01 through 14), where each direc
 - **14-webmcp** - WebMCP (W3C Draft) integration guide: navigator.modelContext API, browser tool registration, Chrome/Playwright MCP integration
 - **15-context-mode** - context-mode MCP plugin: sandbox tool output to protect context window, session continuity after compaction, tool hierarchy (ctx_batch_execute → ctx_search → ctx_execute)
 - **16-autonomous-agents** - Running Claude Code unattended: cron journaling agents, heartbeat watchdog protocol, watchdog detection patterns, /loop usage, heartbeat template + session-summary Stop hook
+- **17-mods** - Claude Code mods (v2.1.287+): guide + example marketplace of 13 tested TypeScript mods (the only section with code; run `claude plugin test` on a changed mod)
 
 ## Key Patterns
 
@@ -45,7 +46,7 @@ The library follows a sequential learning path (01 through 14), where each direc
 - Each directory has a `guide.md` as its primary entry point
 - Templates use bracket placeholders: `[Description]`, `[Step 1]`
 - Token savings estimates are included in guides where applicable
-- Version history is tracked in the root `README.md` (current: v1.31.4)
+- Version history is tracked in the root `README.md` (current: v1.32.0)
 - Compatible with Claude Fable 5, Opus 5, Opus 4.8/4.7/4.6, Sonnet 5/4.6, Haiku 4.5
 
 ## When Editing

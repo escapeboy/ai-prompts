@@ -14,7 +14,7 @@ This library contains reusable prompts for implementing global Claude Code optim
 - **[guide.md](01-global-optimization/guide.md)** - Step-by-step installation guide
 - **[setup-agent.md](01-global-optimization/setup-agent.md)** - Executable agent for automated setup
 - **[checklist.md](01-global-optimization/checklist.md)** - Verification checklist
-- **[skills/](01-global-optimization/skills/)** - Complete SKILL.md files for all 17 global skills (installed to `~/.claude/skills/`)
+- **[skills/](01-global-optimization/skills/)** - Complete SKILL.md files for all 18 global skills (installed to `~/.claude/skills/`)
   - [`optimize/`](01-global-optimization/skills/optimize/SKILL.md) - `/optimize` — max token efficiency mode (multi-file: thin core + `references/`)
   - [`context/`](01-global-optimization/skills/ctx/SKILL.md) - `/ctx` — memory management (multi-file: thin core + `references/`)
   - [`cache-inspector/`](01-global-optimization/skills/cache-inspector/SKILL.md) - `/cache-inspector` — cache monitoring (multi-file: thin core + `references/`)
@@ -29,7 +29,8 @@ This library contains reusable prompts for implementing global Claude Code optim
   - [`codebase-memory/`](01-global-optimization/skills/codebase-memory/SKILL.md) - codebase-memory-mcp knowledge-graph queries: callers, call chains, dead code, Cypher
   - [`confidence-check/`](01-global-optimization/skills/confidence-check/SKILL.md) - `/confidence-check` — ≥90% readiness gate before implementation (+ `confidence.ts` reference implementation)
   - [`decision-classify/`](01-global-optimization/skills/decision-classify/SKILL.md) - `/decision-classify` — Mechanical / Taste / User Challenge classification to cut interruptions
-  - [`sprint-orchestrate/`](01-global-optimization/skills/sprint-orchestrate/SKILL.md) - `/sprint-orchestrate` — Think → Plan → Build → Review → Test → Ship → Reflect with decision gates
+  - [`sprint-orchestrate/`](01-global-optimization/skills/sprint-orchestrate/SKILL.md) - `/sprint-orchestrate` — Think → Plan → Build → Review → Test → Ship → Reflect with decision gates (`--from-design`, `--no-merge` for callers like `/company`)
+  - [`company/`](01-global-optimization/skills/company/SKILL.md) - `/company` — an IT company for one task: clarify → research → split into parts → staff teams with fitting models → deliver through `sprint-orchestrate`; two stops for the user (multi-file: org-design, roster, briefs, workflows, memory references; back office in the `company-hq` mod)
   - [`sync-features/`](01-global-optimization/skills/sync-features/SKILL.md) - `/sync-features` — sync a project's feature inventory into Serena memories and auto-memory
   - [`ui-ux-review/`](01-global-optimization/skills/ui-ux-review/SKILL.md) - `/ui-ux-review` — audit UI code for design consistency and accessibility (multi-file: examples + sample report)
 - **[system-prompts/](01-global-optimization/system-prompts/)** - Global system prompt files
@@ -250,6 +251,16 @@ This library contains reusable prompts for implementing global Claude Code optim
 **Use when**: Scheduled health checks, automated journaling, any unattended Claude Code run
 **Benefit**: Agents that complete within budget instead of drifting; a daily work journal nobody has to write
 **Time**: 30-60 minutes for the first cron agent
+
+### [17-mods](17-mods/)
+**Claude Code mods (v2.1.287+) — TypeScript hooks inside the engine**
+
+- **[guide.md](17-mods/guide.md)** - What mods can do that settings hooks cannot, anatomy, events and engine API, patterns that held up, testing
+- **[marketplace/](17-mods/marketplace/)** - Example marketplace `ai-prompts-mods`: 13 mods with tests — context-meter, cache-guard, spend-ledger, subagent-models, secret-redactor, ssh-guard, deploy-verify, ci-watch, cleanup-tracker, aside, fleet-status, lang-guard, company-hq
+
+**Use when**: A policy must hold on every tool call or subagent spawn, output must be rewritten before the model sees it, or you want live UI (meters, panes, status)
+**Benefit**: Secrets out of transcripts, model routing that plugin updates cannot undo, cache and spend visible while you work
+**Time**: 10 minutes to install the set; 1-2 hours to write your first mod
 
 ---
 
@@ -614,12 +625,15 @@ These prompts are project-agnostic and can be freely adapted for your team's nee
 
 **Created**: 2026-01-04
 **Last Updated**: 2026-09-27
-**Version**: 1.31.4
+**Version**: 1.32.0
 **Compatibility**: Claude Code v2.1.32+, Claude API (Fable 5: `claude-fable-5`, Opus 4.8: `claude-opus-4-8`, Opus 4.7: `claude-opus-4-7`, Sonnet 5: `claude-sonnet-5`, Haiku 4.5: `claude-haiku-4-5`)
 
 ---
 
 ## 📝 Version History
+
+### v1.32.0 (2026-10-08)
+**Added**: `/company` skill (clarify → research → teams → delivery through `sprint-orchestrate`, two user stops, budget cap) and section **17-mods** — guide plus an example marketplace of 13 tested Claude Code mods, including `company-hq`. **Updated**: `sprint-orchestrate` gains `--from-design` and `--no-merge`; `agent-team` links to `company`.
 
 ### v1.31.4 (2026-10-07)
 **Fixed**: `git-sync-branches` no longer rebases (a rebased pushed branch would need a force-push) — *Rebase first* became **Hold**, kept and reported; conflicts are staged by file name instead of `git add .`, and an unresolvable conflict is aborted and held.

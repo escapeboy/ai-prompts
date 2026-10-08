@@ -649,3 +649,5 @@ These capabilities shipped or graduated in the Claude 4.6–4.8 era. Each is a c
 3. **Track improvements**: Log savings for same task types
 4. **Refine**: Identify where savings are lowest, focus there
 5. **Share**: Help teammates benefit from optimizations
+
+**See also:** [17-mods](../17-mods/guide.md) — `context-meter`, `cache-guard` and `spend-ledger` show context fill, cache reads and spend live, and keep the prompt cache warm while you are idle.

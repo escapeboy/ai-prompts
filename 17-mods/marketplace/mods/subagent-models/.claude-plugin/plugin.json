@@ -1,0 +1,8 @@
+{
+  "name": "subagent-models",
+  "version": "0.1.0",
+  "description": "Pins subagent models to a model-routing policy (Opus for judgement, Haiku for mechanical work, Sonnet otherwise) and logs every spawn.",
+  "author": {
+    "name": "escapeboy"
+  }
+}

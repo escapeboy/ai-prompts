@@ -1,0 +1,8 @@
+{
+  "name": "cleanup-tracker",
+  "version": "0.1.0",
+  "description": "Records downloads, installs and started containers; /cleanup-list shows them.",
+  "author": {
+    "name": "escapeboy"
+  }
+}

@@ -1,0 +1,8 @@
+{
+  "name": "cache-guard",
+  "version": "0.1.0",
+  "description": "Keeps the prompt cache warm while idle and holds the first prompt after the cache went cold, with its cost.",
+  "author": {
+    "name": "escapeboy"
+  }
+}

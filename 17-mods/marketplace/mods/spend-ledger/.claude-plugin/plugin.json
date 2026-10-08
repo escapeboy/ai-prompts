@@ -1,0 +1,35 @@
+{
+  "name": "spend-ledger",
+  "version": "0.1.0",
+  "description": "Per-project token and cost ledger per machine; /spend; monthly note in Svod, with other machines pulled over ssh.",
+  "author": {
+    "name": "escapeboy"
+  },
+  "userConfig": {
+    "remote_hosts": {
+      "type": "string",
+      "multiple": true,
+      "title": "Remote machines",
+      "description": "ssh aliases whose ~/.claude/spend-ledger/<month>.json this machine pulls into the Svod note (only where the Svod MCP is connected).",
+      "default": []
+    },
+    "svod_server": {
+      "type": "string",
+      "title": "Svod MCP server",
+      "description": "MCP server name of Svod; leave as is if you do not use Svod.",
+      "default": "svod"
+    },
+    "svod_vault": {
+      "type": "string",
+      "title": "Svod vault",
+      "description": "Vault for the monthly note.",
+      "default": "personal"
+    },
+    "note_dir": {
+      "type": "string",
+      "title": "Note folder",
+      "description": "Folder in the vault for <YYYY-MM>.md notes.",
+      "default": "engineering/claude-spend"
+    }
+  }
+}

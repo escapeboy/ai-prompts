@@ -101,6 +101,7 @@ After all reviewers finish, synthesize as:
 
 ## Related skills
 - Guide: [`06-advanced-patterns/agent-teams-guide.md`](../../../06-advanced-patterns/agent-teams-guide.md) — how Agent Teams work and when they pay off.
+- [`company`](../company/SKILL.md) — uses this skill (depended-on-by) for the parts of a larger project where teammates must talk (debug, cross-review); reach for `/company` when the whole task needs clarifying, splitting and staffing.
 - [`code-research`](../code-research/SKILL.md) — read-only parallel research/audit of a codebase or git repo (agents fan out over non-overlapping slices, write durable notes, and do NOT talk to each other). Use it instead of a team when the goal is to map / audit / understand a codebase rather than have teammates coordinate mid-task.
 
 ---

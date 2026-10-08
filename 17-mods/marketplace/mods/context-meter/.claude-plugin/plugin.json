@@ -1,0 +1,9 @@
+{
+  "name": "context-meter",
+  "version": "0.2.0",
+  "description": "Band above the prompt: context fill, cache read, cost, plan limits; warns at 50%/70%; Handoff button and /handoff past 70%.",
+  "types": "./types/index.d.ts",
+  "author": {
+    "name": "escapeboy"
+  }
+}

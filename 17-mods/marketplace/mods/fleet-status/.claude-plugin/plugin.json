@@ -1,0 +1,16 @@
+{
+  "name": "fleet-status",
+  "version": "0.1.0",
+  "description": "Fleet P1/P2 counts from ~/.continuity/FLEET-STATE.md in the status line; /fleet and /ports commands.",
+  "author": {
+    "name": "escapeboy"
+  },
+  "userConfig": {
+    "state_file": {
+      "type": "string",
+      "title": "Fleet state file",
+      "description": "Markdown report with \"## P1/P2/P3\" sections of \"- [\" items. ~ is your home.",
+      "default": "~/.continuity/FLEET-STATE.md"
+    }
+  }
+}
