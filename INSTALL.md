@@ -1,7 +1,7 @@
 # INSTALL.md — for AI agents
 
 > **Human?** Point your coding agent here with something like:
-> *"Read https://github.com/escapeboy/ai-prompts/blob/master/INSTALL.md and install what fits my setup."*
+> *"Read https://github.com/escapeboy/claude-code-kit/blob/master/INSTALL.md and install what fits my setup."*
 > The agent will look at your environment, propose a selection, wait for your yes, then install and verify it.
 
 **Agent:** this file is your runbook. The repository is a library — skills, mods, subagents, hooks, commands and guides for Claude Code. Do **not** install everything. Find out what the user needs, install that, and leave the rest.
@@ -37,11 +37,11 @@ Not Claude Code? Skills and subagent files are plain Markdown and work as refere
 ## Step 2 — Get the files
 
 ```bash
-TAG=$(git ls-remote --tags --sort=-v:refname https://github.com/escapeboy/ai-prompts 'v*' | head -1 | sed 's|.*refs/tags/||; s|\^{}||')
-git clone --depth 1 --branch "$TAG" https://github.com/escapeboy/ai-prompts.git ~/ai-prompts   # or: git -C ~/ai-prompts fetch --tags && git -C ~/ai-prompts checkout "$TAG"
+TAG=$(git ls-remote --tags --sort=-v:refname https://github.com/escapeboy/claude-code-kit 'v*' | head -1 | sed 's|.*refs/tags/||; s|\^{}||')
+git clone --depth 1 --branch "$TAG" https://github.com/escapeboy/claude-code-kit.git ~/claude-code-kit   # or: git -C ~/claude-code-kit fetch --tags && git -C ~/claude-code-kit checkout "$TAG"
 ```
 
-Keep the clone: it is the source for updates and the mods marketplace is read from it. Without git, fetch single files from `https://raw.githubusercontent.com/escapeboy/ai-prompts/$TAG/<path>`.
+Keep the clone: it is the source for updates and the mods marketplace is read from it. Without git, fetch single files from `https://raw.githubusercontent.com/escapeboy/claude-code-kit/$TAG/<path>`.
 
 ## Step 3 — Propose a selection
 
@@ -68,7 +68,7 @@ Single skills on request: `video-digest` (needs `yt-dlp`, `ffmpeg` and a local s
 All skills live in `01-global-optimization/skills/<name>/`. **Copy the whole directory** — many have `references/` and `scripts/`.
 
 ```bash
-cp -R ~/ai-prompts/01-global-optimization/skills/<name> ~/.claude/skills/<name>   # only if the target does not exist
+cp -R ~/claude-code-kit/01-global-optimization/skills/<name> ~/.claude/skills/<name>   # only if the target does not exist
 ```
 
 Install the dependencies a skill names in its *Related* section as `depends-on`, or it will point at missing skills:
@@ -90,7 +90,7 @@ More skill examples (not installed by default): [03-custom-skills/examples](03-c
 Requires Claude Code >= 2.1.287. The marketplace is read from the clone:
 
 ```bash
-claude plugin marketplace add ~/ai-prompts/17-mods/marketplace
+claude plugin marketplace add ~/claude-code-kit/17-mods/marketplace   # the marketplace is named ai-prompts-mods (the repo's former name)
 claude plugin install context-meter@ai-prompts-mods      # one call per chosen mod; in zsh, write names out — `for m in $LIST` does not split
 ```
 
@@ -106,9 +106,9 @@ Details and the reason for each hook are in [13-security-hardening/hooks/README.
 
 ```bash
 mkdir -p ~/.claude/hooks/tests
-cp ~/ai-prompts/13-security-hardening/hooks/*.py ~/.claude/hooks/
-cp ~/ai-prompts/13-security-hardening/hooks/tests/*.py ~/.claude/hooks/tests/
-cp ~/ai-prompts/01-global-optimization/hooks/shell-habits.py ~/.claude/hooks/   # test_guards.py imports it
+cp ~/claude-code-kit/13-security-hardening/hooks/*.py ~/.claude/hooks/
+cp ~/claude-code-kit/13-security-hardening/hooks/tests/*.py ~/.claude/hooks/tests/
+cp ~/claude-code-kit/01-global-optimization/hooks/shell-habits.py ~/.claude/hooks/   # test_guards.py imports it
 chmod +x ~/.claude/hooks/*.py
 ```
 
@@ -133,7 +133,7 @@ The rules are in [01-global-optimization/system-prompts/global-optimization.md](
 
 - The content to merge is each file's body: from the line after the second `---` (the one right under "Copy everything below this line") to the end of the file. Later `---` lines are section dividers inside the body — keep them, don't stop there.
 - Compare its `##` sections with the user's `CLAUDE.md` and take only topics they don't already cover; Prefer `global-optimization.md` — it already contains a *Symbol-First* section; use `symbol-first-protocol.md` alone only when the user wants just the symbol-first rules.
-- Append them at the end, wrapped in `<!-- ai-prompts <TAG>: begin -->` / `<!-- ai-prompts <TAG>: end -->` comments, keeping their `##` headings (no wrapper heading — it would make every section a sibling of it anyway). The markers make later updates and removal exact.
+- Append them at the end, wrapped in `<!-- claude-code-kit <TAG>: begin -->` / `<!-- claude-code-kit <TAG>: end -->` comments, keeping their `##` headings (no wrapper heading — it would make every section a sibling of it anyway). The markers make later updates and removal exact.
 - Before writing, show the list of `##` sections you will add and the line count, and offer the full text on request (it is a few hundred lines of pure addition). Symbol-first rules only make sense with Serena or codebase-memory-mcp connected; skip them otherwise.
 
 ### Per project (not global)
@@ -143,9 +143,9 @@ Offer, don't do: [02-project-activation](02-project-activation/guide.md) (Serena
 ## Verify
 
 ```bash
-python3 ~/ai-prompts/01-global-optimization/skills/self-improve/scripts/skill-lint.py ~/.claude/skills   # installed skills parse
+python3 ~/claude-code-kit/01-global-optimization/skills/self-improve/scripts/skill-lint.py ~/.claude/skills   # installed skills parse
 claude plugin list | grep ai-prompts-mods                                                               # mods installed + enabled
-claude plugin test ~/ai-prompts/17-mods/marketplace/mods/<mod>                                          # needs >= 2.1.294; read the "N fail" line
+claude plugin test ~/claude-code-kit/17-mods/marketplace/mods/<mod>                                          # needs >= 2.1.294; read the "N fail" line
 python3 ~/.claude/hooks/tests/test_guards.py                                                            # if security hooks were installed
 python3 -c "import json; json.load(open('$HOME/.claude/settings.json'))" && echo settings.json ok
 ```
@@ -159,8 +159,8 @@ End with one table: component · installed / skipped / already present · path �
 ## Update later
 
 ```bash
-git -C ~/ai-prompts fetch --tags && git -C ~/ai-prompts checkout <new tag>
-diff -r ~/ai-prompts/01-global-optimization/skills/<name> ~/.claude/skills/<name>   # per installed skill; ask before replacing
+git -C ~/claude-code-kit fetch --tags && git -C ~/claude-code-kit checkout <new tag>
+diff -r ~/claude-code-kit/01-global-optimization/skills/<name> ~/.claude/skills/<name>   # per installed skill; ask before replacing
 claude plugin marketplace update ai-prompts-mods && claude plugin update <mod>@ai-prompts-mods
 ```
 

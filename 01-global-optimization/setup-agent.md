@@ -71,37 +71,37 @@ All 5 skill files are in the `skills/` subdirectory next to this file. Copy each
 
 #### Skill 1: `/optimize`
 ```bash
-cp -r ~/ai-prompts/01-global-optimization/skills/optimize ~/.claude/skills/
+cp -r ~/claude-code-kit/01-global-optimization/skills/optimize ~/.claude/skills/
 ```
 Source: [`skills/optimize/SKILL.md`](skills/optimize/SKILL.md)
 
 #### Skill 2: `/ctx`
 ```bash
-cp -r ~/ai-prompts/01-global-optimization/skills/ctx ~/.claude/skills/
+cp -r ~/claude-code-kit/01-global-optimization/skills/ctx ~/.claude/skills/
 ```
 Source: [`skills/ctx/SKILL.md`](skills/ctx/SKILL.md)
 
 #### Skill 3: `/cache-inspector`
 ```bash
-cp -r ~/ai-prompts/01-global-optimization/skills/cache-inspector ~/.claude/skills/
+cp -r ~/claude-code-kit/01-global-optimization/skills/cache-inspector ~/.claude/skills/
 ```
 Source: [`skills/cache-inspector/SKILL.md`](skills/cache-inspector/SKILL.md)
 
 #### Skill 4: `/update-docs`
 ```bash
-cp -r ~/ai-prompts/01-global-optimization/skills/update-docs ~/.claude/skills/
+cp -r ~/claude-code-kit/01-global-optimization/skills/update-docs ~/.claude/skills/
 ```
 Source: [`skills/update-docs/SKILL.md`](skills/update-docs/SKILL.md)
 
 #### Skill 5: `/init-project`
 ```bash
-cp -r ~/ai-prompts/01-global-optimization/skills/init-project ~/.claude/skills/
+cp -r ~/claude-code-kit/01-global-optimization/skills/init-project ~/.claude/skills/
 ```
 Source: [`skills/init-project/SKILL.md`](skills/init-project/SKILL.md)
 
 **Or copy all at once**:
 ```bash
-cp -r ~/ai-prompts/01-global-optimization/skills/* ~/.claude/skills/
+cp -r ~/claude-code-kit/01-global-optimization/skills/* ~/.claude/skills/
 ```
 
 ### Phase 5: Create System Prompts (2 files)
@@ -111,16 +111,16 @@ Both system prompt files are in the `system-prompts/` subdirectory. Copy the con
 #### Prompt 1: `~/.claude/system-prompts/global-optimization.md`
 ```bash
 # Extract just the system prompt content (skip the header/instructions)
-tail -n +$(grep -n "^---$" ~/ai-prompts/01-global-optimization/system-prompts/global-optimization.md | tail -1 | cut -d: -f1) \
-  ~/ai-prompts/01-global-optimization/system-prompts/global-optimization.md \
+tail -n +$(grep -n "^---$" ~/claude-code-kit/01-global-optimization/system-prompts/global-optimization.md | tail -1 | cut -d: -f1) \
+  ~/claude-code-kit/01-global-optimization/system-prompts/global-optimization.md \
   > ~/.claude/system-prompts/global-optimization.md
 ```
 Or open [`system-prompts/global-optimization.md`](system-prompts/global-optimization.md) and copy the content after the second `---` divider.
 
 #### Prompt 2: `~/.claude/system-prompts/symbol-first-protocol.md`
 ```bash
-tail -n +$(grep -n "^---$" ~/ai-prompts/01-global-optimization/system-prompts/symbol-first-protocol.md | tail -1 | cut -d: -f1) \
-  ~/ai-prompts/01-global-optimization/system-prompts/symbol-first-protocol.md \
+tail -n +$(grep -n "^---$" ~/claude-code-kit/01-global-optimization/system-prompts/symbol-first-protocol.md | tail -1 | cut -d: -f1) \
+  ~/claude-code-kit/01-global-optimization/system-prompts/symbol-first-protocol.md \
   > ~/.claude/system-prompts/symbol-first-protocol.md
 ```
 Or open [`system-prompts/symbol-first-protocol.md`](system-prompts/symbol-first-protocol.md) and copy the content after the second `---` divider.
@@ -239,7 +239,7 @@ Commands available: All 17 skills recognized ✅
    cd ~/projects/your-project
    /init-project --full
    ```
-   Or follow: ~/ai-prompts/02-project-activation/guide.md
+   Or follow: ~/claude-code-kit/02-project-activation/guide.md
 
 2. **Start optimized work**:
    ```
@@ -342,7 +342,7 @@ After successful setup:
 ### 2. Activate First Project
 - Navigate to project directory
 - Run `/init-project --full`
-- Or follow `~/ai-prompts/02-project-activation/guide.md`
+- Or follow `~/claude-code-kit/02-project-activation/guide.md`
 
 ### 3. Monitor Performance
 - Check cache hit rate: `/cache-inspector status`
@@ -350,7 +350,7 @@ After successful setup:
 - Validate savings: Compare to baseline
 
 ### 4. Share with Team
-- Zip `~/ai-prompts/` directory
+- Zip `~/claude-code-kit/` directory
 - Share setup guide
 - Help teammates set up their own global config
 

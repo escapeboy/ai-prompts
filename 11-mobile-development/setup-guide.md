@@ -80,7 +80,7 @@ claude mcp list
 ### Step 4: Create CLAUDE.md
 
 ```bash
-cp /path/to/ai-prompts/11-mobile-development/ios/ios-claude-md-template.md ./CLAUDE.md
+cp /path/to/claude-code-kit/11-mobile-development/ios/ios-claude-md-template.md ./CLAUDE.md
 # Edit to match your project
 ```
 
@@ -131,7 +131,7 @@ adb devices
 ### Step 4: Create CLAUDE.md
 
 ```bash
-cp /path/to/ai-prompts/11-mobile-development/android/android-claude-md-template.md ./CLAUDE.md
+cp /path/to/claude-code-kit/11-mobile-development/android/android-claude-md-template.md ./CLAUDE.md
 # Edit to match your project
 ```
 
@@ -170,7 +170,7 @@ claude mcp list
 ### Step 4: Create CLAUDE.md
 
 ```bash
-cp /path/to/ai-prompts/11-mobile-development/react-native/react-native-claude-md-template.md ./CLAUDE.md
+cp /path/to/claude-code-kit/11-mobile-development/react-native/react-native-claude-md-template.md ./CLAUDE.md
 # Edit to match your project
 ```
 
@@ -222,7 +222,7 @@ claude mcp list
 ### Step 5: Create CLAUDE.md
 
 ```bash
-cp /path/to/ai-prompts/11-mobile-development/flutter/flutter-claude-md-template.md ./CLAUDE.md
+cp /path/to/claude-code-kit/11-mobile-development/flutter/flutter-claude-md-template.md ./CLAUDE.md
 # Edit to match your project
 ```
 

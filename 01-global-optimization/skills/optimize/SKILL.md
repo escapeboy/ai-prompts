@@ -157,6 +157,6 @@ For worked end-to-end examples of each strategy (Unified bug fix, Intent-Plannin
 - [`/ctx`](../ctx/SKILL.md) — Memory management (load these memories before optimizing; depends-on)
 - [`/cache-inspector`](../cache-inspector/SKILL.md) — Cache performance monitoring (complements the `report` action)
 - [`/init-project`](../init-project/SKILL.md) — Initialize optimization for a new project (run once before `/optimize`)
-- [Token Optimization Guide](https://github.com/escapeboy/ai-prompts/blob/master/05-token-optimization/guide.md)
-- [Custom Skills Guide](https://github.com/escapeboy/ai-prompts/blob/master/03-custom-skills/guide.md) — skill authoring conventions
+- [Token Optimization Guide](https://github.com/escapeboy/claude-code-kit/blob/master/05-token-optimization/guide.md)
+- [Custom Skills Guide](https://github.com/escapeboy/claude-code-kit/blob/master/03-custom-skills/guide.md) — skill authoring conventions
 - Bundled references: [planning-strategies.md](references/planning-strategies.md) · [actions.md](references/actions.md) · [examples-troubleshooting.md](references/examples-troubleshooting.md)

@@ -105,4 +105,4 @@ fixes are in **[references/troubleshooting.md](references/troubleshooting.md)**.
 - [`/optimize`](../optimize/SKILL.md) — Uses loaded context for token-efficient work; the fallback when Serena is unavailable
 - [`/init-project`](../init-project/SKILL.md) — Creates initial memory set for a new project
 - [`/cache-inspector`](../cache-inspector/SKILL.md) — Monitor cache performance
-- [Project Activation Guide](https://github.com/escapeboy/ai-prompts/blob/master/02-project-activation/guide.md)
+- [Project Activation Guide](https://github.com/escapeboy/claude-code-kit/blob/master/02-project-activation/guide.md)

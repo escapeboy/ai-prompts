@@ -83,5 +83,5 @@ Low hit rate, entries expiring fast, or "no cache data available" — see
 - [references/actions.md](references/actions.md) — full action detail and example outputs.
 - [references/caching-internals.md](references/caching-internals.md) — how caching works, config, target metrics.
 - [references/troubleshooting.md](references/troubleshooting.md) — symptoms and fixes.
-- [Token Optimization Guide](https://github.com/escapeboy/ai-prompts/blob/master/05-token-optimization/guide.md)
-- [Prompt Caching Config](https://github.com/escapeboy/ai-prompts/blob/master/01-global-optimization/guide.md) (`~/.claude/settings/prompt-caching.json`)
+- [Token Optimization Guide](https://github.com/escapeboy/claude-code-kit/blob/master/05-token-optimization/guide.md)
+- [Prompt Caching Config](https://github.com/escapeboy/claude-code-kit/blob/master/01-global-optimization/guide.md) (`~/.claude/settings/prompt-caching.json`)

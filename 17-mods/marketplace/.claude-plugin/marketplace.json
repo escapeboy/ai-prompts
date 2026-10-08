@@ -4,7 +4,7 @@
     "name": "escapeboy"
   },
   "metadata": {
-    "description": "Example Claude Code mods from the ai-prompts library"
+    "description": "Example Claude Code mods from the claude-code-kit library"
   },
   "plugins": [
     {

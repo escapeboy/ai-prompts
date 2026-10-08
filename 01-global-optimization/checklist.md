@@ -535,7 +535,7 @@ Once all checks pass:
 2. **📖 Read** `~/.claude/README.md` for full documentation
 3. **🚀 Proceed** to project activation (`../02-project-activation/guide.md`)
 4. **📊 Monitor** token savings after first few sessions
-5. **🤝 Share** `~/ai-prompts/` with your team
+5. **🤝 Share** `~/claude-code-kit/` with your team
 
 ---
 

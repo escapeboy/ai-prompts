@@ -175,6 +175,6 @@ Troubleshooting for failed detection, missing Serena, and constitution conflicts
 
 - [`/ctx`](../ctx/SKILL.md) — Load memories after init
 - [`/optimize`](../optimize/SKILL.md) — Start optimized work sessions
-- [Project Activation Guide](https://github.com/escapeboy/ai-prompts/blob/master/02-project-activation/guide.md)
-- [Custom Skills Guide](https://github.com/escapeboy/ai-prompts/blob/master/03-custom-skills/guide.md)
+- [Project Activation Guide](https://github.com/escapeboy/claude-code-kit/blob/master/02-project-activation/guide.md)
+- [Custom Skills Guide](https://github.com/escapeboy/claude-code-kit/blob/master/03-custom-skills/guide.md)
 - References: [detection](references/detection.md) · [frameworks](references/frameworks.md) · [constitution](references/constitution.md) · [memories](references/memories.md) · [troubleshooting](references/troubleshooting.md)

@@ -57,7 +57,7 @@ Order of execution: managed `PreToolUse` hooks → mods → user settings hooks.
 [`marketplace/`](marketplace/) — install the whole set or pick:
 
 ```bash
-claude plugin marketplace add /path/to/ai-prompts/17-mods/marketplace
+claude plugin marketplace add /path/to/claude-code-kit/17-mods/marketplace
 claude plugin install context-meter@ai-prompts-mods
 claude plugin install secret-redactor@ai-prompts-mods
 # … one install per mod; in zsh write the names out, `for m in $LIST` does not split

@@ -4,6 +4,12 @@ All notable changes to this library are documented here.
 
 ---
 
+## [1.34.0] — 2026-10-08
+
+### Changed
+
+- **Repository renamed `escapeboy/ai-prompts` → `escapeboy/claude-code-kit`.** The library is now mostly installable parts — skills, mods, hooks, subagents, commands — rather than prompts. GitHub redirects the old web, git and raw URLs; existing clones keep working, and `git remote set-url origin git@github.com:escapeboy/claude-code-kit.git` makes it explicit. All links, the suggested clone path (`~/claude-code-kit`) and the `CLAUDE.md` merge markers (`<!-- claude-code-kit <TAG>: begin -->`) use the new name. The mods marketplace keeps its name `ai-prompts-mods`, so installed mods need no reinstall.
+
 ## [1.33.0] — 2026-10-08
 
 ### Added
