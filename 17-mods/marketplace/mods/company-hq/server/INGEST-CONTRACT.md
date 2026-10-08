@@ -28,7 +28,8 @@ Headers: `Authorization: Bearer <token>`, `Content-Type: application/json`
 | Status | Body | When |
 |---|---|---|
 | 200 | `{"ok":true,"seq":N,"missingDocs":["key"],"rejectedDocs":["key"]}` | stored. `missingDocs`: keys sent without `content` whose `sha256` the server does not have — the client re-sends them with content. `rejectedDocs`: docs whose content matched a secret pattern; not stored |
-| 200 | `{"ok":true,"ignored":"stale","seq":N}` | `snapshot.seq` ≤ stored seq for (team, machine, snapshot.id) |
+| 200 | `{"ok":true,"ignored":"stale","seq":N}` | `snapshot.seq` < stored seq for (team, machine, snapshot.id): nothing is changed |
+| 200 | same as the first row | `snapshot.seq` == stored seq: the snapshot row is kept, the docs are processed as usual (this is how the client re-sends `missingDocs` without a state change) |
 | 401 | `{"ok":false,"error":"unauthorized"}` | missing/unknown/revoked token |
 | 413 | `{"ok":false,"error":"too_large"}` | limits |
 | 422 | `{"ok":false,"error":"invalid","fields":{...}}` | schema |
