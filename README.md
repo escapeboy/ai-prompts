@@ -6,6 +6,16 @@ This library contains reusable prompts for implementing global Claude Code optim
 
 ---
 
+## 🤖 Install with an agent
+
+Point your coding agent at **[INSTALL.md](INSTALL.md)**:
+
+> Read https://github.com/escapeboy/ai-prompts/blob/master/INSTALL.md and install what fits my setup.
+
+The agent inspects your environment, proposes a selection (starter, code intelligence, delivery, multi-agent, mods, security, unattended, stack-specific), installs it from the latest release tag after your yes, without overwriting your files, and verifies the result. [llms.txt](llms.txt) is the index agents use to find their way around.
+
+---
+
 ## 📁 Contents
 
 ### [01-global-optimization](01-global-optimization/)
@@ -625,12 +635,15 @@ These prompts are project-agnostic and can be freely adapted for your team's nee
 
 **Created**: 2026-01-04
 **Last Updated**: 2026-09-27
-**Version**: 1.32.0
+**Version**: 1.33.0
 **Compatibility**: Claude Code v2.1.32+, Claude API (Fable 5: `claude-fable-5`, Opus 4.8: `claude-opus-4-8`, Opus 4.7: `claude-opus-4-7`, Sonnet 5: `claude-sonnet-5`, Haiku 4.5: `claude-haiku-4-5`)
 
 ---
 
 ## 📝 Version History
+
+### v1.33.0 (2026-10-08)
+**Added**: `INSTALL.md`, a runbook an AI agent follows to install the parts of this library that fit a user's setup (bundles, skill dependencies, no-overwrite rules, verification, updates), and `llms.txt` as the agent index. **Updated**: 17-mods notes that mod tests need Claude Code ≥ 2.1.294.
 
 ### v1.32.0 (2026-10-08)
 **Added**: `/company` skill (clarify → research → teams → delivery through `sprint-orchestrate`, two user stops, budget cap) and section **17-mods** — guide plus an example marketplace of 13 tested Claude Code mods, including `company-hq`. **Updated**: `sprint-orchestrate` gains `--from-design` and `--no-merge`; `agent-team` links to `company`.

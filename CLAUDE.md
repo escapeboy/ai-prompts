@@ -28,6 +28,8 @@ The library follows a sequential learning path (01 through 14), where each direc
 - **16-autonomous-agents** - Running Claude Code unattended: cron journaling agents, heartbeat watchdog protocol, watchdog detection patterns, /loop usage, heartbeat template + session-summary Stop hook
 - **17-mods** - Claude Code mods (v2.1.287+): guide + example marketplace of 13 tested TypeScript mods (the only section with code; run `claude plugin test` on a changed mod)
 
+**Agent-facing entry points** (root): `INSTALL.md` is the runbook an outside agent follows to install parts of this library into a user's setup; `llms.txt` is the index. When you add, rename or remove a skill, mod, hook, subagent or command, update the bundle and dependency tables in `INSTALL.md` and the lists in `llms.txt` in the same change.
+
 ## Key Patterns
 
 **Document format**: Most files use YAML frontmatter (`---` delimited) for metadata, followed by structured Markdown. Skill files and subagent definitions both use this pattern.
@@ -46,7 +48,7 @@ The library follows a sequential learning path (01 through 14), where each direc
 - Each directory has a `guide.md` as its primary entry point
 - Templates use bracket placeholders: `[Description]`, `[Step 1]`
 - Token savings estimates are included in guides where applicable
-- Version history is tracked in the root `README.md` (current: v1.32.0)
+- Version history is tracked in the root `README.md` (current: v1.33.0)
 - Compatible with Claude Fable 5, Opus 5, Opus 4.8/4.7/4.6, Sonnet 5/4.6, Haiku 4.5
 
 ## When Editing

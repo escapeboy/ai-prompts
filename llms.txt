@@ -1,0 +1,37 @@
+# ai-prompts
+
+> A library of skills, mods, subagents, hooks, slash commands and guides for Claude Code. Agents installing parts of it for a user should follow INSTALL.md: inspect the environment, propose a selection, install from the latest release tag without overwriting user files, then verify.
+
+Start with [INSTALL.md](https://github.com/escapeboy/ai-prompts/blob/master/INSTALL.md). Raw files: `https://raw.githubusercontent.com/escapeboy/ai-prompts/<tag>/<path>`. Releases: https://github.com/escapeboy/ai-prompts/releases
+
+## Install
+
+- [INSTALL.md](https://github.com/escapeboy/ai-prompts/blob/master/INSTALL.md): agent runbook — bundles, skill dependencies, install steps per component type, verification, updates
+- [CHANGELOG.md](https://github.com/escapeboy/ai-prompts/blob/master/CHANGELOG.md): what changed between tags
+
+## Installable components
+
+- [Skills](https://github.com/escapeboy/ai-prompts/tree/master/01-global-optimization/skills): 18 skills → `~/.claude/skills/<name>/` (agent-ready, agent-team, cache-inspector, code-research, codebase-memory, company, confidence-check, continuity, ctx, decision-classify, init-project, optimize, self-improve, sprint-orchestrate, sync-features, ui-ux-review, update-docs, video-digest)
+- [Mods marketplace](https://github.com/escapeboy/ai-prompts/tree/master/17-mods/marketplace): `ai-prompts-mods`, 13 Claude Code mods (≥ 2.1.287) with tests
+- [Subagents](https://github.com/escapeboy/ai-prompts/tree/master/10-subagents/examples): 8 agent definitions → `~/.claude/agents/`
+- [Security hooks](https://github.com/escapeboy/ai-prompts/tree/master/13-security-hardening/hooks): PreToolUse guards with tests
+- [Productivity hooks](https://github.com/escapeboy/ai-prompts/tree/master/01-global-optimization/hooks): shell-habits, package-version check, memory load
+- [Slash commands](https://github.com/escapeboy/ai-prompts/tree/master/07-custom-commands): debug, deploy, i18n, perf, qa, refactor, retro, seo, content-review
+- [Global rules](https://github.com/escapeboy/ai-prompts/tree/master/01-global-optimization/system-prompts): sections to merge into `~/.claude/CLAUDE.md`
+
+## Guides
+
+- [01 Global optimization](https://github.com/escapeboy/ai-prompts/blob/master/01-global-optimization/guide.md): one-time `~/.claude/` setup
+- [02 Project activation](https://github.com/escapeboy/ai-prompts/blob/master/02-project-activation/guide.md): per-project Serena memories
+- [03 Custom skills](https://github.com/escapeboy/ai-prompts/blob/master/03-custom-skills/guide.md): writing skills
+- [05 Token optimization](https://github.com/escapeboy/ai-prompts/blob/master/05-token-optimization/guide.md)
+- [06 Advanced patterns](https://github.com/escapeboy/ai-prompts/tree/master/06-advanced-patterns): multi-agent, Agent Teams, sprint orchestration
+- [10 Subagents](https://github.com/escapeboy/ai-prompts/blob/master/10-subagents/guide.md)
+- [13 Security hardening](https://github.com/escapeboy/ai-prompts/blob/master/13-security-hardening/guide.md)
+- [16 Autonomous agents](https://github.com/escapeboy/ai-prompts/blob/master/16-autonomous-agents/guide.md): unattended runs, heartbeat
+- [17 Mods](https://github.com/escapeboy/ai-prompts/blob/master/17-mods/guide.md)
+
+## Optional
+
+- [09 Laravel](https://github.com/escapeboy/ai-prompts/tree/master/09-laravel-mcp-integration), [11 Mobile](https://github.com/escapeboy/ai-prompts/tree/master/11-mobile-development), [12 Desktop](https://github.com/escapeboy/ai-prompts/tree/master/12-desktop-development), [14 WebMCP](https://github.com/escapeboy/ai-prompts/tree/master/14-webmcp), [15 context-mode](https://github.com/escapeboy/ai-prompts/blob/master/15-context-mode/guide.md), [04 Research integration](https://github.com/escapeboy/ai-prompts/tree/master/04-research-integration)
+- [01 setup-agent.md](https://github.com/escapeboy/ai-prompts/blob/master/01-global-optimization/setup-agent.md): older all-in-one setup prompt for an empty `~/.claude/`
