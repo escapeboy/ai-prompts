@@ -1,7 +1,7 @@
 ---
 name: sprint-orchestrate
 description: "Run a full sprint lifecycle — chain skills into Think → Plan → Build → Review → Test → Ship → Reflect"
-version: 1.1.0
+version: 1.2.0
 ---
 
 # /sprint-orchestrate - Sprint Lifecycle Orchestrator
@@ -55,15 +55,16 @@ Chain skills into a complete development lifecycle where each phase feeds the ne
    - Architecture plan with data flow and component design
    - Test plan with edge cases and acceptance criteria
    Save to `docs/architecture-[feature].md` and `docs/test-plan-[feature].md`.
+   - End the architecture doc with a `## Tasks` checklist (`- [ ] T1 …`), small checkable tasks — format and rules in [references/tasks.md](references/tasks.md).
    - **Probe the target host** when the code will run somewhere other than this machine: a 60s SSH
      check of the binaries, data schema, auth state and SSH alias the plan assumes. Record every
      mismatch in the architecture doc before Build — they are cheap here and expensive at deploy.
 
-3. **Build**: Implement on feature branch following the architecture plan. Reference test plan for edge cases.
+3. **Build**: Implement on feature branch following the architecture plan. Reference test plan for edge cases. Tick each task `[x]` in `## Tasks` as it is done; a task found on the way is added with `{added}`. Never delete or rename a task.
 
-4. **Review**: Run code review on the branch diff. Fix all findings before proceeding.
+4. **Review**: Run code review on the branch diff on a stronger model than the builder's (Opus by default). The same review checks every ticked task against the diff and tests and marks it `{verified}` or `{rejected: <reason>}` ([references/tasks.md](references/tasks.md)). Fix all findings and rejected tasks before proceeding.
 
-5. **Test**: Run `/qa --full`. Pick up test plan from step 2 automatically.
+5. **Test**: Run `/qa --full`. Pick up test plan from step 2 automatically. Record `Result: PASS|FAIL <date>` under the title of `docs/test-plan-[feature].md`.
 
 6. **Ship**: Before creating the PR, spawn an **independent verifier subagent** on the branch diff as a **mandatory gate** — e.g. [`output-evaluator`](../../../10-subagents/examples/output-evaluator.md), or your own adversarial verifier that re-runs the gates itself, marks every causal claim PROVEN/UNSUPPORTED, sweeps sibling repos for the same defect, and checks adjacent regressions. It must not be the agent that wrote the code:
 
@@ -81,7 +82,7 @@ Chain skills into a complete development lifecycle where each phase feeds the ne
 
 ### Quick Pipeline (`/sprint-orchestrate quick [feature]`)
 
-For well-understood changes — skip Think/Plan:
+For well-understood changes — skip Think/Plan (so there is no `## Tasks` list to tick or verify):
 
 1. Implement on branch
 2. Review
@@ -102,10 +103,10 @@ At each transition, check before proceeding:
 | Gate | Proceed When | Loop Back When |
 |------|-------------|----------------|
 | Think → Plan | Scope clear, problem defined | Unclear requirements |
-| Plan → Build | Architecture approved, test plan exists, target host probed (if remote) | Missing edge cases, unprobed target |
-| Build → Review | Feature complete, no TODOs | Partial implementation |
-| Review → Test | All findings addressed | Critical bugs found |
-| Test → Ship | All tests pass | Test failures |
+| Plan → Build | Architecture approved, test plan exists, `## Tasks` list written, target host probed (if remote) | Missing edge cases, unprobed target |
+| Build → Review | Feature complete, no TODOs, every task `[x]` (or an open one explained) | Partial implementation |
+| Review → Test | All findings addressed, every `[x]` task `{verified}`, none `{rejected}` | Critical bugs found, a task rejected |
+| Test → Ship | All tests pass, `Result: PASS` recorded | Test failures (`Result: FAIL`) |
 | Ship (verify → PR) | Verifier returns PASS | Gate fails, unsupported claim, or sibling repo carries the same defect |
 
 ## Artifact Locations
@@ -113,8 +114,8 @@ At each transition, check before proceeding:
 | Artifact | Path | Created By | Used By |
 |----------|------|-----------|---------|
 | Design doc | `docs/design-[feature].md` | Think | Plan, Review |
-| Architecture | `docs/architecture-[feature].md` | Plan | Build, Review |
-| Test plan | `docs/test-plan-[feature].md` | Plan | Test |
+| Architecture + `## Tasks` | `docs/architecture-[feature].md` | Plan (tasks ticked by Build, verified by Review) | Build, Review, `/company` dashboard |
+| Test plan + `Result:` line | `docs/test-plan-[feature].md` | Plan (result by Test) | Test, `/company` dashboard |
 | Retro report | `retro/retro-[date].md` | Reflect | Next sprint |
 
 ## Anti-Patterns
@@ -128,6 +129,7 @@ At each transition, check before proceeding:
 
 **Always**
 - Require an independent verifier PASS before creating the PR at Ship.
+- Verify every ticked task at Review on a stronger model than the builder's; a builder's `[x]` is a claim, not a result.
 - Require CI green (`gh pr checks --watch --fail-fast`) before merge.
 - Probe the target host before Build when the code will run somewhere other than this machine.
 
@@ -144,3 +146,4 @@ At each transition, check before proceeding:
 - [`decision-classify`](../decision-classify/SKILL.md) — decides which intermediate choices in each phase need the user.
 - [`ui-ux-review`](../ui-ux-review/SKILL.md) — Review-phase companion when the sprint touches UI.
 - [`company`](../company/SKILL.md) — runs above this skill (depended-on-by): clarifies the task, splits it into parts and teams, then runs `--from-design` per part and one `ship --no-merge` on the integration branch.
+- [`references/tasks.md`](references/tasks.md) — the `## Tasks` checklist format; the optional [`company-hq`](../../../17-mods/marketplace/mods/company-hq/) dashboard (see [`17-mods/guide.md`](../../../17-mods/guide.md)) reads it.

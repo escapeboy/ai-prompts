@@ -1,0 +1,268 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Company HQ</title>
+<style>
+:root {
+  --bg: #f6f7f9; --panel: #ffffff; --ink: #1b1f24; --muted: #667085; --line: #e3e6ea;
+  --accent: #3b5bdb; --ok: #2b8a3e; --warn: #c77c02; --bad: #c92a2a; --chip: #eef1f5;
+  --mono: ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root { --bg: #111418; --panel: #191d23; --ink: #e6e8eb; --muted: #98a2b3; --line: #2a3038;
+          --accent: #7c9cff; --ok: #51cf66; --warn: #fcc419; --bad: #ff6b6b; --chip: #232a33; }
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--ink); font: 14px/1.45 system-ui, -apple-system, "Segoe UI", sans-serif; }
+header { display: flex; align-items: center; gap: 12px; padding: 10px 16px; border-bottom: 1px solid var(--line); background: var(--panel); }
+header h1 { font-size: 15px; margin: 0; }
+#live { font-size: 12px; color: var(--muted); }
+#live.on::before { content: "●"; color: var(--ok); margin-right: 4px; }
+#live.off::before { content: "●"; color: var(--bad); margin-right: 4px; }
+main { display: grid; grid-template-columns: 280px 1fr; min-height: calc(100vh - 45px); }
+aside { border-right: 1px solid var(--line); background: var(--panel); overflow-y: auto; }
+aside label { display: block; padding: 8px 14px; font-size: 12px; color: var(--muted); border-bottom: 1px solid var(--line); }
+.co { padding: 10px 14px; border-bottom: 1px solid var(--line); cursor: pointer; }
+.co:hover { background: var(--chip); }
+.co.sel { box-shadow: inset 3px 0 0 var(--accent); background: var(--chip); }
+.co .t { font-weight: 600; display: flex; gap: 6px; align-items: center; }
+.co .m { font-size: 12px; color: var(--muted); }
+.dot { width: 8px; height: 8px; border-radius: 50%; flex: none; background: var(--muted); }
+.dot.open { background: var(--ok); } .dot.stale { background: var(--warn); } .dot.closed { background: var(--muted); }
+.badge { display: inline-block; font-size: 11px; padding: 1px 6px; border-radius: 9px; background: var(--chip); color: var(--muted); }
+.badge.q { background: var(--bad); color: #fff; }
+.badge.ok { color: var(--ok); } .badge.bad { color: var(--bad); }
+section#detail { padding: 16px 20px; overflow-x: auto; }
+.empty { color: var(--muted); padding: 40px; text-align: center; }
+.head h2 { margin: 0 0 4px; font-size: 18px; }
+.head .m { color: var(--muted); font-size: 12px; }
+.bar { height: 6px; background: var(--chip); border-radius: 3px; overflow: hidden; margin-top: 6px; max-width: 360px; }
+.bar > i { display: block; height: 100%; background: var(--accent); }
+.bar.hot > i { background: var(--bad); }
+nav.tabs { display: flex; gap: 2px; margin: 14px 0 12px; border-bottom: 1px solid var(--line); flex-wrap: wrap; }
+nav.tabs button { border: 0; background: none; color: var(--muted); padding: 8px 12px; cursor: pointer; font: inherit; border-bottom: 2px solid transparent; }
+nav.tabs button.sel { color: var(--ink); border-bottom-color: var(--accent); }
+.board { display: grid; grid-template-columns: repeat(5, minmax(180px, 1fr)); gap: 10px; }
+.col { background: var(--chip); border-radius: 8px; padding: 8px; min-height: 120px; }
+.col h3 { font-size: 12px; text-transform: uppercase; letter-spacing: .04em; color: var(--muted); margin: 2px 4px 8px; }
+.card { background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: 8px 10px; margin-bottom: 8px; cursor: pointer; }
+.card .n { font-weight: 600; }
+.card .m { font-size: 12px; color: var(--muted); }
+.card ul { list-style: none; padding: 0; margin: 6px 0 0; font-size: 12px; }
+.card li { padding: 2px 0; }
+.card li .r { color: var(--bad); display: block; margin-left: 22px; }
+.ag { display: inline-block; font-size: 11px; background: var(--accent); color: #fff; border-radius: 9px; padding: 0 6px; margin: 4px 4px 0 0; }
+table { border-collapse: collapse; width: 100%; font-size: 13px; }
+th, td { text-align: left; padding: 6px 8px; border-bottom: 1px solid var(--line); vertical-align: top; }
+th { color: var(--muted); font-weight: 500; font-size: 12px; }
+.docs { display: grid; grid-template-columns: 260px 1fr; gap: 16px; }
+.docs .list div { padding: 5px 8px; cursor: pointer; border-radius: 4px; font-family: var(--mono); font-size: 12px; word-break: break-all; }
+.docs .list div.sel, .docs .list div:hover { background: var(--chip); }
+.md { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 6px 20px; min-height: 200px; overflow-x: auto; }
+.md pre { background: var(--chip); padding: 10px; border-radius: 6px; overflow-x: auto; }
+.md code { font-family: var(--mono); font-size: 12.5px; }
+.md table { width: auto; }
+.q.open { border-left: 3px solid var(--bad); padding-left: 10px; margin-bottom: 12px; }
+.mono { font-family: var(--mono); font-size: 12px; }
+@media (max-width: 760px) {
+  main { grid-template-columns: 1fr; }
+  aside { border-right: 0; border-bottom: 1px solid var(--line); max-height: 40vh; }
+  .docs { grid-template-columns: 1fr; }
+  section#detail { padding: 12px 16px; }
+}
+</style>
+</head>
+<body>
+<header><h1>Company HQ</h1><span id="live" class="off" data-t="connecting…">connecting…</span></header>
+<main>
+  <aside>
+    <label><input type="checkbox" id="showClosed"> <span data-t="show closed">show closed</span></label>
+    <div id="list"></div>
+  </aside>
+  <section id="detail"><div class="empty" data-t="No company selected.">No company selected.</div></section>
+</main>
+<script src="/vendor/marked.min.js"></script>
+<script>
+"use strict";
+const PH = ["plan", "build", "review", "test", "done"];
+const ICON = { todo: "☐", done: "✓", verified: "✓✓", rejected: "✗" };
+const S = { list: [], sel: null, detail: null, tab: "board", doc: null, open: new Set(), showClosed: false };
+try { S.showClosed = localStorage.getItem("showClosed") === "1"; S.tab = localStorage.getItem("tab") || "board"; } catch (e) {}
+// English by default; Bulgarian when the browser asks for it.
+const LANG = (navigator.language || "en").toLowerCase().startsWith("bg") ? "bg" : "en";
+const BG = {"Agents": "Агенти", "Question": "Въпрос", "Failed to load.": "Грешка при зареждане.", "Documents": "Документи", "Team": "Екип", "Teams": "Екипи", "Task": "Задача", "Choice": "Избор", "When": "Кога", "By": "Кой", "Model": "Модел", "No documents in ": "Няма документи в ", "No documents.": "Няма документи.", "No company selected.": "Няма избрана компания.", "No companies.": "Няма компании.", "None.": "Няма.", "Description": "Описание", "Answered": "Отговорени", "Answer in the terminal.": "Отговорът се дава в терминала.", "No agents yet.": "Още няма агенти.", "No specialists hired yet.": "Още няма наети специалисти.", "No parts yet (docs/design-<part>.md).": "Още няма части (docs/design-<част>.md).", "Result: ": "Резултат: ", "Decisions made without the user": "Решения без потребителя", "Role": "Роля", "Specialist": "Специалист", "Started": "Старт", "Type": "Тип", "Questions waiting": "Чакащи въпроси", "Part": "Част", "done": "готово", "live": "на живо", "inactive": "неактивна", "disconnected — retrying": "няма връзка — опитва отново", "rejected task": "отхвърлена задача", "questions waiting": "чакащи въпроси", "closed": "затворена", "open": "отворена", "Document not available.": "Документът не е наличен.", "show closed": "покажи затворените", "connecting…": "свързване…", "phase": "фаза", "agents": "агента", "of": "от", "no cap": "без лимит", "ticked": "отметнати", "verified": "потвърдени", "no tasks": "няма задачи", "added": "добавена", "Questions": "Въпроси", "Scorer": "Оценка", "s ago": "s", "min ago": "мин", "h ago": "ч", "ago": "преди"};
+const t = k => (LANG === "bg" && BG[k]) || k;
+document.documentElement.lang = LANG;
+document.querySelectorAll("[data-t]").forEach(n => { n.textContent = t(n.dataset.t); });
+
+// Markdown: raw HTML is shown as text; links and images only http(s), #, relative.
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+const safeUrl = u => /^(https?:|#|\/|\.\/|[\w-]+(\/|\.|$))/i.test(u || "") && !/^\s*(javascript|data|vbscript):/i.test(u) ? u : "#";
+marked.use({ renderer: {
+  html: ({ text }) => esc(text),
+  link: ({ href, title, text }) => `<a href="${esc(safeUrl(href))}" rel="noopener noreferrer" target="_blank"${title ? ` title="${esc(title)}"` : ""}>${text}</a>`,
+  image: ({ href, text }) => `<img alt="${esc(text)}" src="${esc(safeUrl(href))}">`,
+} });
+
+const el = (tag, attrs = {}, ...kids) => {
+  const n = document.createElement(tag);
+  for (const [k, v] of Object.entries(attrs)) {
+    if (k === "class") n.className = v; else if (k.startsWith("on")) n.addEventListener(k.slice(2), v); else if (v !== undefined && v !== null) n.setAttribute(k, v);
+  }
+  for (const k of kids.flat()) if (k !== null && k !== undefined && k !== false) n.append(k.nodeType ? k : document.createTextNode(String(k)));
+  return n;
+};
+const money = n => "$" + Number(n || 0).toFixed(2);
+const ago = iso => {
+  if (!iso) return "";
+  const s = Math.max(0, (Date.now() - Date.parse(iso)) / 1000);
+  const fmt = (n, unit) => LANG === "bg" ? `преди ${n} ${t(unit)}` : `${n} ${unit}`;
+  return s < 60 ? fmt(Math.round(s), "s ago") : s < 3600 ? fmt(Math.round(s / 60), "min ago") : s < 86400 ? fmt(Math.round(s / 3600), "h ago") : new Date(iso).toLocaleString(LANG);
+};
+const getJSON = async u => { const r = await fetch(u, { cache: "no-store" }); if (!r.ok) throw new Error(r.status); return r.json(); };
+
+async function loadList() {
+  S.list = (await getJSON("/api/companies")).companies;
+  if (!S.sel) S.sel = (S.list.find(c => c.status === "open") || S.list[0] || {}).id || null;
+  renderList();
+}
+async function loadDetail() {
+  if (!S.sel) { S.detail = null; return renderDetail(); }
+  try { S.detail = await getJSON("/api/companies/" + encodeURIComponent(S.sel)); } catch (e) { S.detail = null; }
+  renderDetail();
+}
+
+function renderList() {
+  const box = document.getElementById("list");
+  const rows = S.list.filter(c => S.showClosed || c.status === "open");
+  box.replaceChildren(...(rows.length ? rows.map(c => {
+    const state = c.status === "closed" ? "closed" : c.stale ? "stale" : "open";
+    return el("div", { class: "co" + (c.id === S.sel ? " sel" : ""), onclick: () => { S.sel = c.id; S.doc = null; renderList(); loadDetail(); } },
+      el("div", { class: "t" }, el("span", { class: "dot " + state, title: state === "stale" ? t("inactive") : t(state === "open" ? "open" : "closed") }), c.title || c.id,
+        c.openQuestions ? el("span", { class: "badge q", title: t("questions waiting") }, c.openQuestions) : null),
+      el("div", { class: "m" }, `${c.machine} · ${c.phase}${c.running ? ` · ${c.running} ${t("agents")}` : ""} · ${money(c.budget?.spentUsd)}${c.budget?.capUsd ? " / " + money(c.budget.capUsd) : ""}`),
+      el("div", { class: "m" }, state === "stale" ? t("inactive") + " · " + ago(c.updatedAt) : ago(c.updatedAt)));
+  }) : [el("div", { class: "empty" }, t("No companies."))]));
+}
+
+function renderDetail() {
+  const box = document.getElementById("detail");
+  const d = S.detail;
+  if (!d) return box.replaceChildren(el("div", { class: "empty" }, t("No company selected.")));
+  const c = d.company, b = c.budget || {};
+  const pct = b.capUsd ? Math.min(100, Math.round(b.spentUsd / b.capUsd * 100)) : 0;
+  const tabs = [["board", "Board"], ["about", t("Description")], ["questions", `${t("Questions")}${(c.questions || []).some(q => q.status === "open") ? " •" : ""}`], ["teams", t("Teams")], ["agents", t("Agents")], ["docs", t("Documents")]];
+  box.replaceChildren(
+    el("div", { class: "head" },
+      el("h2", {}, c.title || c.id),
+      el("div", { class: "m" }, `${c.id} · ${c.machine} · ${c.kind} · ${t("phase")} ${c.phase}${c.note ? " — " + c.note : ""}${d.summary.stale ? " · " + t("inactive") : ""}${c.status === "closed" ? " · " + t("closed") : ""}`),
+      el("div", { class: "m" }, `${money(b.spentUsd)}${b.capUsd ? ` ${t("of")} ${money(b.capUsd)} (${pct}%)` : ` (${t("no cap")})`}`),
+      b.capUsd ? el("div", { class: "bar" + (pct >= 80 ? " hot" : "") }, el("i", { style: `width:${pct}%` })) : null),
+    el("nav", { class: "tabs" }, tabs.map(([k, label]) => el("button", { class: k === S.tab ? "sel" : "", onclick: () => { S.tab = k; try { localStorage.setItem("tab", k); } catch (e) {} renderDetail(); } }, label))),
+    el("div", {}, ({ board, about, questions, teams, agents, docs })[S.tab]?.(d) ?? board(d)));
+  if (S.tab === "docs" || S.tab === "about") showDoc();
+}
+
+function board(d) {
+  if (!d.parts.length) return el("div", { class: "empty" }, t("No parts yet (docs/design-<part>.md)."));
+  return el("div", { class: "board" }, PH.map(ph => el("div", { class: "col" }, el("h3", {}, ph === "done" ? t("done") : ph),
+    d.parts.filter(p => p.phase === ph).map(p => {
+      const total = p.tasks.length, ok = p.tasks.filter(k => k.status === "verified").length, ticked = p.tasks.filter(k => k.status !== "todo").length;
+      const running = p.agents.filter(a => a.status === "running");
+      const isOpen = S.open.has(p.name);
+      return el("div", { class: "card", onclick: () => { isOpen ? S.open.delete(p.name) : S.open.add(p.name); renderDetail(); } },
+        el("div", { class: "n" }, p.name),
+        el("div", { class: "m" }, `${total ? `${ticked}/${total} ${t("ticked")} · ${ok} ${t("verified")}` : t("no tasks")}${p.branch ? " · " + p.branch : ""}`),
+        p.result ? el("span", { class: "badge " + (p.result === "PASS" ? "ok" : "bad") }, "test " + p.result) : null,
+        p.tasks.some(k => k.status === "rejected") ? el("span", { class: "badge bad" }, t("rejected task")) : null,
+        el("div", {}, running.map(a => el("span", { class: "ag", title: a.description }, `▶ ${a.model || a.type}`))),
+        isOpen ? el("ul", {}, p.tasks.map(k => el("li", {}, `${ICON[k.status]} ${k.id} ${k.title}${k.added ? ` (${t("added")})` : ""}`,
+          k.status === "rejected" && k.reason ? el("span", { class: "r" }, k.reason) : null))) : null);
+    }))));
+}
+
+function about(d) {
+  const c = d.company;
+  const plan = d.docs.filter(x => x.path.startsWith((c.docsDir || "").replace(/\/$/, "") + "/"));
+  if (!S.doc && plan.length) S.doc = plan.find(x => /plan/i.test(x.path)) || plan[0];
+  return el("div", {},
+    el("h3", {}, t("Task")), el("p", {}, c.task || "—"),
+    c.result && (c.result.pr || c.result.report) ? el("p", {}, t("Result: "), c.result.pr ? el("a", { href: safeUrl(c.result.pr), target: "_blank", rel: "noopener noreferrer" }, c.result.pr) : c.result.report) : null,
+    plan.length ? el("div", { class: "docs" }, docList(plan), el("div", { class: "md", id: "md" }, "…")) : el("p", { class: "m" }, t("No documents in ") + c.docsDir));
+}
+
+function docs(d) {
+  if (!d.docs.length) return el("div", { class: "empty" }, t("No documents."));
+  if (!S.doc) S.doc = d.docs[0];
+  return el("div", { class: "docs" }, docList(d.docs), el("div", { class: "md", id: "md" }, "…"));
+}
+
+function docList(list) {
+  return el("div", { class: "list" }, list.map(x => el("div", {
+    class: S.doc && S.doc.root === x.root && S.doc.path === x.path ? "sel" : "",
+    title: x.branch || "", onclick: () => { S.doc = x; renderDetail(); },
+  }, (x.root ? `[${x.branch || "wt" + x.root}] ` : "") + x.path)));
+}
+
+async function showDoc() {
+  const box = document.getElementById("md");
+  if (!box || !S.doc) return;
+  try {
+    const r = await fetch(`/api/companies/${encodeURIComponent(S.sel)}/doc?root=${S.doc.root}&path=${encodeURIComponent(S.doc.path)}`, { cache: "no-store" });
+    box.innerHTML = r.ok ? marked.parse(await r.text()) : "<p>" + esc(t("Document not available.")) + "</p>";
+  } catch (e) { box.textContent = t("Failed to load."); }
+}
+
+function questions(d) {
+  const qs = d.company.questions || [], ds = d.company.decisions || [];
+  const open = qs.filter(q => q.status === "open"), done = qs.filter(q => q.status !== "open");
+  return el("div", {},
+    el("h3", {}, t("Questions waiting")),
+    open.length ? open.map(q => el("div", { class: "q open" }, el("div", {}, el("b", {}, q.text)),
+      el("div", { class: "m" }, `${q.part ? "[" + q.part + "] " : ""}${q.class || ""} · ${ago(q.askedAt)}`),
+      q.options?.length ? el("ul", {}, q.options.map(o => el("li", {}, o))) : null,
+      el("div", { class: "m" }, t("Answer in the terminal.")))) : el("p", { class: "m" }, t("None.")),
+    el("h3", {}, t("Decisions made without the user")),
+    ds.length ? el("table", {}, el("tr", {}, [t("When"), t("Part"), t("Question"), t("Choice"), t("By"), t("Scorer")].map(h => el("th", {}, h))),
+      ds.slice().reverse().map(x => el("tr", {}, el("td", {}, ago(x.at)), el("td", {}, x.part || ""), el("td", {}, x.text),
+        el("td", {}, x.chosen), el("td", {}, x.by), el("td", { class: "mono" }, x.scorer ? `${x.scorer.name || ""} ${x.scorer.mode}: ${(x.scorer.scores || []).map(s => Number(s).toFixed(2)).join(" / ")}` : "—")))) : el("p", { class: "m" }, t("None.")),
+    done.length ? [el("h3", {}, t("Answered")), done.map(q => el("p", {}, `${q.text} → `, el("b", {}, q.answer || "")))] : null);
+}
+
+function teams(d) {
+  const ts = d.company.teams || [];
+  if (!ts.length) return el("div", { class: "empty" }, t("No specialists hired yet."));
+  return el("table", {}, el("tr", {}, [t("Team"), t("Specialist"), t("Model"), t("Role")].map(h => el("th", {}, h))),
+    ts.flatMap(t => t.members.map(m => el("tr", {}, el("td", {}, t.name), el("td", { class: "mono" }, m.name), el("td", {}, m.model), el("td", {}, m.description)))));
+}
+
+function agents(d) {
+  const as = (d.company.agents || []).slice().reverse();
+  if (!as.length) return el("div", { class: "empty" }, t("No agents yet."));
+  return el("table", {}, el("tr", {}, ["", t("Part"), t("Type"), t("Model"), t("Description"), t("Started")].map(h => el("th", {}, h))),
+    as.map(a => el("tr", {}, el("td", {}, a.status === "running" ? "▶" : a.status === "done" ? "✓" : "✗"), el("td", {}, a.part || ""),
+      el("td", { class: "mono" }, a.type), el("td", {}, a.model || ""), el("td", {}, a.description), el("td", {}, ago(a.startedAt)))));
+}
+
+document.getElementById("showClosed").checked = S.showClosed;
+document.getElementById("showClosed").addEventListener("change", e => {
+  S.showClosed = e.target.checked; try { localStorage.setItem("showClosed", S.showClosed ? "1" : "0"); } catch (x) {} renderList();
+});
+
+let pending = null;
+const refresh = () => { clearTimeout(pending); pending = setTimeout(async () => { try { await loadList(); await loadDetail(); } catch (e) {} }, 200); };
+function connect() {
+  const live = document.getElementById("live");
+  const es = new EventSource("/events");
+  es.addEventListener("change", refresh);
+  es.onopen = () => { live.className = "on"; live.textContent = t("live"); };
+  es.onerror = () => { live.className = "off"; live.textContent = t("disconnected — retrying"); };
+}
+refresh();
+connect();
+setInterval(renderList, 30000); // keeps relative times and stale marks current
+</script>
+</body>
+</html>

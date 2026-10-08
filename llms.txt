@@ -12,7 +12,7 @@ Start with [INSTALL.md](https://github.com/escapeboy/claude-code-kit/blob/master
 ## Installable components
 
 - [Skills](https://github.com/escapeboy/claude-code-kit/tree/master/01-global-optimization/skills): 18 skills → `~/.claude/skills/<name>/` (agent-ready, agent-team, cache-inspector, code-research, codebase-memory, company, confidence-check, continuity, ctx, decision-classify, init-project, optimize, self-improve, sprint-orchestrate, sync-features, ui-ux-review, update-docs, video-digest)
-- [Mods marketplace](https://github.com/escapeboy/claude-code-kit/tree/master/17-mods/marketplace): `ai-prompts-mods`, 13 Claude Code mods (≥ 2.1.287) with tests
+- [Mods marketplace](https://github.com/escapeboy/claude-code-kit/tree/master/17-mods/marketplace): `ai-prompts-mods`, 13 Claude Code mods (≥ 2.1.287) with tests; `company-hq` adds an optional local read-only dashboard for `/company` runs (python3 ≥ 3.9) and `sprint-orchestrate` keeps a `## Tasks` checklist it reads
 - [Subagents](https://github.com/escapeboy/claude-code-kit/tree/master/10-subagents/examples): 8 agent definitions → `~/.claude/agents/`
 - [Security hooks](https://github.com/escapeboy/claude-code-kit/tree/master/13-security-hardening/hooks): PreToolUse guards with tests
 - [Productivity hooks](https://github.com/escapeboy/claude-code-kit/tree/master/01-global-optimization/hooks): shell-habits, package-version check, memory load

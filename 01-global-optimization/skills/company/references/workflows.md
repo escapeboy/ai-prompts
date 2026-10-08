@@ -63,14 +63,28 @@ for (const wave of args.waves) {            // waves run in order; parts inside 
   const done = await parallel(wave.map(p => () => agent(
     `${p.brief}\n\nFirst: git checkout -b company/${args.slug}/${p.key} ${args.base}.\n` +
     `Then run /sprint-orchestrate plan build review test ${p.key} --from-design ${p.design}.\n` +
-    `Commit your work on that branch. Do not push.`,
-    { label: `part:${p.key}`, phase: 'Build parts', schema: REPORT, isolation: 'worktree',
+    `Commit your work on that branch. Do not push.\n` +
+    `If a question comes up: classify it (decision-classify). User-class → call mcp__company-hq__ask_user ` +
+    `(load it with ToolSearch), stop the tasks that depend on it, finish the rest, return BLOCKED with the ` +
+    `question id in notes. Mechanical/Taste → decide by your recommendation per the company skill's ` +
+    `references/questions.md and call mcp__company-hq__record_decision.`,
+    // The label is how the company-hq mod ties the agent to its part on the dashboard: `<part>: …`.
+    { label: `${p.key}: sprint`, phase: 'Build parts', schema: REPORT, isolation: 'worktree',
       agentType: p.agentType ?? 'general-purpose', model: p.model })))   // needs the Skill tool for /sprint-orchestrate
   reports.push(...done.filter(Boolean))
   if (done.some(r => !r || r.status === 'BLOCKED')) { log('a part is BLOCKED; stopping before the next wave'); break }
 }
 return reports
 ```
+
+Labels: every `agent()` that works on a part gets `label: '<part>: <short>'` (and every Agent tool
+call `description: '<part>: …'`). Without a label the mod sees the whole prompt and cannot place the
+agent on the board. Research and other company-wide agents keep labels without the `<word>: ` form
+(e.g. `research:code`).
+
+A part BLOCKED on a question is not a failed round: send the PushNotification for its question id.
+The other parts of its wave finish; later waves wait, since they depend on it. Re-run it after the
+answer ([questions.md](questions.md)).
 
 A part whose report is not DONE, or whose checks are not all `passed`, is not merged. Fix it with
 the same team (one more wave of one) — at most 2 rounds, then ask the user.

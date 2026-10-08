@@ -4,6 +4,27 @@ All notable changes to this library are documented here.
 
 ---
 
+## [1.35.0] — 2026-10-08
+
+### Added
+
+- **Optional live dashboard for `/company`** (`company-hq` mod 0.4.0). Every `/company` run is now its own company with its own state file, and several can be open at once. A read-only web page served on `127.0.0.1` by a Python standard-library server inside the mod (`python3` >= 3.9, default port 7420) shows the org, spend, parts, task lists, open questions and logged decisions. It is off by default: enable it with `/company --dashboard[=local|fleetq|local+fleetq]`, the `dashboard` key in `~/.claude/company-hq/config.json`, or the new question at stop 1. In `local` mode nothing leaves the machine. `fleetq` also sends a redacted snapshot to a FleetQ instance (`fleetq.url` in the config, token in `COMPANY_HQ_FLEETQ_TOKEN`); the format is in `server/INGEST-CONTRACT.md`. New config keys: `dashboard`, `port`, `machine`, `fleetq.url`.
+- **Questions and decisions during unattended work.** New `company-hq` tools `ask_user`, `answer_question` and `record_decision`, and `company/references/questions.md`: User-class questions block only the part that needs them and send a notification; Mechanical/Taste choices are decided by the recommendation and logged. Part agents carry the rule in their brief.
+- **`sprint-orchestrate` task list** (skill 1.2.0, new `references/tasks.md`). Plan writes a `## Tasks` checklist in the architecture doc, Build ticks it, Review checks each ticked task on a stronger model than the builder's and marks it `{verified}` or `{rejected: <reason>}`, Test writes a `Result:` line in the test plan. The phase gates, artifact table and Always boundary were extended to match.
+
+### Updated
+
+- `company` skill: Dashboard section, dashboard question at stop 1, `open_project` parameters `task`, `kind`, `dashboard`, `resume`, part agents labelled `<part>: …` (fixed the workflows example label) so the dashboard can place them.
+- `17-mods/guide.md`, `INSTALL.md`, `llms.txt`: company-hq entry, dependency notes and cross-links.
+- Dashboard page: English by default, Bulgarian when the browser asks for it. Logged decisions carry an optional generic `scorer {name, scores, mode}` (an external ranker; it never decides User-class questions).
+
+### Security
+
+- The dashboard server has no state-changing GET (no `/shutdown`; stop it by its pid in `server.json`), answers only `127.0.0.1`/`localhost` Host headers, and serves only plan documents under the project dir or its worktrees.
+- `open_project({resume})` accepts only a company id whose state file carries the same id (no path traversal).
+- A company's `docsDir` must be a relative path without `..`, in the mod and in the server, so nothing outside the project is read or sent.
+- The FleetQ token is sent only over `https://` (plain `http://` only to localhost); documents are redacted before sending.
+
 ## [1.34.1] — 2026-10-08
 
 ### Fixed
