@@ -135,7 +135,7 @@ Updates a specific file or set of files based on research findings.
 
 **Rules when applying updates**:
 - **Never retro-edit historical records.** Model IDs, prices, and dates inside CHANGELOG entries, README "Version History", and any `.backups/` directory are frozen records — leave them exactly as written. Only touch live/current claims: frontmatter, config examples, compatibility lines, and pricing-reference tables.
-- **When updating the `ai-prompts` repo, follow the Releasing convention** (repo `CLAUDE.md` → "Releasing"): every change ships as four synced artifacts — CHANGELOG entry, README "Version History" entry + footer version bump (and the `current: vX.Y.Z` line in the repo `CLAUDE.md`), an annotated git tag, and a GitHub Release.
+- **When updating the `claude-code-kit` repo, follow the Releasing convention** (repo `CLAUDE.md` → "Releasing"): every change ships as four synced artifacts — CHANGELOG entry, README "Version History" entry + footer version bump (and the `current: vX.Y.Z` line in the repo `CLAUDE.md`), an annotated git tag, and a GitHub Release.
 
 ---
 

@@ -1,4 +1,8 @@
-# Claude Code Optimization Prompts Library
+# claude-code-kit
+
+> Formerly `ai-prompts`. Old links and clones redirect to this repo.
+
+**Skills, mods, subagents, hooks, slash commands and guides for Claude Code — installable by your agent ([INSTALL.md](INSTALL.md)).**
 
 **Project-agnostic guides and executable agents for setting up Claude Code with 70-90% token reduction.**
 
@@ -10,7 +14,7 @@ This library contains reusable prompts for implementing global Claude Code optim
 
 Point your coding agent at **[INSTALL.md](INSTALL.md)**:
 
-> Read https://github.com/escapeboy/ai-prompts/blob/master/INSTALL.md and install what fits my setup.
+> Read https://github.com/escapeboy/claude-code-kit/blob/master/INSTALL.md and install what fits my setup.
 
 The agent inspects your environment, proposes a selection (starter, code intelligence, delivery, multi-agent, mods, security, unattended, stack-specific), installs it from the latest release tag after your yes, without overwriting your files, and verifies the result. [llms.txt](llms.txt) is the index agents use to find their way around.
 
@@ -426,7 +430,7 @@ cd ~/projects/your-project
 **Send the entire directory**:
 ```bash
 # Zip the library
-tar -czf claude-optimization.tar.gz ~/ai-prompts
+tar -czf claude-optimization.tar.gz ~/claude-code-kit
 
 # Share with team
 # Recipients extract and follow guides
@@ -470,7 +474,7 @@ If you lose your `~/.claude/` directory:
 
 **Version control**:
 ```bash
-cd ~/ai-prompts
+cd ~/claude-code-kit
 git init
 git add .
 git commit -m "Initial Claude Code optimization library"
@@ -635,12 +639,15 @@ These prompts are project-agnostic and can be freely adapted for your team's nee
 
 **Created**: 2026-01-04
 **Last Updated**: 2026-09-27
-**Version**: 1.33.0
+**Version**: 1.34.0
 **Compatibility**: Claude Code v2.1.32+, Claude API (Fable 5: `claude-fable-5`, Opus 4.8: `claude-opus-4-8`, Opus 4.7: `claude-opus-4-7`, Sonnet 5: `claude-sonnet-5`, Haiku 4.5: `claude-haiku-4-5`)
 
 ---
 
 ## 📝 Version History
+
+### v1.34.0 (2026-10-08)
+**Changed**: repository renamed from `ai-prompts` to `claude-code-kit`; links, clone path and merge markers updated. Old URLs redirect; the mods marketplace keeps the name `ai-prompts-mods`.
 
 ### v1.33.0 (2026-10-08)
 **Added**: `INSTALL.md`, a runbook an AI agent follows to install the parts of this library that fit a user's setup (bundles, skill dependencies, no-overwrite rules, verification, updates), and `llms.txt` as the agent index. **Updated**: 17-mods notes that mod tests need Claude Code ≥ 2.1.294.

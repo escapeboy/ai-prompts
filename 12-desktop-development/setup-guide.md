@@ -52,7 +52,7 @@ claude mcp list
 ### Step 4: Create CLAUDE.md
 
 ```bash
-cp /path/to/ai-prompts/12-desktop-development/macos/macos-claude-md-template.md ./CLAUDE.md
+cp /path/to/claude-code-kit/12-desktop-development/macos/macos-claude-md-template.md ./CLAUDE.md
 # Edit to match your project
 ```
 
@@ -104,7 +104,7 @@ cargo tauri --version
 ### Step 4: Create CLAUDE.md
 
 ```bash
-cp /path/to/ai-prompts/12-desktop-development/tauri/tauri-claude-md-template.md ./CLAUDE.md
+cp /path/to/claude-code-kit/12-desktop-development/tauri/tauri-claude-md-template.md ./CLAUDE.md
 # Edit to match your project
 ```
 
@@ -151,7 +151,7 @@ npx electron --version
 ### Step 4: Create CLAUDE.md
 
 ```bash
-cp /path/to/ai-prompts/12-desktop-development/electron/electron-claude-md-template.md ./CLAUDE.md
+cp /path/to/claude-code-kit/12-desktop-development/electron/electron-claude-md-template.md ./CLAUDE.md
 # Edit to match your project
 ```
 

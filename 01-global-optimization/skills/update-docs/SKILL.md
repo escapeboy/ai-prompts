@@ -10,7 +10,7 @@ Keeps your Claude Code configuration documentation current with the latest Claud
 
 Especially useful for keeping `~/.claude/` system prompts, skill files, and project memories accurate after Claude API updates.
 
-> **Scope**: `/update-docs` handles **external freshness** — API / model / pricing / beta-header drift sourced from the web. For **internal consistency** (dead links, README↔CHANGELOG version parity, terminology, stray Cyrillic, privacy leaks) use [`/content-review`](https://github.com/escapeboy/ai-prompts/blob/master/07-custom-commands/content-review.md) instead. The two are complementary, not overlapping — don't duplicate content-review's checks here.
+> **Scope**: `/update-docs` handles **external freshness** — API / model / pricing / beta-header drift sourced from the web. For **internal consistency** (dead links, README↔CHANGELOG version parity, terminology, stray Cyrillic, privacy leaks) use [`/content-review`](https://github.com/escapeboy/claude-code-kit/blob/master/07-custom-commands/content-review.md) instead. The two are complementary, not overlapping — don't duplicate content-review's checks here.
 
 ---
 
@@ -19,7 +19,7 @@ Especially useful for keeping `~/.claude/` system prompts, skill files, and proj
 | Use this skill for | Use a simpler approach for |
 |--------------------|----------------------------|
 | Refreshing docs after a Claude API / model / pricing / beta-header change | Fixing a single known-stale value you already have the correct source for — just edit it |
-| A periodic sweep for staleness across `~/.claude/`, skills, or memories | Internal-consistency issues (dead links, version parity, terminology) → [`/content-review`](https://github.com/escapeboy/ai-prompts/blob/master/07-custom-commands/content-review.md) |
+| A periodic sweep for staleness across `~/.claude/`, skills, or memories | Internal-consistency issues (dead links, version parity, terminology) → [`/content-review`](https://github.com/escapeboy/claude-code-kit/blob/master/07-custom-commands/content-review.md) |
 | Comparing live web/authoritative facts against what the docs currently claim | A fact you can confirm from the bundled `claude-api` skill in one read — read it and edit |
 | A multi-file update that must stay in sync (frontmatter + config + compat lines + pricing tables) | A one-line typo or wording tweak with no external source to verify |
 
@@ -70,7 +70,7 @@ For the recommended monthly full-refresh workflow, token budget, and troubleshoo
 **Always**
 - After an `update`, **verify**: re-read the file (or run a regression grep) to confirm the change landed and didn't break JSON / fence parity before reporting done.
 - Lead with authoritative primary sources (platform.claude.com, the bundled `claude-api` skill) — not community mirrors — for any model / pricing / API fact.
-- When editing the `ai-prompts` repo, ship the change as the four synced Releasing artifacts (CHANGELOG + README Version History & footer + annotated tag + GitHub Release; see repo `CLAUDE.md` → "Releasing").
+- When editing the `claude-code-kit` repo, ship the change as the four synced Releasing artifacts (CHANGELOG + README Version History & footer + annotated tag + GitHub Release; see repo `CLAUDE.md` → "Releasing").
 
 **Ask first**
 - Bulk `update --scope global` / `--scope memories` (edits across many files at once) — preview with `--dry-run` and confirm before applying.
@@ -87,8 +87,8 @@ For the recommended monthly full-refresh workflow, token budget, and troubleshoo
 
 - [references/actions.md](references/actions.md) — full per-action detail (process, primary sources, output formats, editing rules)
 - [references/workflow.md](references/workflow.md) — monthly full-refresh workflow, token budget, troubleshooting
-- [`/content-review`](https://github.com/escapeboy/ai-prompts/blob/master/07-custom-commands/content-review.md) — complementary: internal consistency (dead links, version parity), where this skill owns external freshness
+- [`/content-review`](https://github.com/escapeboy/claude-code-kit/blob/master/07-custom-commands/content-review.md) — complementary: internal consistency (dead links, version parity), where this skill owns external freshness
 - [`/init-project`](../init-project/SKILL.md) — Initial docs setup for a new project
 - [`/ctx refresh`](../ctx/SKILL.md) — Refresh Serena memories specifically
-- [Research Integration Guide](https://github.com/escapeboy/ai-prompts/blob/master/04-research-integration/guide.md)
-- [Custom Skills Guide](https://github.com/escapeboy/ai-prompts/blob/master/03-custom-skills/guide.md) — how these skills are authored
+- [Research Integration Guide](https://github.com/escapeboy/claude-code-kit/blob/master/04-research-integration/guide.md)
+- [Custom Skills Guide](https://github.com/escapeboy/claude-code-kit/blob/master/03-custom-skills/guide.md) — how these skills are authored

@@ -99,6 +99,6 @@ Then:
 
 ## See also
 
-- [Prompt injection defense](https://github.com/escapeboy/ai-prompts/blob/master/13-security-hardening/guide.md#3-prompt-injection-defense) — why the transcript and description are treated as untrusted input.
-- [`self-improve`](https://github.com/escapeboy/ai-prompts/blob/master/01-global-optimization/skills/self-improve/SKILL.md) — same provisional → active review gate for anything promoted into durable memory.
+- [Prompt injection defense](https://github.com/escapeboy/claude-code-kit/blob/master/13-security-hardening/guide.md#3-prompt-injection-defense) — why the transcript and description are treated as untrusted input.
+- [`self-improve`](https://github.com/escapeboy/claude-code-kit/blob/master/01-global-optimization/skills/self-improve/SKILL.md) — same provisional → active review gate for anything promoted into durable memory.
 - [Svod](https://github.com/FleetQ/svod-engine) — the versioned note store with the provisional-memory review queue this skill writes into.

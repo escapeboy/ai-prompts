@@ -95,7 +95,7 @@ Every Laravel project should have a `CLAUDE.md` file that tells Claude Code abou
 
 ```bash
 # Copy the template
-cp /path/to/ai-prompts/09-laravel-mcp-integration/laravel-claude-md-template.md ./CLAUDE.md
+cp /path/to/claude-code-kit/09-laravel-mcp-integration/laravel-claude-md-template.md ./CLAUDE.md
 
 # Edit to match your project
 # Fill in: project name, PHP version, key patterns, etc.
