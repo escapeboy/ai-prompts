@@ -33,7 +33,20 @@ export const TEMPLATE: Config = {
 export const errorLines = (log: string) => log.split('\n').filter(l => /\.(ERROR|CRITICAL|ALERT|EMERGENCY):/.test(l))
 export const count500 = (log: string) => log.split('\n').filter(l => /"\s500\s/.test(l)).length
 
-type Found = { path: string; config: Config } | undefined
+type Found = { path: string; raw: string; config: Config } | undefined
+// The config runs shell commands, and a cloned repo can ship one. It runs only
+// after the user approved this exact content with /deploy-verify trust.
+const TRUST_KEY = 'trusted'
+
+export async function isTrusted($: EngineInterface, f: { path: string; raw: string }) {
+  const t = ((await $.store.get(TRUST_KEY)) as Record<string, string> | undefined) ?? {}
+  return t[f.path] === f.raw
+}
+
+async function trust($: EngineInterface, path: string, raw: string) {
+  const t = ((await $.store.get(TRUST_KEY)) as Record<string, string> | undefined) ?? {}
+  await $.store.set(TRUST_KEY, { ...t, [path]: raw })
+}
 // Looked up once per working directory; /deploy-verify init clears it.
 const found = new Map<string, Found>()
 
@@ -49,13 +62,17 @@ async function searchConfig($: EngineInterface, cwd: string): Promise<Found> {
   let dir = cwd
   for (let i = 0; i < 8 && dir; i++) {
     const path = `${dir}/${CONFIG}`
-    if (await $.fs.exists(path)) return { path, config: JSON.parse(await $.fs.read(path)) as Config }
+    if (await $.fs.exists(path)) {
+      const raw = await $.fs.read(path)
+      return { path, raw, config: JSON.parse(raw) as Config }
+    }
     dir = dir.slice(0, dir.lastIndexOf('/'))
   }
   return undefined
 }
 
 async function remote($: EngineInterface, c: Config, cmd: string) {
+  if (c.ssh?.startsWith('-')) throw new Error(`ssh host must not start with '-': ${c.ssh}`)
   const argv = c.ssh ? ['ssh', '-o', 'ConnectTimeout=10', '-o', 'BatchMode=yes', c.ssh, cmd] : ['sh', '-c', cmd]
   return $.process.run(argv, { timeoutMs: 60_000 })
 }
@@ -96,7 +113,7 @@ async function verify($: EngineInterface, c: Config): Promise<string[]> {
 
 export const register: Register = on => {
   on('session.start', async ($, e, next) => {
-    await $.command.register({ name: 'deploy-verify', description: 'Run the 5 post-deploy checks from .claude/deploy-verify.json', argumentHint: '[init]' })
+    await $.command.register({ name: 'deploy-verify', description: 'Run the 5 post-deploy checks from .claude/deploy-verify.json', argumentHint: '[init|trust]' })
     return next(e)
   })
 
@@ -109,6 +126,9 @@ export const register: Register = on => {
     if (!cfg) {
       return { ...ran, context: [...(ran.context ?? []), `deploy-verify: this looks like a deploy, but there is no ${CONFIG} here. Run your post-deploy checks now, or /deploy-verify init to set the project up.`] }
     }
+    if (!(await isTrusted($, cfg))) {
+      return { ...ran, context: [...(ran.context ?? []), `deploy-verify: ${cfg.path} is new or changed since the user last approved it, so its checks did not run. Ask the user to read it and run /deploy-verify trust; meanwhile run the post-deploy checks yourself.`] }
+    }
     const lines = await verify($, cfg.config)
     for (const l of lines) $.ui.log(l)
     return { ...ran, context: [...(ran.context ?? []), `deploy-verify (${cfg.path}), checks run after this deploy:\n${lines.join('\n')}\nDo not report the deploy as done while any line is ❌ or ⚠️ unexplained.`] }
@@ -118,13 +138,19 @@ export const register: Register = on => {
     if (e.args.trim() === 'init') {
       const path = `${await $.session.cwd()}/${CONFIG}`
       if (await $.fs.exists(path)) return { text: `${path} already exists.` }
-      await $.fs.write(path, JSON.stringify(TEMPLATE, null, 2) + '\n')
+      const raw = JSON.stringify(TEMPLATE, null, 2) + '\n'
+      await $.fs.write(path, raw)
       found.clear()
       return { text: `Wrote ${path}. Fill in the URLs, the ssh host and the container, then /deploy-verify to test it.` }
     }
     found.clear()
     const cfg = await findConfig($)
     if (!cfg) return { text: `No ${CONFIG} in this project. /deploy-verify init writes a template.` }
+    if (e.args.trim() === 'trust') {
+      await trust($, cfg.path, cfg.raw)
+      return { text: `Trusted ${cfg.path} as it is now. Any later change needs /deploy-verify trust again.\n\n${cfg.raw}` }
+    }
+    if (!(await isTrusted($, cfg))) return { text: `${cfg.path} is new or changed. Read it, then /deploy-verify trust:\n\n${cfg.raw}` }
     return { text: (await verify($, cfg.config)).join('\n') }
   })
 }

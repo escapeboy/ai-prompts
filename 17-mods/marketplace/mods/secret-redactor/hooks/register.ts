@@ -31,6 +31,9 @@ const KEYED: RegExp[] = [
 
 const BLOCKED_READ = [/\/\.config\/op\/sa-token$/, /\.pem$/, /\/\.ssh\/id_[A-Za-z0-9_-]+$/, /\/\.claude\/alert\.env$/]
 const SKIP_TOOLS = new Set(['Agent', 'Task', 'Workflow'])
+// Real values go back only into local tools. A placeholder in a web or MCP
+// call (e.g. from injected page text) is sent as the placeholder.
+const RESTORE_TOOLS = new Set(['Bash', 'Read', 'Edit', 'Write', 'NotebookEdit', 'Grep', 'Glob'])
 
 export class Vault {
   private byValue = new Map<string, string>()
@@ -96,7 +99,7 @@ export const register: Register = on => {
     }
 
     // Put real values back into the arguments Claude wrote with placeholders.
-    const restored = mapStrings(e, s => (s.includes('‹secret:') ? vault.restore(s) : s)) as typeof e
+    const restored = (RESTORE_TOOLS.has(tool) ? mapStrings(e, s => (s.includes('‹secret:') ? vault.restore(s) : s)) : e) as typeof e
     const ran = await next(restored)
     if (ran.deny !== undefined) return ran
 

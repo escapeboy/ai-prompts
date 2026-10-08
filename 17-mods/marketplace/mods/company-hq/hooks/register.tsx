@@ -112,7 +112,10 @@ export const register: Register = on => {
     const saved = ((await $.store.get('prompts')) as Record<string, { prompt: string; tools?: string[]; skills?: string[] }> | undefined) ?? {}
     await update($, project, () => p ?? null)
     await update($, roster, () => r)
-    for (const s of r) {
+    // Hired agents come back only inside the open project's folder, so a hire
+    // never follows the user into other repos.
+    const here = p ? inProject(e.cwd, p.dir) : false
+    for (const s of here ? r : []) {
       const sp = saved[s.name]
       if (sp) {
         prompts.set(s.name, sp)

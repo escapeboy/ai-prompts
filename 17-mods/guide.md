@@ -49,6 +49,7 @@ Order of execution: managed `PreToolUse` hooks → mods → user settings hooks.
 - **Config through `userConfig`**, not constants: `claude plugin configure <mod>@<marketplace> --values-stdin`. Values land in `settings.json` → `pluginConfigs`.
 - **A version bump needs `claude plugin update <mod>@<marketplace>`.** An installed plugin keeps its cached copy; a local folder marketplace is read live only while the version matches.
 - **Tests answer the bottom hook.** In `claude plugin test`, an event no one implements fails — add a bottom hook (`session.start` returns `{cwd}`, op events return `{value}`).
+- **Treat repo files as untrusted input.** A mod runs outside the permission system, so a mod that executes something read from the project (a config, a script path) is a way around it. Pin the content the user approved and refuse anything else.
 - **Cheap when idle.** Timers and status lines run plain code; spend tokens (`model.fork`) only when something is actionable.
 
 ## The example marketplace
@@ -68,15 +69,15 @@ claude plugin install secret-redactor@ai-prompts-mods
 | cache-guard | Idle ≥ 50 min with ≥ 150K context: a tiny fork keeps the prompt cache warm (≤ 4 pings; stops if the cache had already lapsed). Idle > 60 min: holds the next prompt once and shows what the cache rewrite will cost. | `/keepwarm [on\|off]` |
 | spend-ledger | Per-turn tokens and $ by day, project and model in `~/.claude/spend-ledger/<YYYY-MM>.json`. Optional: pulls other machines' ledgers over ssh and writes a monthly note to a notes MCP. | `/spend [day\|week\|month\|sync]`; `remote_hosts`, `svod_server`, `svod_vault`, `note_dir` |
 | subagent-models | Pins subagent models to a routing table (Opus for judgement, Haiku for mechanical work, Sonnet for the catch-alls); an explicit `model` wins; logs every spawn. Edit `POLICY` to your agents. | `/agent-models [n]` |
-| secret-redactor | Tokens, keys and passwords in tool output → `‹secret:N›`; the real value is restored in later tool-call arguments, so commands still work. Blocks Read of key files. | — |
+| secret-redactor | Tokens, keys and passwords in tool output → `‹secret:N›`; the real value is restored in later arguments of local tools only (Bash, Read, Edit, Write, Grep, Glob), never in web or MCP calls. Blocks Read of key files. | — |
 | ssh-guard | Refuses ssh/scp/rsync/sftp to hosts in a retired-hosts markdown file (`## name — ip (aliases)` headers; aliases resolved with `ssh -G`). `# decommissioned-ok` in the command overrides, after the user agrees. | `hosts_file` |
-| deploy-verify | After a command that the project's `.claude/deploy-verify.json` marks as a deploy, runs 5 checks (homepage, endpoints, app log, nginx 5xx, OPcache clear) and hands Claude the result. | `/deploy-verify [init]` |
+| deploy-verify | After a command that the project's `.claude/deploy-verify.json` marks as a deploy, runs 5 checks (homepage, endpoints, app log, nginx 5xx, OPcache clear) and hands Claude the result. The config runs shell commands, so it runs only after the user approved its exact content with `/deploy-verify trust`; a cloned repo's config is never run on its own. | `/deploy-verify [init\|trust]` |
 | ci-watch | Polls `gh pr checks` every minute into the status line; toast when done; stops after 2h. No tokens. | `/ci-watch [pr\|stop]` |
 | cleanup-tracker | Records successful downloads, clones, installs, containers and launchd loads, so a session can clean up after itself. | `/cleanup-list [write\|clear]` |
 | aside | `/aside` opens a pane; a tool-less fork answers from the prompt cache; nothing enters the conversation. | `/aside [question]` |
 | fleet-status | Status line `fleet: P1 n · P2 n` from a triage report (`## P1` sections with `- [` items). | `/fleet [full]`, `/ports`; `state_file` |
 | lang-guard | Example language guard: after each main answer flags Russian words in Bulgarian text and plain-language slips (em-dash asides, 40+ word sentences, aphorisms); shows a line and adds a hidden reminder. Adapt the word lists. | — |
-| company-hq | Back office for the [`company`](../01-global-optimization/skills/company/SKILL.md) skill: tools `open_project` / `hire` / `set_phase` / `close_project`, hired specialists as agent types (`company-hq:<name>`), a budget cap enforced on every spawn inside the project folder. | `/company-status` |
+| company-hq | Back office for the [`company`](../01-global-optimization/skills/company/SKILL.md) skill: tools `open_project` / `hire` / `set_phase` / `close_project`, hired specialists as agent types (`company-hq:<name>`), a budget cap enforced on every spawn inside the project folder. Hired agents are re-registered only inside that folder. | `/company-status` |
 
 Turn one off: `/plugin` → Installed → disable. All mods off for one session: `claude --safe-mode`.
 

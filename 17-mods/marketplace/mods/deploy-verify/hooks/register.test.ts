@@ -1,6 +1,6 @@
 import { expect, test } from 'claude-code/testing'
 
-import { count500, errorLines, TEMPLATE } from './register'
+import { count500, errorLines, isTrusted, TEMPLATE } from './register'
 
 test('log parsers', async () => {
   const log = [
@@ -20,4 +20,12 @@ test('log parsers', async () => {
 test('template patterns are valid regexes', async () => {
   for (const p of TEMPLATE.deployCommands) expect(() => new RegExp(p)).not.toThrow()
   expect(new RegExp(TEMPLATE.deployCommands[1]!).test('git push origin main')).toBe(true)
+})
+
+test('config runs only when its exact content was trusted', async () => {
+  const store = (t: Record<string, string>) => ({ store: { get: async () => t } }) as never
+  const f = { path: '/p/.claude/deploy-verify.json', raw: '{"ssh":"a"}' }
+  expect(await isTrusted(store({}), f)).toBe(false)
+  expect(await isTrusted(store({ [f.path]: f.raw }), f)).toBe(true)
+  expect(await isTrusted(store({ [f.path]: '{"ssh":"b"}' }), f)).toBe(false)
 })
