@@ -150,8 +150,18 @@ class Git:
 DOC_PATTERNS = [re.compile(r"^docs/(design|architecture|test-plan)-[a-z0-9][a-z0-9-]*\.md$")]
 
 
+SAFE_DIR = re.compile(r"[A-Za-z0-9_][A-Za-z0-9_.-]*(/[A-Za-z0-9_][A-Za-z0-9_.-]*)*")
+
+
+def safe_docs_dir(d: str) -> str:
+    """A company's docsDir: relative, no '..' — else nothing is read from it."""
+    d = (d or "").strip("/")
+    return d if SAFE_DIR.fullmatch(d) and ".." not in d.split("/") else ""
+
+
 def docs_dir_ok(rel: str, docs_dir: str) -> bool:
-    return bool(re.fullmatch(re.escape(docs_dir.strip("/")) + r"/[^/]+\.md", rel))
+    d = safe_docs_dir(docs_dir)
+    return bool(d) and bool(re.fullmatch(re.escape(d) + r"/[^/]+\.md", rel))
 
 
 class Store:
@@ -209,7 +219,7 @@ class Store:
             names = []
             if (root / "docs").is_dir():
                 names += [f"docs/{p.name}" for p in sorted((root / "docs").glob("*.md"))]
-            dd = (c.get("docsDir") or "").strip("/")
+            dd = safe_docs_dir(c.get("docsDir") or "")
             if dd and (root / dd).is_dir():
                 names += [f"{dd}/{p.name}" for p in sorted((root / dd).glob("*.md"))]
             for rel in names:
@@ -362,9 +372,6 @@ def make_handler(store: Store, hub: Hub, port_ref: dict, stop: threading.Event):
                 return self._send(200, marked, "text/javascript; charset=utf-8")
             if u.path == "/health":
                 return self._json({"app": APP, "version": VERSION, "pid": os.getpid()})
-            if u.path == "/shutdown":
-                stop.set()
-                return self._json({"stopping": True})
             if u.path == "/api/companies":
                 cs = [store.summary(c) for c in store.companies()]
                 cs.sort(key=lambda s: (s["status"] != "open", -(parse_iso(s.get("updatedAt") or ""))))

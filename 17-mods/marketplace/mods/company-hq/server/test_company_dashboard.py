@@ -198,6 +198,13 @@ class Server(unittest.TestCase):
         s, _ = self.req("/api/companies/..%2F..%2Fetc")
         self.assertEqual(s, 404)
 
+    def test_unsafe_docs_dir_is_ignored(self):
+        self.assertEqual(cd.safe_docs_dir("claudedocs/company/pay"), "claudedocs/company/pay")
+        self.assertEqual(cd.safe_docs_dir("../../hq"), "")
+        self.assertEqual(cd.safe_docs_dir("docs/../.."), "")
+        self.assertFalse(cd.docs_dir_ok("../../hq/companies/x/private.json", "../../hq"))
+        self.assertEqual(self.req("/shutdown")[0], 404)  # no state-changing GET
+
     def test_host_header_and_methods(self):
         self.assertEqual(self.req("/api/companies", host="evil.example:80")[0], 403)
         self.assertEqual(self.req("/api/companies", method="POST")[0], 405)

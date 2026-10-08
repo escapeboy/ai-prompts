@@ -1,7 +1,7 @@
 import { expect, mock, test } from 'claude-code/testing'
 import type { On } from 'claude-code'
 
-import { addMember, companyId, dashLine, inProject, nearCap, overCap, parseWorktrees, partOf, redact, sha256Hex, validateHire } from './register'
+import { addMember, companyId, dashLine, fleetUrlOk, inProject, nearCap, overCap, parseWorktrees, partOf, redact, safeDocsDir, sha256Hex, validateHire } from './register'
 
 const B = { capUsd: 10, spentUsd: 7 }
 const HOME = '/home/me'
@@ -269,8 +269,8 @@ test('questions wait for the user; decisions are logged', async ($, on) => {
   await $.tool.call(call('mcp__company-hq__answer_question', { id: 'q1', answer: 'yes' }))
   expect(state(w, id).questions[0]).toMatchObject({ status: 'answered', answer: 'yes' })
   expect(String((await $.tool.call(call('mcp__company-hq__answer_question', { id: 'q9', answer: 'x' }))).result)).toContain('No question')
-  await $.tool.call(call('mcp__company-hq__record_decision', { text: 'Button top or bottom?', options: ['bottom', 'top'], chosen: 'bottom', by: 'agent', part: 'ui', jev: { scores: [0.74, 0.21], mode: 'shadow' } }))
-  expect(state(w, id).decisions[0]).toMatchObject({ id: 'd1', chosen: 'bottom', by: 'agent', jev: { mode: 'shadow' } })
+  await $.tool.call(call('mcp__company-hq__record_decision', { text: 'Button top or bottom?', options: ['bottom', 'top'], chosen: 'bottom', by: 'agent', part: 'ui', scorer: { name: 'ranker', scores: [0.74, 0.21], mode: 'shadow' } }))
+  expect(state(w, id).decisions[0]).toMatchObject({ id: 'd1', chosen: 'bottom', by: 'agent', scorer: { name: 'ranker', mode: 'shadow' } })
   expect(String((await $.tool.call(call('mcp__company-hq__record_decision', { text: 't', options: [], chosen: 'a', by: 'me' }))).result)).toContain('refused')
 })
 
@@ -317,4 +317,29 @@ test('fleetq: sends snapshot, then missing docs with content, redacted; retries 
   await clock.settle()
   expect(sent.length).toBe(4)
   expect(JSON.parse(w.files.get(`${ROOT}/companies/${id}/outbox.json`)!)).toMatchObject({ pending: false })
+})
+
+test('untrusted paths and urls are refused', async ($, on) => {
+  expect(safeDocsDir('claudedocs/company/pay')).toBe('claudedocs/company/pay')
+  expect(safeDocsDir('/claudedocs/x/')).toBe('claudedocs/x')
+  expect(safeDocsDir('../../.ssh')).toBe('')
+  expect(safeDocsDir('docs/../../etc')).toBe('')
+  expect(safeDocsDir('.hidden')).toBe('')
+  expect(fleetUrlOk('https://fleetq.example')).toBe(true)
+  expect(fleetUrlOk('http://fleetq.example')).toBe(false)
+  expect(fleetUrlOk('http://127.0.0.1:8000/')).toBe(true)
+  expect(fleetUrlOk('http://localhost.evil.com')).toBe(false)
+
+  const files = new Map<string, string>([['/etc/evil.json', JSON.stringify({ schema: 1, id: '../../../tmp/x', status: 'open' })]])
+  const w = world(on, { v: 0 }, { files })
+  await $.session.start(start)
+  for (const bad of ['../../../etc/evil', '/etc/evil', 'a/b']) {
+    const r = await $.tool.call(call('mcp__company-hq__open_project', { slug: 'x', title: 'x', capUsd: 0, resume: bad }))
+    expect(String(r.result)).toContain('resume refused')
+  }
+  // A state file whose id does not match its folder is not taken over.
+  files.set(`${ROOT}/companies/fake-1/state.json`, JSON.stringify({ schema: 1, id: '../../../tmp/x', status: 'open', questions: [], decisions: [] }))
+  const r = await $.tool.call(call('mcp__company-hq__open_project', { slug: 'x', title: 'x', capUsd: 0, resume: 'fake-1' }))
+  expect(String(r.result)).toContain('resume refused')
+  expect([...w.files.keys()].some(k => k.includes('/tmp/x'))).toBe(false)
 })

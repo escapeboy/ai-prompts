@@ -21,6 +21,7 @@ const activeId = atom({ plugin: 'company-hq', key: 'activeId' } as const, null)
 const MODELS = new Set(['haiku', 'sonnet', 'opus', 'inherit'])
 const DASHBOARDS = new Set(['off', 'local', 'fleetq', 'local+fleetq'])
 const NAME = /^[a-z][a-z0-9-]{1,40}$/
+const ID = /^[a-z0-9][a-z0-9-]{0,80}$/
 const PART = /^([a-z0-9][a-z0-9-]{0,40}):\s/
 const MAX_AGENTS = 200
 
@@ -116,17 +117,17 @@ const TOOLS = [
   },
   {
     name: 'record_decision',
-    description: 'company-hq: log a non-critical choice (decision-classify: Mechanical/Taste) made without the user, with the options, the choice, who chose (agent or jev) and the Jev scores when there were any, so the user can review and reverse it.',
+    description: 'company-hq: log a non-critical choice (decision-classify: Mechanical/Taste) made without the user, with the options, the choice, who chose (agent or an external scorer) and the scorer\'s scores when there were any, so the user can review and reverse it.',
     inputSchema: {
       type: 'object',
       properties: {
         text: { type: 'string' },
         options: { type: 'array', items: { type: 'string' } },
         chosen: { type: 'string' },
-        by: { type: 'string', enum: ['agent', 'jev'] },
+        by: { type: 'string', enum: ['agent', 'scorer'] },
         part: { type: 'string' },
         class: { type: 'string', description: 'mechanical or taste' },
-        jev: { type: 'object', properties: { scores: { type: 'array', items: { type: 'number' } }, mode: { type: 'string', enum: ['shadow', 'decide'] } } },
+        scorer: { type: 'object', description: 'an external ranker of the options, when one was asked', properties: { name: { type: 'string' }, scores: { type: 'array', items: { type: 'number' } }, mode: { type: 'string', enum: ['shadow', 'decide'] } } },
         company: { type: 'string' },
       },
       required: ['text', 'options', 'chosen', 'by'],
@@ -272,6 +273,13 @@ const SECRETS: RegExp[] = [
 ]
 export const redact = (t: string) => SECRETS.reduce((s, re) => s.replace(re, '[REDACTED]'), t)
 const DOC = /^docs\/(design|architecture|test-plan)-[a-z0-9][a-z0-9-]*\.md$/
+// docsDir comes from a state file: only a relative path without '..' is read.
+export const safeDocsDir = (d: string) => {
+  const s = d.replace(/^\/+|\/+$/g, '')
+  return /^[A-Za-z0-9_][A-Za-z0-9_.-]*(\/[A-Za-z0-9_][A-Za-z0-9_.-]*)*$/.test(s) && !s.split('/').includes('..') ? s : ''
+}
+// The token goes only over https (plain http only to this machine).
+export const fleetUrlOk = (u: string) => /^https:\/\/[^/\s]+/.test(u) || /^http:\/\/(127\.0\.0\.1|localhost)(:\d+)?(\/|$)/.test(u)
 const wantsFleet = (d: Dashboard) => d === 'fleetq' || d === 'local+fleetq'
 
 export async function sha256Hex(text: string) {
@@ -297,7 +305,7 @@ async function collectDocs($: EngineInterface, c: Company): Promise<Doc[]> {
   const real = (await $.fs.stat(c.dir, { resolve: true }).catch(() => undefined))?.realPath ?? c.dir
   const wt = await $.process.run(['git', '-C', c.dir, 'worktree', 'list', '--porcelain']).catch(() => undefined)
   const roots = parseWorktrees(wt?.exitCode === 0 ? wt.stdout : '', real)
-  const docsDir = c.docsDir.replace(/^\/+|\/+$/g, '')
+  const docsDir = safeDocsDir(c.docsDir)
   const subs = docsDir && docsDir !== 'docs' ? ['docs', docsDir] : ['docs']
   const out: Doc[] = []
   for (const [i, r] of roots.entries()) {
@@ -338,6 +346,13 @@ async function sendFleet($: EngineInterface, id: string) {
   const cfg = (await readJson<{ fleetq?: { url?: string } }>($, `${S.home}/config.json`)) ?? {}
   const url = cfg.fleetq?.url?.replace(/\/+$/, '')
   const token = await $.env.get('COMPANY_HQ_FLEETQ_TOKEN')
+  if (url && !fleetUrlOk(url)) {
+    if (!fleetWarned.has('url')) {
+      fleetWarned.add('url')
+      $.ui.toast('company: fleetq.url must be https:// (http only for localhost); nothing was sent')
+    }
+    return
+  }
   if (!url || !token) {
     if (!fleetWarned.has('config')) {
       fleetWarned.add('config')
@@ -462,8 +477,9 @@ export const register: Register = on => {
     const cwd = await $.session.cwd()
 
     if (a.resume) {
+      if (!ID.test(a.resume)) return { result: 'resume refused: not a company id.' }
       const c = (await read($, companies)).find(x => x.id === a.resume) ?? (await readJson<Company>($, stateFile(a.resume)))
-      if (!c || c.status !== 'open') return { result: `resume refused: no open company ${a.resume}.` }
+      if (!c || c.status !== 'open' || c.id !== a.resume) return { result: `resume refused: no open company ${a.resume}.` }
       const taken = { ...c, questions: c.questions ?? [], decisions: c.decisions ?? [], sessionId: S.sessionId, seq: c.seq + 1, updatedAt: new Date().toISOString() }
       await update($, companies, list => [...list.filter(x => x.id !== c.id), taken])
       await update($, activeId, () => taken.id)
@@ -543,13 +559,13 @@ export const register: Register = on => {
   }).catch(() => ({ result: 'company-hq: answer_question failed; see claude --debug.' }))
 
   on('tool.call', { tool: 'mcp__company-hq__record_decision' }, async ($, e) => {
-    const a = e as unknown as { text: string; options: string[]; chosen: string; by: string; part?: string; class?: string; jev?: Decision['jev']; company?: string }
+    const a = e as unknown as { text: string; options: string[]; chosen: string; by: string; part?: string; class?: string; scorer?: Decision['scorer']; company?: string }
     const c = await pick($, a.company)
     if (!c) return { result: 'No open company.' }
-    if (a.by !== 'agent' && a.by !== 'jev') return { result: 'record_decision refused: by must be agent or jev.' }
+    if (a.by !== 'agent' && a.by !== 'scorer') return { result: 'record_decision refused: by must be agent or scorer.' }
     const d: Decision = {
       id: `d${c.decisions.length + 1}`, part: a.part ?? null, class: a.class ?? 'taste', text: a.text, options: a.options ?? [],
-      ...(a.jev ? { jev: a.jev } : {}), chosen: a.chosen, by: a.by, at: new Date().toISOString(),
+      ...(a.scorer ? { scorer: a.scorer } : {}), chosen: a.chosen, by: a.by, at: new Date().toISOString(),
     }
     await change($, c.id, x => ({ ...x, decisions: [...x.decisions, d] }))
     return { result: `Decision ${d.id} logged.` }

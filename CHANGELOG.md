@@ -16,6 +16,14 @@ All notable changes to this library are documented here.
 
 - `company` skill: Dashboard section, dashboard question at stop 1, `open_project` parameters `task`, `kind`, `dashboard`, `resume`, part agents labelled `<part>: …` (fixed the workflows example label) so the dashboard can place them.
 - `17-mods/guide.md`, `INSTALL.md`, `llms.txt`: company-hq entry, dependency notes and cross-links.
+- Dashboard page: English by default, Bulgarian when the browser asks for it. Logged decisions carry an optional generic `scorer {name, scores, mode}` (an external ranker; it never decides User-class questions).
+
+### Security
+
+- The dashboard server has no state-changing GET (no `/shutdown`; stop it by its pid in `server.json`), answers only `127.0.0.1`/`localhost` Host headers, and serves only plan documents under the project dir or its worktrees.
+- `open_project({resume})` accepts only a company id whose state file carries the same id (no path traversal).
+- A company's `docsDir` must be a relative path without `..`, in the mod and in the server, so nothing outside the project is read or sent.
+- The FleetQ token is sent only over `https://` (plain `http://` only to localhost); documents are redacted before sending.
 
 ## [1.34.1] — 2026-10-08
 

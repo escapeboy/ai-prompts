@@ -15,7 +15,8 @@ export type Question = {
 // A non-critical choice made without the user, kept so it can be reviewed and reversed.
 export type Decision = {
   id: string; part: string | null; class: string; text: string; options: string[]
-  jev?: { scores: number[]; mode: 'shadow' | 'decide' }; chosen: string; by: 'agent' | 'jev'; at: string
+  // scorer: an optional external ranker of the options; it never decides User-class questions.
+  scorer?: { name: string; scores: number[]; mode: 'shadow' | 'decide' }; chosen: string; by: 'agent' | 'scorer'; at: string
 }
 // One /company run. Written to ~/.claude/company-hq/companies/<id>/state.json by
 // the session that owns it; the dashboard server and the FleetQ adapter read it.

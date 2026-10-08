@@ -38,7 +38,7 @@ Idempotent: same body twice → same stored state.
 
 ## Snapshot (schema 1) fields the server relies on
 
-`schema` (=1), `id` (`^[a-z0-9][a-z0-9-]{0,80}$`), `slug`, `title`, `task`, `kind`, `machine`, `status` (`open|closed`), `phase`, `note`, `budget {capUsd, spentUsd}`, `teams [{name, members[{name, agent, model, description}]}]`, `agents [{agentId?, type, model?, part|null, description, status (running|done|denied), startedAt, endedAt?}]`, `questions [{id, part, class, text, options[], askedAt, status (open|answered), answer, answeredAt}]` (may be absent), `decisions [{id, part, class, text, options[], jev?{scores[], mode}, chosen, by, at}]` (may be absent), `result {pr?, report?}`, `seq`, `openedAt`, `updatedAt`, `closedAt|null`, `docsDir`.
+`schema` (=1), `id` (`^[a-z0-9][a-z0-9-]{0,80}$`), `slug`, `title`, `task`, `kind`, `machine`, `status` (`open|closed`), `phase`, `note`, `budget {capUsd, spentUsd}`, `teams [{name, members[{name, agent, model, description}]}]`, `agents [{agentId?, type, model?, part|null, description, status (running|done|denied), startedAt, endedAt?}]`, `questions [{id, part, class, text, options[], askedAt, status (open|answered), answer, answeredAt}]` (may be absent), `decisions [{id, part, class, text, options[], scorer?{name, scores[], mode}, chosen, by (agent|scorer), at}]` (may be absent), `result {pr?, report?}`, `seq`, `openedAt`, `updatedAt`, `closedAt|null`, `docsDir`.
 
 The snapshot never contains specialists' system prompts (they stay on the machine in `private.json`).
 
