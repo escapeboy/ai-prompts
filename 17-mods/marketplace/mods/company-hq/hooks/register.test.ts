@@ -143,6 +143,17 @@ test('open, hire, spawn under the cap, refuse past it', async ($, on) => {
   expect(after.deny).toBe(undefined)
 })
 
+test('no capUsd means no cap', async ($, on) => {
+  const usd = { v: 0 }
+  const w = world(on, usd)
+  await $.session.start(start)
+  const opened = await $.tool.call(call('mcp__company-hq__open_project', { slug: 'free', title: 'Free' }))
+  expect(String(opened.result)).toContain('cap $∞')
+  expect(state(w, idOf(opened.result)).budget).toEqual({ capUsd: 0, spentUsd: 0 })
+  usd.v = 1000
+  expect((await $.agent.spawn(spawn('general-purpose'))).deny).toBe(undefined)
+})
+
 test('two companies stay open side by side', async ($, on) => {
   const usd = { v: 1 }
   const w = world(on, usd)

@@ -63,14 +63,14 @@ const TOOLS = [
       properties: {
         slug: { type: 'string', description: 'kebab-case short name' },
         title: { type: 'string' },
-        capUsd: { type: 'number', description: 'budget cap in USD for all agents of this company; 0 = no cap' },
+        capUsd: { type: 'number', description: 'optional budget cap in USD for all agents of this company; omit or 0 = no cap' },
         dir: { type: 'string', description: 'working directory of the project' },
         task: { type: 'string', description: 'the task as the user gave it' },
         kind: { type: 'string', enum: ['code', 'new-project', 'audit', 'ops'] },
         dashboard: { type: 'string', enum: ['off', 'local', 'fleetq', 'local+fleetq'], description: 'omit to use ~/.claude/company-hq/config.json, else off' },
         resume: { type: 'string', description: 'id of an open company to take over in this session; the other fields are ignored' },
       },
-      required: ['slug', 'title', 'capUsd'],
+      required: ['slug', 'title'],
     },
   },
   {
@@ -472,7 +472,7 @@ export const register: Register = on => {
   })
 
   on('tool.call', { tool: 'mcp__company-hq__open_project' }, async ($, e) => {
-    const a = e as unknown as { slug: string; title: string; capUsd: number; dir?: string; task?: string; kind?: string; dashboard?: string; resume?: string }
+    const a = e as unknown as { slug: string; title: string; capUsd?: number; dir?: string; task?: string; kind?: string; dashboard?: string; resume?: string }
     await flush($)
     const cwd = await $.session.cwd()
 
@@ -499,7 +499,7 @@ export const register: Register = on => {
     for (let n = 2; taken.has(id); n++) id = `${companyId(a.slug, new Date())}-${n}`
     const c: Company = {
       ...blank(new Date(), a.slug, a.title, a.dir ?? cwd, dashboard),
-      id, task: a.task ?? '', kind: a.kind ?? 'code', budget: { capUsd: Math.max(0, a.capUsd), spentUsd: 0 },
+      id, task: a.task ?? '', kind: a.kind ?? 'code', budget: { capUsd: Math.max(0, a.capUsd ?? 0), spentUsd: 0 },
     }
     hires.set(id, {})
     await update($, companies, list => [...list, c])

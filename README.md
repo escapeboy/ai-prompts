@@ -638,13 +638,16 @@ These prompts are project-agnostic and can be freely adapted for your team's nee
 ---
 
 **Created**: 2026-01-04
-**Last Updated**: 2026-09-27
-**Version**: 1.35.0
+**Last Updated**: 2026-10-09
+**Version**: 1.35.1
 **Compatibility**: Claude Code v2.1.32+, Claude API (Fable 5: `claude-fable-5`, Opus 4.8: `claude-opus-4-8`, Opus 4.7: `claude-opus-4-7`, Sonnet 5: `claude-sonnet-5`, Haiku 4.5: `claude-haiku-4-5`)
 
 ---
 
 ## 📝 Version History
+
+### v1.35.1 (2026-10-09)
+**Changed**: `/company` has no budget cap by default; `capUsd` on `open_project` is optional (company-hq mod 0.4.1). Set a cap at stop 2 when you want one.
 
 ### v1.35.0 (2026-10-08)
 **Added**: optional live dashboard for `/company` (company-hq mod 0.4.0: one state file per company, local read-only Python server, optional FleetQ ingest, questions and decisions during unattended work); `sprint-orchestrate` keeps a `## Tasks` checklist (Build ticks, Review verifies on a stronger model, Test writes `Result:`).

@@ -6,7 +6,7 @@ version: 0.1.0
 
 # /company — an IT company for one task
 
-`/company` is management, not a second orchestrator. It clarifies, researches, splits the work and staffs teams; the work itself runs through skills that already exist (`sprint-orchestrate` for code, `code-research` for audits, the ops skills for hosts). The back office is the `company-hq` mod: it hires project specialists as agent types, enforces the budget cap on every spawn, and shows the org in a pane.
+`/company` is management, not a second orchestrator. It clarifies, researches, splits the work and staffs teams; the work itself runs through skills that already exist (`sprint-orchestrate` for code, `code-research` for audits, the ops skills for hosts). The back office is the `company-hq` mod: it hires project specialists as agent types, enforces the optional budget cap on every spawn, and shows the org in a pane.
 
 ## When to Use (and When NOT to)
 
@@ -25,7 +25,7 @@ Track the phase with `mcp__company-hq__set_phase` (load the `mcp__company-hq__*`
 
 | # | Phase | What happens | Detail |
 |---|---|---|---|
-| 0 | Intake | Classify (code / new project / audit / ops). Recall similar past projects from your memory store. Read `.continuity/STATE.md` if present. `open_project` with the default cap, `task`, `kind` and `dashboard` (see Dashboard). Every `/company` call is a new company; `resume: <id>` takes over an open one. | [references/memory.md](references/memory.md) |
+| 0 | Intake | Classify (code / new project / audit / ops). Recall similar past projects from your memory store. Read `.continuity/STATE.md` if present. `open_project` with `task`, `kind` and `dashboard` (see Dashboard). Every `/company` call is a new company; `resume: <id>` takes over an open one. | [references/memory.md](references/memory.md) |
 | 1 | **Stop 1 — clarify** | Ask only what changes the result: ≤4 questions per round, options with a recommendation (`AskUserQuestion`). Without `--dashboard` and without a `dashboard` in `~/.claude/company-hq/config.json`, the first round also asks "Dashboard? off (recommended) / local / fleetq / local+fleetq". Look up anything the code, memory or docs can answer instead of asking. Rounds may repeat after research raises a real question. Use `decision-classify` to keep Mechanical/Taste choices away from the user. | [references/org-design.md](references/org-design.md#clarify) |
 | 2 | Research | Read-only parallel subagents (cbm/Serena for code, Context7 for libraries, web). Output `research.md` with sources. | [references/workflows.md](references/workflows.md#research) |
 | 3 | **Stop 2 — plan, org, budget** | Split into parts with disjoint files; write `docs/design-<part>.md` per part; staff teams from the roster, hire specialists only where no existing agent fits; pick models; estimate cost; present one page; wait for yes / change / cancel. | [references/org-design.md](references/org-design.md), [references/roster.md](references/roster.md) |
@@ -44,7 +44,7 @@ Off unless asked: `/company --dashboard[=local|fleetq|local+fleetq]`, or `dashbo
 
 ## Defaults (edit these to your own)
 
-- **Budget cap:** $25 per project unless the user sets another at stop 2. The mod refuses spawns past it; then stop and report.
+- **Budget cap:** none by default. If the user sets one at stop 2, pass it as `capUsd`; the mod then refuses spawns past it, and you stop and report.
 - **Size:** ≤10 agents per Workflow run (the session guideline). More only with an explicit yes at stop 2.
 - **New project:** `~/projects/<slug>` in your default stack unless the task implies another; `init-project`, then `sprint-orchestrate full`, then `devops` for CI/CD.
 - **Ops hosts:** the hosts you list here, read-only by default. Any write, restart or other host is a separate yes.
@@ -65,14 +65,14 @@ Off unless asked: `/company --dashboard[=local|fleetq|local+fleetq]`, or `dashbo
 
 **Always**
 - Stop twice: after clarifying, and with the plan + org + cost before any agent writes code or touches a host.
-- Open the project in `company-hq` with a cap before spawning; close it at the end, and also when the user cancels at a stop.
+- Open the project in `company-hq` before spawning; close it at the end, and also when the user cancels at a stop.
 - Route code delivery through `sprint-orchestrate` (`--from-design`, `ship --no-merge`); do not re-implement its phases.
 - Read command output for every "passes/works" claim; report failures as failures.
 - Label every part agent `<part>: …`; route every question through decision-classify and record it (`ask_user` / `record_decision`).
 
 **Ask first**
 - Merge, deploy, push to a shared branch, any write on a server, deleting anything.
-- Raising the cap, more than 10 agents, or a 3rd fix round after FAIL.
+- Raising a cap the user set, more than 10 agents, or a 3rd fix round after FAIL.
 - Saving a specialist as a permanent agent.
 
 **Never**

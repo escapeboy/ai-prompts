@@ -24,7 +24,7 @@ tags: [company, <task type>, <stack>]
 ---
 # <title>
 Task: … · Type: … · Repo: … · Result: PR <url> | report <path> | ops change list
-Cost: $<spent> of $<cap> · Agents: <n> · Fix rounds: <n>
+Cost: $<spent> (cap $<cap> | none) · Agents: <n> · Fix rounds: <n>
 
 ## Split and teams
 | Part | Files | Lead (model) | Specialists | Status |

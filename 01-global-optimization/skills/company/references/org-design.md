@@ -68,7 +68,7 @@ when there is no history:
 | Opus verifier pass on a branch | $1–3 |
 | Read-only research agent | $0.2–1 |
 
-State it as a range and an explicit cap. Label it an estimate.
+State it as a range and label it an estimate. No cap unless the user asks for one.
 
 ## The stop-2 page
 
@@ -82,7 +82,7 @@ Parts and teams:
 New specialists: <name> (model) — why
 Order: 1 → (2 ∥ 3) → integration → ship --no-merge
 Checks: tests by command, adversarial-verifier, /code-review
-Cost: ~$X–Y (estimate), cap $Z. Agents: N.
+Cost: ~$X–Y (estimate), cap: none | $Z. Agents: N.
 Stops before: merge, deploy, server writes.
 ```
 
