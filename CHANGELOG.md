@@ -4,6 +4,13 @@ All notable changes to this library are documented here.
 
 ---
 
+## [1.35.1] — 2026-10-09
+
+### Changed
+
+- **`/company` has no budget cap by default.** `capUsd` on `company-hq`'s `open_project` is now optional; omitted or `0` means no cap (`company-hq` mod 0.4.1). The `company` skill no longer opens every project with a $25 cap: the user can still set one at stop 2, and the mod then refuses spawns past it as before. The stop-2 page shows `cap: none | $Z`, and the project note records `cap $<cap> | none`.
+- `17-mods/guide.md`, marketplace and plugin descriptions say the cap is optional. New mod test: a company opened without `capUsd` never denies a spawn.
+
 ## [1.35.0] — 2026-10-08
 
 ### Added
